@@ -1,0 +1,6 @@
+{% load i18n %}
+You have been invited!
+
+{% trans "Go to" %}
+http://129.120.93.131:8000/accounts/signup/?code={{ activation_code }}
+{% trans "to join!" %}

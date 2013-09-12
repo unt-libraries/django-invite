@@ -1,0 +1,17 @@
+{% extends 'invite/base.html' %}
+{% block content %}
+{% if perms.invite.add_invitation %}
+
+<div class='span3 well'>
+    <h3><i class="icon-envelope"></i> Who would you like to invite, {{ user.first_name|title }}?</h3>
+    <form action='/accounts/invite/' method="post">{% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Submit" />
+    </form>
+<div>
+{% else %}
+    <h3>
+        <i class="icon-remove"></i> Sorry, {{ user.first_name|title }}, you don't have invite permission.
+    </h3>
+{% endif %}
+{% endblock %}
