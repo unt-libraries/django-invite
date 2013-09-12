@@ -1,31 +1,33 @@
 {% extends 'invite/base.html' %}
 {% block content %}
-<div class='span5 well'>
-    {% if perms.invite.add_invitation %}
-        <a href="/accounts/invite/" class="btn btn-large btn-block btn-primary" type="button">Send an Invitation</a>
-    {% else %}
-        <a href="#" class="btn btn-large btn-block btn-primary disabled" type="button">Send an Invitation</a>
-    {% endif %}
-    {% if invites %}
-        <div>
-            <h3>Open Invitations:</h3>
+    <div class='centered'>
+        <div class='text-left well span6'>
+            {% if perms.invite.add_invitation %}
+                <a href="/accounts/invite/" class="btn btn-large btn-block btn-primary" type="button">Send an Invitation</a>
+            {% else %}
+                <a href="#" class="btn btn-large btn-block btn-primary disabled" type="button">Send an Invitation</a>
+            {% endif %}
+            {% if invites %}
+                <div>
+                    <h3>Open Invitations:</h3>
+                </div>
+                <div>
+                    {% for i in invites %}
+                        <table class='table'>
+                        <i class="icon-envelope"></i> {{ i.first_name|title }} {{ i.last_name|title }} was emailed an invitation on {{ i.date_invited }}
+                        </table>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            <hr>
+            <div>
+                <h3>Active Accounts:</h3>
+            </div>
+                {% for u in users %}
+                    <table class='table'>
+                    <code><i class="icon-user"></i> {{ u }}</code> registered on {{ u.date_joined }}
+                    </table>
+                {% endfor %}
         </div>
-        <div>
-            {% for i in invites %}
-                <table class='table'>
-                <i class="icon-envelope"></i> {{ i.first_name|title }} {{ i.last_name|title }} was emailed an invitation on {{ i.date_invited }}
-                </table>
-            {% endfor %}
-        </div>
-    {% endif %}
-    <hr>
-    <div>
-        <h3>Active Accounts:</h3>
     </div>
-        {% for u in users %}
-            <table class='table'>
-            <code><i class="icon-user"></i> {{ u }}</code> registered on {{ u.date_joined }}
-            </table>
-        {% endfor %}
-    {% endblock %}
-</div>
+{% endblock %}

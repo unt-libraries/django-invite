@@ -1,14 +1,18 @@
 {% extends 'invite/base.html' %}
 {% block content %}
-{% if user.is_authenticated %}
-<div class='well'>
-    <h3>{{ user.first_name }}, you're already logged in. If your username is not {{ user }}, please logout of the system.</h3>
-{% else %}
-<div class='span3 well'>
-    <form action='/accounts/login/' method="post">{% csrf_token %}
-        {{ form.as_p }}
-        <input type="submit" value="Submit" />
-    </form>
+<div class='centered'>
+
+    {% if user.is_authenticated %}
+        <div class='well'>
+            <h3>{{ user.first_name }}, you're already logged in. If your username is not {{ user }}, please logout of the system.</h3>
+        <div>
+    {% else %}
+        <div class='span3 well'>
+            <form action='/accounts/login/?next={{ next }}' method="post">{% csrf_token %}
+                {{ form.as_p }}
+                <input type="submit" value="Submit" />
+            </form>
+        </div>
+    {% endif %}
 </div>
-{% endif %}
 {% endblock %}

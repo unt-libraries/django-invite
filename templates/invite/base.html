@@ -8,6 +8,7 @@
     <title>{% block title %}{% endblock %}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ MEDIA_URL }}edit_events/bootstrap/css/bootstrap.css">
+    <link rel="stylesheet" href="{{ MEDIA_URL }}edit_events/css/extended.css">
     <link rel="stylesheet" href="{{ MEDIA_URL }}edit_events/bootstrap/css/bootstrap-responsive.css">
     <link rel="stylesheet" href="{{ MEDIA_URL }}edit_events/fontawesome/css/font-awesome.css">
     <style type="text/css"> body { padding-top: 60px; }</style>
@@ -40,15 +41,13 @@
                         <li class="nav-header">Invite</li>
                         <li><a href="/accounts">Accounts</a></li>
                         <li><a href="/accounts/invite/">Invite</a></li>
-
-
                     </ul>
                 </li>
                 <li><a href="/accounts/about/">About</a></li>
                 {% if user.is_authenticated %}
-                    <li><a href="/accounts/logout/">Logout</a></li>
+                    <li><a href="/accounts/logout/"><i class="icon-white icon-road"></i> Logout</a></li>
                 {% else %}
-                    <li><a href="/accounts/login/">Login</a></li>
+                    <li><a href="/accounts/login/"><i class="icon-white icon-key"></i> Login</a></li>
                 {% endif %}
                 <li class="divider-vertical"></li>
             </ul>
@@ -72,7 +71,9 @@
         </div>
         {% endif %}
 
-        {% block content %}{% endblock %}
+        <div class="block">
+            {% block content %}{% endblock %}
+        </div>
     </div>
     {% endblock %}
 </div>

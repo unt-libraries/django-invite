@@ -29,6 +29,9 @@ def about(request):
 
 
 def log_in_user(request):
+    next = '/accounts/'
+    if request.GET.get('next'):
+        next = request.GET.get('next')
     if request.method == 'POST':
         form = LoginForm(request.POST)
         if form.is_valid():
@@ -38,14 +41,15 @@ def log_in_user(request):
             if user is not None:
                 if user.is_active:
                     login(request, user)
-                    # Redirect to a success page.
-                    return HttpResponseRedirect('/accounts/')
+                    # Redirect to next page.
+                    return HttpResponseRedirect(next)
     else:
         form = LoginForm()
     return render(
         request,
         'invite/login.html',
         {
+            'next': next,
             'form': form,
         },
         context_instance=RequestContext(request)
