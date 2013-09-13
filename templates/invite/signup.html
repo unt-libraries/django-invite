@@ -1,11 +1,13 @@
 {% extends 'invite/base.html' %}
 
 {% block content %}
-<div class='span3 well'>
-    <h3><i class="icon-thumbs-up"></i> Welcome, {{ form.first_name.value|title }}!</h3>
+<div class='centered'>
+    <div class='span3 well'>
+        <h3><i class="icon-thumbs-up"></i> Welcome, {{ form.first_name.value|title }}!</h3>
         <form action='/accounts/signup/?code={{ activation_code }}' method="POST">{% csrf_token %}
-            {{ form.as_p }}
+            {{ form }}
             <input type="submit" value="Submit" />
         </form>
+    </div>
 </div>
 {% endblock %}

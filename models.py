@@ -30,6 +30,9 @@ class Invitation(models.Model):
         max_length=41,
         help_text="the potential member's email address",
     )
+    custom_msg = models.CharField(
+        max_length=256,
+    )
     date_invited = models.DateField(
         auto_now=True,
         help_text="the day on which the superuser invited the potential member",
@@ -51,7 +54,9 @@ class Invitation(models.Model):
             message = render_to_string(
                 'invite/invitation_email.txt',
                 {
+                    'service_name': settings.SERVICE_NAME,
                     'activation_code': self.activation_code,
+                    'custom_msg': self.custom_msg,
                 }
             )
 

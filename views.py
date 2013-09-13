@@ -15,7 +15,8 @@ def log_out_user(request):
     logout(request)
     # Redirect to a success page.
     return render_to_response(
-        'invite/logout.html',
+        'invite/base.html',
+        {'form': LoginForm()},
         context_instance=RequestContext(request)
     )
 
@@ -24,14 +25,12 @@ def about(request):
     return render(
         request,
         'invite/about.html',
+        {'form': LoginForm()},
         context_instance=RequestContext(request)
     )
 
 
 def log_in_user(request):
-    next = '/accounts/'
-    if request.GET.get('next'):
-        next = request.GET.get('next')
     if request.method == 'POST':
         form = LoginForm(request.POST)
         if form.is_valid():
@@ -42,27 +41,24 @@ def log_in_user(request):
                 if user.is_active:
                     login(request, user)
                     # Redirect to next page.
-                    return HttpResponseRedirect(next)
+                    return HttpResponseRedirect('/accounts/')
     else:
         form = LoginForm()
     return render(
         request,
-        'invite/login.html',
+        'invite/base.html',
         {
-            'next': next,
             'form': form,
         },
         context_instance=RequestContext(request)
     )
 
 
-@login_required(login_url='/accounts/login/')
 def index(request):
-    if request.GET.get('next'):
-        return HttpResponseRedirect(next)
     return render_to_response(
         'invite/index.html',
         {
+            'form': LoginForm(),
             'invites': Invitation.objects.all(),
             'users': User.objects.all(),
         },
@@ -70,7 +66,6 @@ def index(request):
     )
 
 
-@login_required(login_url='/accounts/login/')
 def invite(request):
     if request.method == 'POST':
         form = InviteForm(request.POST)
@@ -84,6 +79,7 @@ def invite(request):
                 user_name=form.cleaned_data['user_name'],
                 email=form.cleaned_data['email'],
                 permissions=permission_code,
+                custom_msg=form.cleaned_data['custom_msg'],
             )
             i.send()
             return HttpResponseRedirect('/accounts/')
@@ -93,7 +89,8 @@ def invite(request):
         request,
         'invite/invite.html',
         {
-            'form': form,
+            'form': LoginForm(),
+            'invite_form': form,
         },
         context_instance=RequestContext(request)
     )
@@ -122,10 +119,6 @@ def signup(request):
                             codename='add_invitation'
                         )
                         u.user_permissions.add(p)
-                    # if permission == '2':
-                    #     content_type = ContentType.objects.get_for_model(User)
-                    #     p = Permission.objects.get(content_type=content_type, codename='delete_user')
-                    #     u.user_permissions.add(p)
                     elif permission == '3':
                         u.is_superuser = True
                 u.save()
