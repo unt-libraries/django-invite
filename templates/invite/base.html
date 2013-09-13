@@ -44,6 +44,9 @@
                     <li><a href="/accounts/login/"><i class="icon-white icon-key"></i> Login</a></li>
                 {% endif %}
                 <li class="divider-vertical"></li>
+                {% if user.is_authenticated %}
+                <li><a><small>logged in as <i class="icon-white icon-user"></i> {{ user }}</small></a></li>
+                {% endif %}
             </ul>
 
         </div>
@@ -68,6 +71,13 @@
             <div class="block">
                 <div class='centered'>
                     <div class='text-left well'>
+                        {% if form.non_field_errors %}
+                            <ul class='form-errors'>
+                                {% for error in form.non_field_errors %}
+                                    <i class="icon-remove"></i> <em><smal>{{ error }}</small></em>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
                         <form action='/accounts/login/' method="post">{% csrf_token %}
                             <div class="input-prepend">
                                 <span class="add-on"><i class="icon-user"></i></span>

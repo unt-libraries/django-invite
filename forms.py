@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
-
+from django.contrib.auth import authenticate, login
+from django.core import validators
 
 PERMISSION_CHOICES = (
     (1, 'Can Invite Users',),
@@ -49,13 +50,16 @@ class SignupForm(forms.Form):
 
     def clean(self,*args, **kwargs):
         self.clean_password()
-        return super(SignupForm, self).clean(*args, **kwargs)
 
 
 class LoginForm(forms.Form):
     username = forms.CharField(max_length=30, required=True)
     password = forms.CharField(widget=forms.PasswordInput(), required=True)
 
-    def clean(self,*args, **kwargs):
-        return super(LoginForm, self).clean(*args, **kwargs)
-
+    def clean(self):
+        username = self.cleaned_data.get('username')
+        password = self.cleaned_data.get('password')
+        user = authenticate(username=username, password=password)
+        if not user or not user.is_active:
+            raise forms.ValidationError("Incorrect username or password")
+        return self.cleaned_data

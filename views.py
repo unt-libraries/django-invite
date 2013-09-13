@@ -22,6 +22,7 @@ def log_out_user(request):
 
 
 def about(request):
+
     return render(
         request,
         'invite/about.html',
