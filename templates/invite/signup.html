@@ -6,7 +6,7 @@
         <h3><i class="icon-thumbs-up"></i> Welcome, {{ form.first_name.value|title }}!</h3>
         <form action='/accounts/signup/?code={{ activation_code }}' method="POST">{% csrf_token %}
             {{ form }}
-            <input type="submit" value="Submit" />
+            <input type='submit' value='Register' class="btn btn-large btn-block btn-primary" type="button">
         </form>
     </div>
 </div>

@@ -139,6 +139,7 @@ def signup(request):
             request,
             'invite/signup.html',
             {
+                'request': request,
                 'form': form,
                 'activation_code': code,
             },

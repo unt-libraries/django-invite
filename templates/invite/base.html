@@ -63,7 +63,7 @@
             <strong>{{ maintenance_message }}</strong>
         </div>
         {% endif %}
-        {% if user.is_authenticated %}
+        {% if user.is_authenticated or 'signup' in request.path %}
             <div class="block">
                 {% block content %}{% endblock %}
             </div>

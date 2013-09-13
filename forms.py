@@ -53,7 +53,7 @@ class SignupForm(forms.Form):
 
 
 class LoginForm(forms.Form):
-    username = forms.CharField(max_length=30, required=True)
+    username = forms.CharField(max_length=30)
     password = forms.CharField(widget=forms.PasswordInput(), required=True)
 
     def clean(self):
