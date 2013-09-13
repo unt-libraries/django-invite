@@ -2,10 +2,45 @@
 
 {% block content %}
 <div class='centered'>
-    <div class='span3 well'>
+    <div class='well'>
         <h3><i class="icon-thumbs-up"></i> Welcome, {{ form.first_name.value|title }}!</h3>
+        {% if form.non_field_errors %}
+            <ul class='alert form-errors'>
+                {% for error in form.non_field_errors %}
+                    <i class="icon-remove"></i> <em><smal>{{ error }}</small></em>
+                {% endfor %}
+            </ul>
+        {% endif %}
         <form action='/accounts/signup/?code={{ activation_code }}' method="POST">{% csrf_token %}
-            {{ form }}
+            <div class="input-prepend">
+                <span class="add-on">first</span>
+                {{ form.first_name }}
+            </div>
+            <div class="input-prepend">
+                <span class="add-on">last</span>
+                {{ form.last_name }}
+            </div>
+            <br>
+            <div class="input-prepend">
+                <span class="add-on">email</span>
+                {{ form.email }}
+            </div>
+            <hr>
+            <div class="input-prepend">
+                <span class="add-on">username</span>
+                {{ form.user_name }}
+            </div>
+            <br>
+            <div class="input-prepend">
+                <span class="add-on">password</span>
+                {{ form.password }}
+            </div>
+            <br>
+            <div class="input-prepend">
+                <span class="add-on">password</span>
+                {{ form.password2 }}
+            </div>
+            <br>
             <input type='submit' value='Register' class="btn btn-large btn-block btn-primary" type="button">
         </form>
     </div>

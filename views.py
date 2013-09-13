@@ -151,9 +151,3 @@ def signup(request):
             'invite/denied.html',
             context_instance=RequestContext(request)
         )
-
-
-def send(request):
-    i = Invitation.objects.create(email=request.GET.get('email'))
-    i.send()
-    return render(request, 'invite/sent.html')

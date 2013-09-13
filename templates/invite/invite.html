@@ -2,11 +2,11 @@
 {% block content %}
     {% if perms.invite.add_invitation %}
         <div class='centered'>
-            <div class='text-left span3 well'>
+            <div class='text-left well'>
                 <h3>Who would you like to invite, {{ user.first_name|title }}?</h3>
                 <form action='/accounts/invite/' method="post">{% csrf_token %}
                     {{ invite_form }}
-                    <input type='submit' value='send email invite' class="btn btn-large btn-block btn-primary" type="button">
+                    <input type='submit' value='Send email invite' class="btn btn-large btn-block btn-primary" type="button">
                 </form>
             <div>
         <div>

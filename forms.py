@@ -36,20 +36,45 @@ class InviteForm(forms.Form):
 
 
 class SignupForm(forms.Form):
-    first_name = forms.CharField(max_length=30)
-    last_name = forms.CharField(max_length=30)
+    first_name = forms.CharField(
+        max_length=30,
+        widget=forms.TextInput(attrs={'class': 'input-small'})
+    )
+    last_name = forms.CharField(
+        max_length=30,
+        widget=forms.TextInput(attrs={'class': 'input-small'})
+    )
     user_name = UserField(max_length=30)
     email = forms.EmailField()
     password = forms.CharField(widget=forms.PasswordInput(), label="Choose a password")
     password2 = forms.CharField(widget=forms.PasswordInput(), label="Repeat your password")
 
+    def clean_first_last(self):
+        if not self.data['first_name'] or not self.data['last_name']:
+            raise forms.ValidationError('Missing input')
+
+    def clean_email(self):
+        if not self.data['email']:
+            raise forms.ValidationError('Missing input')
+
+    def clean_username(self):
+        if not self.data['user_name']:
+            raise forms.ValidationError('Missing input')
+
+
     def clean_password(self):
+        if not self.data['password'] or not self.data['password2']:
+            raise forms.ValidationError('Missing input')
         if self.data['password'] != self.data['password2']:
             raise forms.ValidationError('Passwords are not the same')
         return self.data['password']
 
     def clean(self,*args, **kwargs):
         self.clean_password()
+        self.clean_first_last()
+        self.clean_email()
+        self.clean_username()
+        return self.cleaned_data
 
 
 class LoginForm(forms.Form):
@@ -59,6 +84,8 @@ class LoginForm(forms.Form):
     def clean(self):
         username = self.cleaned_data.get('username')
         password = self.cleaned_data.get('password')
+        if not username:
+            raise forms.ValidationError("Fill in a username")
         user = authenticate(username=username, password=password)
         if not user or not user.is_active:
             raise forms.ValidationError("Incorrect username or password")
