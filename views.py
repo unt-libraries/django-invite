@@ -26,7 +26,7 @@ def about(request):
     return render(
         request,
         'invite/about.html',
-        {'form': LoginForm()},
+        {'form': LoginForm(request.POST)},
         context_instance=RequestContext(request)
     )
 
@@ -82,7 +82,7 @@ def invite(request):
                 permissions=permission_code,
                 custom_msg=form.cleaned_data['custom_msg'],
             )
-            i.send()
+            i.send(request)
             return HttpResponseRedirect('/accounts/')
     else:
         form = InviteForm()

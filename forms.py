@@ -14,7 +14,9 @@ class UserField(forms.CharField):
         super(UserField, self).clean(value)
         try:
             User.objects.get(username=value)
-            raise forms.ValidationError("Someone is already using this username. Please pick an other.")
+            raise forms.ValidationError(
+                "Someone is already using this username. Please pick another."
+            )
         except User.DoesNotExist:
             return value
 
@@ -24,7 +26,11 @@ class InviteForm(forms.Form):
     last_name = forms.CharField(max_length=30)
     email = forms.EmailField()
     user_name = UserField(max_length=30)
-    custom_msg = forms.CharField(widget=forms.Textarea, label='Custom Message')
+    custom_msg = forms.CharField(
+        widget=forms.Textarea,
+        label='Custom Message',
+        required=False
+    )
     permissions = forms.MultipleChoiceField(
         required=False,
         widget=forms.CheckboxSelectMultiple,
@@ -44,10 +50,19 @@ class SignupForm(forms.Form):
         max_length=30,
         widget=forms.TextInput(attrs={'class': 'input-small'})
     )
-    user_name = UserField(max_length=30)
+    user_name = UserField(
+        max_length=30,
+        widget=forms.TextInput(attrs={'class': 'input-large'}),
+    )
     email = forms.EmailField()
-    password = forms.CharField(widget=forms.PasswordInput(), label="Choose a password")
-    password2 = forms.CharField(widget=forms.PasswordInput(), label="Repeat your password")
+    password = forms.CharField(
+        widget=forms.PasswordInput(),
+        label="Choose a password"
+    )
+    password2 = forms.CharField(
+        widget=forms.PasswordInput(),
+        label="Repeat your password"
+    )
 
     def clean_first_last(self):
         if not self.data['first_name'] or not self.data['last_name']:

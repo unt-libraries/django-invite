@@ -45,7 +45,7 @@ class Invitation(models.Model):
     def __unicode__(self):
         return "%s, %s: %s" % (self.last_name, self.first_name, self.date_invited)
 
-    def send(self):
+    def send(self, request):
             """
             Send an invitation email to ``email``.
             """
@@ -54,6 +54,7 @@ class Invitation(models.Model):
             message = render_to_string(
                 'invite/invitation_email.txt',
                 {
+                    'request': request,
                     'service_name': settings.SERVICE_NAME,
                     'activation_code': self.activation_code,
                     'custom_msg': self.custom_msg,

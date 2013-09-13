@@ -2,7 +2,7 @@
 You have been invited to join {{ service_name }}!
 
 {% trans "Go to" %}
-http://129.120.93.131:8000/accounts/signup/?code={{ activation_code }}
+http://{{ request.META.HTTP_HOST }}/accounts/signup/?code={{ activation_code }}
 {% trans "to join!" %}
 
 {{ custom_msg }}

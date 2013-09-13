@@ -12,17 +12,17 @@
             </ul>
         {% endif %}
         <form action='/accounts/signup/?code={{ activation_code }}' method="POST">{% csrf_token %}
-            <div class="input-prepend">
+            <div class="pull-left input-prepend">
                 <span class="add-on">first</span>
                 {{ form.first_name }}
             </div>
-            <div class="input-prepend">
+            <div class="pull-right input-prepend">
                 <span class="add-on">last</span>
                 {{ form.last_name }}
             </div>
             <br>
             <div class="input-prepend">
-                <span class="add-on">email</span>
+                <span class="add-on">prefered email</span>
                 {{ form.email }}
             </div>
             <hr>
