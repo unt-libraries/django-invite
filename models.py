@@ -37,7 +37,8 @@ class Invitation(models.Model):
         auto_now=True,
         help_text="the day on which the superuser invited the potential member",
     )
-    permissions = models.CharField(max_length=2)
+    can_invite = models.BooleanField()
+    is_super_user = models.BooleanField()
 
     class Meta:
         ordering = ["date_invited"]

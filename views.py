@@ -71,15 +71,13 @@ def invite(request):
     if request.method == 'POST':
         form = InviteForm(request.POST)
         if form.is_valid():
-            permission_code = 0
-            if len(form.cleaned_data['permissions']) > 0:
-                permission_code = ''.join(form.cleaned_data['permissions'])
             i = Invitation.objects.create(
                 first_name=form.cleaned_data['first_name'],
                 last_name=form.cleaned_data['last_name'],
                 user_name=form.cleaned_data['user_name'],
                 email=form.cleaned_data['email'],
-                permissions=permission_code,
+                is_super_user=form.cleaned_data['is_super_user'],
+                can_invite=form.cleaned_data['can_invite'],
                 custom_msg=form.cleaned_data['custom_msg'],
             )
             i.send(request)
@@ -112,20 +110,28 @@ def signup(request):
                 )
                 u.set_password(form.cleaned_data['password'])
                 # add permissions
-                for permission in list(i[0].permissions):
-                    if permission == '1':
-                        content_type = ContentType.objects.get_for_model(Invitation)
-                        p = Permission.objects.get(
-                            content_type=content_type,
-                            codename='add_invitation'
-                        )
-                        u.user_permissions.add(p)
-                    elif permission == '3':
-                        u.is_superuser = True
+                if i[0].can_invite:
+                    content_type = ContentType.objects.get_for_model(Invitation)
+                    p = Permission.objects.get(
+                        content_type=content_type,
+                        codename='add_invitation'
+                    )
+                    u.user_permissions.add(p)
+                if i[0].is_super_user:
+                    u.is_superuser = True
                 u.save()
                 # delete the invite
                 i[0].delete()
-                return HttpResponseRedirect('/accounts/')
+                # log in the new user
+                user = authenticate(
+                    username=form.cleaned_data['user_name'],
+                    password=form.cleaned_data['password'],
+                )
+                if user is not None:
+                    if user.is_active:
+                        login(request, user)
+                        # Redirect to next page.
+                        return HttpResponseRedirect('/accounts/')
         else:
             form = SignupForm(
                 initial={

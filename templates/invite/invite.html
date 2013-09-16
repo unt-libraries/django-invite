@@ -2,10 +2,27 @@
 {% block content %}
     {% if perms.invite.add_invitation %}
         <div class='centered'>
-            <div class='text-left well'>
+            <div class='well'>
+                    {% for error in invite_form.errors %}
+                        <div class='alert'>
+                            <small>{{ error }} required</small>
+                        </div>
+                    {% endfor %}
                 <h3>Who would you like to invite, {{ user.first_name|title }}?</h3>
                 <form action='/accounts/invite/' method="post">{% csrf_token %}
-                    {{ invite_form }}
+                        {{ invite_form.first_name.label }} <br>{{ invite_form.first_name }}<br>
+                        {{ invite_form.last_name.label }} <br>{{ invite_form.last_name }}<br>
+                        {{ invite_form.email.label }} <br>{{ invite_form.email }}<br>
+                        {{ invite_form.user_name.label }} <br>{{ invite_form.user_name }}<br>
+                        {{ invite_form.custom_msg.label }} <br>{{ invite_form.custom_msg }}<br>
+                        {{ invite_form.can_invite.label }}
+                    <div class="make-switch" data-on-label="<i class='icon-ok icon-white'></i>" data-off-label="<i class='icon-remove'></i>">
+                        {{ invite_form.can_invite }}
+                    </div>
+                        {{ invite_form.is_super_user.label }}
+                    <div class="make-switch" data-on-label="<i class='icon-ok icon-white'></i>" data-off-label="<i class='icon-remove'></i>">
+                        {{ invite_form.is_super_user }}
+                    </div><br><br>
                     <input type='submit' value='Send email invite' class="btn btn-large btn-block btn-primary" type="button">
                 </form>
             <div>

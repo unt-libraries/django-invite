@@ -22,19 +22,21 @@ class UserField(forms.CharField):
 
 
 class InviteForm(forms.Form):
-    first_name = forms.CharField(max_length=30)
+    first_name = forms.CharField(max_length=30, help_text='First Name')
     last_name = forms.CharField(max_length=30)
     email = forms.EmailField()
     user_name = UserField(max_length=30)
     custom_msg = forms.CharField(
-        widget=forms.Textarea,
-        label='Custom Message',
-        required=False
-    )
-    permissions = forms.MultipleChoiceField(
         required=False,
-        widget=forms.CheckboxSelectMultiple,
-        choices=PERMISSION_CHOICES,
+        widget=forms.Textarea,
+    )
+    can_invite = forms.BooleanField(
+        required=False,
+        widget=forms.CheckboxInput(),
+    )
+    is_super_user = forms.BooleanField(
+        required=False,
+        widget=forms.CheckboxInput(),
     )
 
     def clean(self,*args, **kwargs):
