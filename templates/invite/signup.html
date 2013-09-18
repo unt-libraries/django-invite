@@ -4,43 +4,30 @@
 <div class='centered'>
     <div class='well'>
         <h3><i class="icon-thumbs-up"></i> Welcome, {{ form.first_name.value|title }}!</h3>
-        {% if form.errors %}
-            <ul class='alert form-errors'>
-                {% for error in form.errors %}
-                    <i class="icon-remove"></i> <em><smal>{{ error }}</small></em>
-                {% endfor %}
-            </ul>
-        {% endif %}
         <form action='/accounts/signup/?code={{ activation_code }}' method="POST">{% csrf_token %}
-            <div class="pull-left input-prepend">
-                <span class="add-on">first</span>
-                {{ form.first_name }}
-            </div>
-            <div class="pull-right input-prepend">
-                <span class="add-on">last</span>
-                {{ form.last_name }}
-            </div>
-            <br>
-            <div class="input-prepend">
-                <span class="add-on">prefered email</span>
-                {{ form.email }}
-            </div>
-            <hr>
-            <div class="input-prepend">
-                <span class="add-on">username</span>
-                {{ form.user_name }}
-            </div>
-            <br>
-            <div class="input-prepend">
-                <span class="add-on">password</span>
-                {{ form.password }}
-            </div>
-            <br>
-            <div class="input-prepend">
-                <span class="add-on">password</span>
-                {{ form.password2 }}
-            </div>
-            <br>
+                <div class="control-group">
+                    {{ form.first_name.errors.as_text }}
+                    {{ form.first_name }}
+                    {{ form.last_name.errors.as_text }}
+                    {{ form.last_name }}
+                </div>
+                    {{ form.email.errors.as_text }}
+                <div class="control-group">
+                    {{ form.email }}
+                </div>
+                <hr>
+                    {{ form.user_name.errors.as_text }}
+                <div class="control-group">
+                    {{ form.user_name }}
+                </div>
+                    {{ form.password.errors.as_text }}
+                <div class="control-group">
+                    {{ form.password }}
+                </div>
+                    {{ form.password2.errors.as_text }}
+                <div class="control-group">
+                    {{ form.password2 }}
+                </div>
             <input type='submit' value='Register' class="btn btn-large btn-block btn-primary" type="button">
         </form>
     </div>

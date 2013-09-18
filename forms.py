@@ -3,11 +3,6 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 from django.core import validators
 
-PERMISSION_CHOICES = (
-    (1, 'Can Invite Users',),
-    (3, 'Is SuperUser',),
-)
-
 
 class UserField(forms.CharField):
     def clean(self, value):
@@ -15,20 +10,61 @@ class UserField(forms.CharField):
         try:
             User.objects.get(username=value)
             raise forms.ValidationError(
-                "Someone is already using this username. Please pick another."
+                "Name taken. Pick another."
             )
         except User.DoesNotExist:
             return value
 
 
 class InviteForm(forms.Form):
-    first_name = forms.CharField(max_length=30, help_text='First Name')
-    last_name = forms.CharField(max_length=30)
-    email = forms.EmailField()
-    user_name = UserField(max_length=30)
+    first_name = forms.CharField(
+        max_length=30,
+        widget=forms.TextInput(
+            attrs={
+                'placeholder': 'First Name',
+                'class': 'input-medium',
+                'style': 'width: 45%',
+            }
+        ),
+    )
+    last_name = forms.CharField(
+        max_length=30,
+        widget=forms.TextInput(
+            attrs={
+                'placeholder': 'Last Name',
+                'class': 'input-medium',
+                'style': 'width: 45%',
+            }
+        ),
+    )
+    email = forms.EmailField(
+        widget=forms.TextInput(
+            attrs={
+                'placeholder': 'Email',
+                'class': 'input-medium',
+                'style': 'width: 45%',
+            }
+        ),
+    )
+    user_name = UserField(
+        max_length=30,
+        widget=forms.TextInput(
+            attrs={
+                'placeholder': 'Username',
+                'class': 'input-medium',
+                'style': 'width: 45%',
+            }
+        ),
+    )
     custom_msg = forms.CharField(
         required=False,
-        widget=forms.Textarea,
+        widget=forms.Textarea(
+            attrs={
+                'placeholder': 'You can write an optional custom greeting here',
+                'class': 'block',
+                'style': 'display: block; width: 96%',
+            }
+        ),
     )
     can_invite = forms.BooleanField(
         required=False,
@@ -39,30 +75,56 @@ class InviteForm(forms.Form):
         widget=forms.CheckboxInput(),
     )
 
-    def clean(self,*args, **kwargs):
+    def clean(self, *args, **kwargs):
         return super(InviteForm, self).clean(*args, **kwargs)
 
 
 class SignupForm(forms.Form):
     first_name = forms.CharField(
         max_length=30,
-        widget=forms.TextInput(attrs={'class': 'input-small'})
+        widget=forms.TextInput(attrs=\
+            {
+                'placeholder': 'First Name',
+                'class': 'input-small',
+            }
+        )
     )
     last_name = forms.CharField(
         max_length=30,
-        widget=forms.TextInput(attrs={'class': 'input-small'})
+        widget=forms.TextInput(attrs=\
+            {
+                'placeholder': 'Last Name',
+                'class': 'input-small',
+            }
+        )
     )
     user_name = UserField(
         max_length=30,
-        widget=forms.TextInput(attrs={'class': 'input-large'}),
+        widget=forms.TextInput(attrs=\
+            {
+                'placeholder': 'User Name',
+                'class': 'input-medium',
+            }
+        ),
     )
-    email = forms.EmailField()
+    email = forms.EmailField(
+        widget=forms.TextInput(attrs=\
+            {
+                'placeholder': 'Preferred Email',
+                'class': 'input-large',
+            }
+        ),
+    )
     password = forms.CharField(
-        widget=forms.PasswordInput(),
+        widget=forms.PasswordInput(attrs=\
+            {'placeholder': 'choose a password', 'class': 'input-medium',}
+        ),
         label="Choose a password"
     )
     password2 = forms.CharField(
-        widget=forms.PasswordInput(),
+        widget=forms.PasswordInput(attrs=\
+            {'placeholder': 'repeat password', 'class': 'input-medium',}
+        ),
         label="Repeat your password"
     )
 
@@ -86,7 +148,7 @@ class SignupForm(forms.Form):
             raise forms.ValidationError('Passwords are not the same')
         return self.data['password']
 
-    def clean(self,*args, **kwargs):
+    def clean(self, *args, **kwargs):
         self.clean_password()
         self.clean_first_last()
         self.clean_email()

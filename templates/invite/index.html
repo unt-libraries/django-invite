@@ -12,11 +12,18 @@
                     <h3>Open Invitations:</h3>
                 </div>
                 <div>
+                    <table class='table table-bordered table-striped'>
                     {% for i in invites %}
-                        <table class='table'>
-                        <i class="icon-envelope"></i> {{ i.first_name|title }} {{ i.last_name|title }} was emailed an invitation on {{ i.date_invited }}
-                        </table>
+                            <tr>
+                            <td><i class="icon-envelope"></i> {{ i.first_name|title }} {{ i.last_name|title }} was emailed an invitation on {{ i.date_invited }}</td>
+                            </tr>
+                            {% if user.is_superuser %}
+                            <tr>
+                            <td><small>code: {{ i.activation_code }}</small></td>
+                            </tr>
+                            {% endif %}
                     {% endfor %}
+                    </table>
                 </div>
             {% endif %}
             <hr>

@@ -73,20 +73,15 @@
             <div class="block">
                 <div class='centered'>
                     <div class='text-left well'>
-                        {% if form.non_field_errors %}
-                            <ul class='alert form-errors'>
-                                {% for error in form.non_field_errors %}
-                                    <i class="icon-remove"></i> <em><smal>{{ error }}</small></em>
-                                {% endfor %}
-                            </ul>
-                        {% endif %}
-
                         <form action='/accounts/login/' method="post">{% csrf_token %}
+                            {{ form.non_field_errors }}
+                            {{ form.username.errors }}
                             <div class="input-prepend">
                                 <span class="add-on"><i class="icon-user"></i></span>
                                 {{ form.username }}
                             </div>
                             <br>
+                            {{ form.password.errors }}
                             <div class="input-prepend">
                                 <span class="add-on"><i class="icon-key"></i></span>
                                 {{ form.password }}
