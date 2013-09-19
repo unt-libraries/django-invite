@@ -9,6 +9,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
+import settings
 
 
 def log_out_user(request):
@@ -147,6 +148,7 @@ def signup(request):
             {
                 'request': request,
                 'form': form,
+                'service_name': settings.SERVICE_NAME,
                 'activation_code': code,
             },
             context_instance=RequestContext(request)

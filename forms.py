@@ -82,36 +82,40 @@ class InviteForm(forms.Form):
 class SignupForm(forms.Form):
     first_name = forms.CharField(
         max_length=30,
-        widget=forms.TextInput(attrs=\
-            {
+        widget=forms.TextInput(
+            attrs={
                 'placeholder': 'First Name',
-                'class': 'input-small',
+                'class': 'input-medium',
+                'style': 'width: 45%',
             }
-        )
+        ),
     )
     last_name = forms.CharField(
         max_length=30,
-        widget=forms.TextInput(attrs=\
-            {
+        widget=forms.TextInput(
+            attrs={
                 'placeholder': 'Last Name',
-                'class': 'input-small',
-            }
-        )
-    )
-    user_name = UserField(
-        max_length=30,
-        widget=forms.TextInput(attrs=\
-            {
-                'placeholder': 'User Name',
                 'class': 'input-medium',
+                'style': 'width: 45%',
             }
         ),
     )
     email = forms.EmailField(
-        widget=forms.TextInput(attrs=\
-            {
-                'placeholder': 'Preferred Email',
-                'class': 'input-large',
+        widget=forms.TextInput(
+            attrs={
+                'placeholder': 'Email',
+                'class': 'input-medium',
+                'style': 'width: 45%',
+            }
+        ),
+    )
+    user_name = UserField(
+        max_length=30,
+        widget=forms.TextInput(
+            attrs={
+                'placeholder': 'Username',
+                'class': 'input-medium',
+                'style': 'width: 45%',
             }
         ),
     )
@@ -128,31 +132,13 @@ class SignupForm(forms.Form):
         label="Repeat your password"
     )
 
-    def clean_first_last(self):
-        if not self.data['first_name'] or not self.data['last_name']:
-            raise forms.ValidationError('Missing input')
-
-    def clean_email(self):
-        if not self.data['email']:
-            raise forms.ValidationError('Missing input')
-
-    def clean_username(self):
-        if not self.data['user_name']:
-            raise forms.ValidationError('Missing input')
-
-
     def clean_password(self):
-        if not self.data['password'] or not self.data['password2']:
-            raise forms.ValidationError('Missing input')
         if self.data['password'] != self.data['password2']:
             raise forms.ValidationError('Passwords are not the same')
         return self.data['password']
 
     def clean(self, *args, **kwargs):
         self.clean_password()
-        self.clean_first_last()
-        self.clean_email()
-        self.clean_username()
         return self.cleaned_data
 
 

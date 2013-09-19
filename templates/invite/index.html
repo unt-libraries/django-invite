@@ -1,7 +1,7 @@
 {% extends 'invite/base.html' %}
 {% block content %}
     <div class='centered'>
-        <div class='text-left well'>
+        <div class='span6 text-left well'>
             {% if perms.invite.add_invitation %}
                 <a href="/accounts/invite/" class="btn btn-large btn-block btn-primary" type="button">Send an Invitation</a>
             {% else %}

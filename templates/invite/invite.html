@@ -2,7 +2,7 @@
 {% block content %}
     {% if perms.invite.add_invitation %}
         <div class='centered'>
-            <div class='well'>
+            <div class='span6 well'>
                 <h3>Who would you like to invite, {{ user.first_name|title }}?</h3>
                 <form action='/accounts/invite/' method="post">{% csrf_token %}
                     <div class='pull-left'>
@@ -27,23 +27,21 @@
                     </div>
                         {{ invite_form.custom_msg }}
                     <div class="control-group">
-                        <div class="input-prepend">
-                            <span class='add-on'>{{ invite_form.can_invite.label|title }}</span>
-                            <div class="make-switch" data-on-label="<i class='icon-ok icon-white'></i>" data-off-label="<i class='icon-remove'></i>">
+                        <div class='well pull-left' style='width: 37%'>
+                            <h4>{{ invite_form.can_invite.label|title }}</h4>
+                            <div class="make-switch switch-large" data-on-label="<i class='icon-ok icon-white'></i>" data-off-label="<i class='icon-remove'></i>">
                                 {{ invite_form.can_invite }}
                             </div>
                         </div>
-
-                        <div class="input-prepend">
-                            <span class='add-on'>{{ invite_form.is_super_user.label|title }}</span>
-                            <div class="make-switch" data-on-label="<i class='icon-ok icon-white'></i>" data-off-label="<i class='icon-remove'></i>">
+                        <div class='well pull-right' style='width: 37%'>
+                            <h4>{{ invite_form.is_super_user.label|title }}</h4>
+                            <div class="make-switch switch-large" data-on-label="<i class='icon-ok icon-white'></i>" data-off-label="<i class='icon-remove'></i>">
                                 {{ invite_form.is_super_user }}
                             </div>
                         </div>
-
                     </div>
                     <div class="control-group">
-                        <input type='submit' value='Send email invite' class="btn btn-large btn-block btn-primary" type="button">
+                        <input type='submit' value='Send invitation email' class="btn btn-large btn-block btn-primary" type="button">
                     </div>
                 </form>
             <div>
