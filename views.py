@@ -56,6 +56,7 @@ def log_in_user(request):
     )
 
 
+
 def index(request):
     return render_to_response(
         'invite/index.html',
@@ -66,6 +67,12 @@ def index(request):
         },
         context_instance=RequestContext(request)
     )
+
+
+def resend(request, code):
+    i = Invitation.objects.filter(activation_code__exact=code)
+    i[0].send()
+    return HttpResponseRedirect('/accounts/')
 
 
 def invite(request):
@@ -81,7 +88,7 @@ def invite(request):
                 can_invite=form.cleaned_data['can_invite'],
                 custom_msg=form.cleaned_data['custom_msg'],
             )
-            i.send(request)
+            i.send()
             return HttpResponseRedirect('/accounts/')
     else:
         form = InviteForm()

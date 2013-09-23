@@ -12,16 +12,24 @@
                     <h3>Open Invitations:</h3>
                 </div>
                 <div>
-                    <table class='table table-bordered table-striped'>
+                    <table class='table  table-striped'>
                     {% for i in invites %}
+                        <tr>
+                        <td colspan='2'><i class="icon-user"></i> {{ i.first_name|title }} {{ i.last_name|title }} was <i class="icon-envelope"></i> emailed an invitation on <i class="icon-calendar"></i> {{ i.date_invited }}</td>
+                        <td></td>
+                        </tr>
+                        {% if user.is_superuser or perms.invite.add_invitation %}
                             <tr>
-                            <td><i class="icon-envelope"></i> {{ i.first_name|title }} {{ i.last_name|title }} was emailed an invitation on {{ i.date_invited }}</td>
+                            <td width='70%'>
+                                <small>signup link: <a href="http://{{ request.META.HTTP_HOST }}/accounts/signup/?code={{ i.activation_code }}">http://{{ request.META.HTTP_HOST }}/accounts/signup/?code={{ i.activation_code }}</a></small>
+                            </td>
+                            <td>
+                                <form action='resend/{{i.activation_code}}/'>{% csrf_token %}
+                                    <input value='resend email' type='submit' class='btn btn-mini pull-right'>
+                                </form>
+                            </td>
                             </tr>
-                            {% if user.is_superuser %}
-                            <tr>
-                            <td><small>code: {{ i.activation_code }}</small></td>
-                            </tr>
-                            {% endif %}
+                        {% endif %}
                     {% endfor %}
                     </table>
                 </div>

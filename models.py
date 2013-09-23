@@ -3,6 +3,7 @@ from django.core.mail import send_mail
 import uuid
 import settings
 from django.template.loader import render_to_string
+from django.contrib.sites.models import Site
 
 
 class Invitation(models.Model):
@@ -46,7 +47,7 @@ class Invitation(models.Model):
     def __unicode__(self):
         return "%s, %s: %s" % (self.last_name, self.first_name, self.date_invited)
 
-    def send(self, request):
+    def send(self):
             """
             Send an invitation email to ``email``.
             """
@@ -55,7 +56,7 @@ class Invitation(models.Model):
             message = render_to_string(
                 'invite/invitation_email.txt',
                 {
-                    'request': request,
+                    'domain': Site.objects.get_current().domain,
                     'service_name': settings.SERVICE_NAME,
                     'activation_code': self.activation_code,
                     'custom_msg': self.custom_msg,
