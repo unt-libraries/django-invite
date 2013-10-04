@@ -1,9 +1,24 @@
-from django.db import models
-from django.core.mail import send_mail
-import uuid
-import settings
+from django.contrib.auth.models import User, Permission, Group
 from django.template.loader import render_to_string
 from django.contrib.sites.models import Site
+from django.core.mail import send_mail
+from django.db import models
+import settings
+import uuid
+
+
+class InviteItem(models.Model):
+    first_name = models.CharField(max_length=150)
+    last_name = models.CharField(max_length=150)
+    email = models.CharField(max_length=150)
+    username = models.CharField(max_length=150)
+    greeting = models.CharField(max_length=150, blank=True)
+    permissions = models.ManyToManyField(Permission, blank=True)
+    groups = models.ManyToManyField(Group, blank=True)
+    is_super_user = models.BooleanField()
+
+    def __unicode__(self):
+        return self.name + " (" + str(self.list) + ")"
 
 
 class Invitation(models.Model):
@@ -24,7 +39,7 @@ class Invitation(models.Model):
     last_name = models.CharField(
         max_length=36,
     )
-    user_name = models.CharField(
+    username = models.CharField(
         max_length=36,
     )
     email = models.EmailField(
@@ -38,7 +53,8 @@ class Invitation(models.Model):
         auto_now=True,
         help_text="the day on which the superuser invited the potential member",
     )
-    can_invite = models.BooleanField()
+    permissions = models.ManyToManyField(Permission)
+    groups = models.ManyToManyField(Group)
     is_super_user = models.BooleanField()
 
     class Meta:
@@ -52,7 +68,7 @@ class Invitation(models.Model):
             Send an invitation email to ``email``.
             """
 
-            subject = 'invite'
+            subject = 'You have been invited to join %s' % (settings.SERVICE_NAME)
             message = render_to_string(
                 'invite/invitation_email.txt',
                 {

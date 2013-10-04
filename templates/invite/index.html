@@ -1,48 +1,47 @@
 {% extends 'invite/base.html' %}
+{% block title %}Accounts{% endblock %}
 {% block content %}
-    <div class='centered'>
-        <div class='span6 text-left well'>
-            {% if perms.invite.add_invitation %}
-                <a href="/accounts/invite/" class="btn btn-large btn-block btn-primary" type="button">Send an Invitation</a>
-            {% else %}
-                <a href="#" class="btn btn-large btn-block disabled" type="button">Send an Invitation</a>
-            {% endif %}
-            {% if invites %}
-                <div>
-                    <h3>Open Invitations:</h3>
-                </div>
-                <div>
-                    <table class='table  table-striped'>
-                    {% for i in invites %}
-                        <tr>
-                        <td colspan='2'><i class="icon-user"></i> {{ i.first_name|title }} {{ i.last_name|title }} was <i class="icon-envelope"></i> emailed an invitation on <i class="icon-calendar"></i> {{ i.date_invited }}</td>
-                        <td></td>
-                        </tr>
-                        {% if user.is_superuser or perms.invite.add_invitation %}
-                            <tr>
-                            <td width='70%'>
-                                <small>signup link: <a href="http://{{ request.META.HTTP_HOST }}/accounts/signup/?code={{ i.activation_code }}">http://{{ request.META.HTTP_HOST }}/accounts/signup/?code={{ i.activation_code }}</a></small>
-                            </td>
-                            <td>
-                                <form action='resend/{{i.activation_code}}/'>{% csrf_token %}
-                                    <input value='resend email' type='submit' class='btn btn-mini pull-right'>
-                                </form>
-                            </td>
-                            </tr>
-                        {% endif %}
-                    {% endfor %}
-                    </table>
-                </div>
-            {% endif %}
-            <hr>
+    <div class='span6 text-left well' style="float: none; margin-left: auto; margin-right: auto;">
+        {% if perms.invite.add_invitation %}
+            <a href="/accounts/invite/" class="btn btn-large btn-block btn-primary" type="button">Send an Invitation</a>
+        {% else %}
+            <a href="#" class="btn btn-large btn-block disabled" type="button">Send an Invitation</a>
+        {% endif %}
+        {% if invites %}
             <div>
-                <h3>Active Accounts:</h3>
+                <h3>Open Invitations:</h3>
             </div>
-                {% for u in users %}
-                    <table class='table'>
-                    <code><i class="icon-user"></i> {{ u }}</code> registered on {{ u.date_joined }}
-                    </table>
+            <div>
+                <table class='table  table-striped'>
+                {% for i in invites %}
+                    <tr>
+                    <td colspan='2'><i class="icon-user"></i> {{ i.first_name|title }} {{ i.last_name|title }} was <i class="icon-envelope"></i> emailed an invitation on <i class="icon-calendar"></i> {{ i.date_invited }}</td>
+                    <td></td>
+                    </tr>
+                    {% if user.is_superuser or perms.invite.add_invitation %}
+                        <tr>
+                        <td width='70%'>
+                            <small>signup link: <a href="http://{{ request.META.HTTP_HOST }}/accounts/signup/?code={{ i.activation_code }}">http://{{ request.META.HTTP_HOST }}/accounts/signup/?code={{ i.activation_code }}</a></small>
+                        </td>
+                        <td>
+                            <form action='resend/{{i.activation_code}}/'>{% csrf_token %}
+                                <input value='resend email' type='submit' class='btn btn-mini pull-right'>
+                            </form>
+                        </td>
+                        </tr>
+                    {% endif %}
                 {% endfor %}
+                </table>
+            </div>
+        {% endif %}
+        <hr>
+        <div>
+            <h3>Active Accounts:</h3>
         </div>
+            {% for u in users %}
+                <table class='table'>
+                <code><i class="icon-user"></i> {{ u }}</code> registered on {{ u.date_joined }}
+                </table>
+            {% endfor %}
     </div>
 {% endblock %}

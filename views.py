@@ -1,15 +1,14 @@
-from django.shortcuts import render, render_to_response, get_object_or_404
+from django.shortcuts import render, render_to_response
+from django.core.context_processors import csrf
 from django.template import RequestContext
-from django.http import HttpResponseRedirect
-from django.contrib.auth.models import User
-from .models import Invitation
-from .forms import SignupForm, LoginForm, InviteForm
+from django.forms.formsets import formset_factory, BaseFormSet
+from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
 from django.contrib.auth.models import Permission
-from django.contrib.contenttypes.models import ContentType
 import settings
+from invite.forms import *
 
 
 def log_out_user(request):
@@ -17,17 +16,7 @@ def log_out_user(request):
     # Redirect to a success page.
     return render_to_response(
         'invite/base.html',
-        {'form': LoginForm()},
-        context_instance=RequestContext(request)
-    )
-
-
-def about(request):
-
-    return render(
-        request,
-        'invite/about.html',
-        {'form': LoginForm(request.POST)},
+        {'login_form': LoginForm()},
         context_instance=RequestContext(request)
     )
 
@@ -50,20 +39,7 @@ def log_in_user(request):
         request,
         'invite/base.html',
         {
-            'form': form,
-        },
-        context_instance=RequestContext(request)
-    )
-
-
-
-def index(request):
-    return render_to_response(
-        'invite/index.html',
-        {
-            'form': LoginForm(),
-            'invites': Invitation.objects.all(),
-            'users': User.objects.all(),
+            'login_form': form,
         },
         context_instance=RequestContext(request)
     )
@@ -76,28 +52,71 @@ def resend(request, code):
 
 
 def invite(request):
+    # This class is used to make empty formset forms required
+    # See http://stackoverflow.com/questions/2406537/django-formsets-make-first-required/4951032#4951032
+    class RequiredFormSet(BaseFormSet):
+        def __init__(self, *args, **kwargs):
+            super(RequiredFormSet, self).__init__(*args, **kwargs)
+            for form in self.forms:
+                form.empty_permitted = False
+
+    InviteItemFormSet = formset_factory(
+        InviteItemForm,
+        max_num=10,
+        formset=RequiredFormSet
+    )
+
     if request.method == 'POST':
-        form = InviteForm(request.POST)
-        if form.is_valid():
-            i = Invitation.objects.create(
-                first_name=form.cleaned_data['first_name'],
-                last_name=form.cleaned_data['last_name'],
-                user_name=form.cleaned_data['user_name'],
-                email=form.cleaned_data['email'],
-                is_super_user=form.cleaned_data['is_super_user'],
-                can_invite=form.cleaned_data['can_invite'],
-                custom_msg=form.cleaned_data['custom_msg'],
-            )
-            i.send()
-            return HttpResponseRedirect('/accounts/')
+        # Create a formset from the submitted data
+        invite_item_formset = InviteItemFormSet(request.POST, request.FILES)
+        if invite_item_formset.is_valid():
+            for form in invite_item_formset.forms:
+                # make invite for each form
+                i = Invitation.objects.create(
+                    first_name=form.cleaned_data['first_name'],
+                    last_name=form.cleaned_data['last_name'],
+                    username=form.cleaned_data['username'],
+                    email=form.cleaned_data['email'],
+                    is_super_user=form.cleaned_data['is_super_user'],
+                )
+                # set m2m relationships seperate from initial object creation
+                for permission in form.cleaned_data['permissions']:
+                    i.permissions.add(permission)
+                for group in form.cleaned_data['groups']:
+                    i.groups.add(group)
+                # send the email invitation
+                i.send()
+                invite_item = form.save(commit=False)
+                invite_item.save()
+            return HttpResponseRedirect('/accounts/') # Redirect to a 'success' page
     else:
-        form = InviteForm()
-    return render(
-        request,
+        invite_item_formset = InviteItemFormSet()
+    return render_to_response(
         'invite/invite.html',
         {
-            'form': LoginForm(),
-            'invite_form': form,
+            'login_form': LoginForm(),
+            'invite_item_formset': invite_item_formset,
+        },
+        context_instance=RequestContext(request),
+    )
+
+
+def about(request):
+    return render(
+        request,
+        'invite/about.html',
+        {'login_form': LoginForm()},
+        context_instance=RequestContext(request)
+    )
+
+
+def index(request):
+    return render_to_response(
+        'invite/index.html',
+        {
+            'login_form': LoginForm(),
+            'invites': Invitation.objects.all(),
+            'users': User.objects.all(),
         },
         context_instance=RequestContext(request)
     )
@@ -105,64 +124,66 @@ def invite(request):
 
 def signup(request):
     code = request.GET.get('code')
-    i = Invitation.objects.filter(activation_code__exact=code)
-    if i:
-        if request.method == 'POST':
-            form = SignupForm(request.POST)
-            if form.is_valid():
-                u = User.objects.create_user(
-                    first_name=form.cleaned_data['first_name'],
-                    last_name=form.cleaned_data['last_name'],
-                    username=form.cleaned_data['user_name'],
-                    email=form.cleaned_data['email'],
-                )
-                u.set_password(form.cleaned_data['password'])
-                # add permissions
-                if i[0].can_invite:
-                    content_type = ContentType.objects.get_for_model(Invitation)
-                    p = Permission.objects.get(
-                        content_type=content_type,
-                        codename='add_invitation'
-                    )
-                    u.user_permissions.add(p)
-                if i[0].is_super_user:
-                    u.is_superuser = True
-                u.save()
-                # delete the invite
-                i[0].delete()
-                # log in the new user
-                user = authenticate(
-                    username=form.cleaned_data['user_name'],
-                    password=form.cleaned_data['password'],
-                )
-                if user is not None:
-                    if user.is_active:
-                        login(request, user)
-                        # Redirect to next page.
-                        return HttpResponseRedirect('/accounts/')
-        else:
-            form = SignupForm(
-                initial={
-                    'first_name': i[0].first_name,
-                    'last_name': i[0].last_name,
-                    'email': i[0].email,
-                    'user_name': i[0].user_name,
-                }
-            )
-        return render(
-            request,
-            'invite/signup.html',
-            {
-                'request': request,
-                'form': form,
-                'service_name': settings.SERVICE_NAME,
-                'activation_code': code,
-            },
-            context_instance=RequestContext(request)
-        )
-    else:
+    # if we can't get an object with the code provided, deny the signup
+    try:
+        i = Invitation.objects.get(activation_code=code)
+    except Exception, e:
         return render(
             request,
             'invite/denied.html',
             context_instance=RequestContext(request)
         )
+    # if the form is submitted
+    if request.method == 'POST':
+        form = SignupForm(request.POST)
+        if form.is_valid():
+            u = User.objects.create_user(
+                username=form.cleaned_data['username'],
+                email=form.cleaned_data['email'],
+                password=form.cleaned_data['password'],
+            )
+            u.first_name=form.cleaned_data['first_name']
+            u.last_name=form.cleaned_data['last_name']
+            # add permissions
+            for permission in i.permissions.all():
+                u.user_permissions.add(permission)
+            # add group memberships
+            for group in i.groups.all():
+                g.user_set.add(u)
+            #set superuser status and save
+            u.is_superuser = i.is_super_user
+            u.save()
+            # delete the invite, no longer valid with the user created
+            i.delete()
+            # log in the new user immediately
+            user = authenticate(
+                username=form.cleaned_data['username'],
+                password=form.cleaned_data['password'],
+            )
+            if user is not None:
+                if user.is_active:
+                    login(request, user)
+                    # Redirect to accounts page.
+                    return HttpResponseRedirect('/accounts/')
+    else:
+        # GET request, just show the form with some initial values
+        form = SignupForm(
+            initial={
+                'first_name': i.first_name,
+                'last_name': i.last_name,
+                'email': i.email,
+                'username': i.username,
+            }
+        )
+    return render(
+        request,
+        'invite/signup.html',
+        {
+            'request': request,
+            'form': form,
+            'service_name': settings.SERVICE_NAME,
+            'activation_code': code,
+        },
+        context_instance=RequestContext(request)
+    )
+

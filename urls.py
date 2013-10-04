@@ -1,12 +1,6 @@
-try:
-    from django.conf.urls import *
-except ImportError:  # django < 1.4
-    from django.conf.urls.defaults import *
-from django.contrib import admin
+from django.conf.urls.defaults import *
 
-# place app url patterns here
-urlpatterns = patterns(
-    '',
+urlpatterns = patterns('',
     url(r'^$', 'invite.views.index'),
     url(r'^invite/$', 'invite.views.invite', name='invite'),
     url(r'^resend/(?P<code>.*)/$', 'invite.views.resend', name='resend'),
