@@ -145,9 +145,12 @@ def signup(request):
                 u.user_permissions.add(permission)
             # add group memberships
             for group in i.groups.all():
-                g.user_set.add(u)
+                group.user_set.add(u)
             #set superuser status and save
-            u.is_superuser = i.is_super_user
+            if i.is_super_user == True:
+                u.is_superuser = True
+            else:
+                u.is_superuser = False
             u.save()
             # delete the invite, no longer valid with the user created
             i.delete()

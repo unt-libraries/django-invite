@@ -4,8 +4,6 @@
     <div class='span6 text-left well' style="float: none; margin-left: auto; margin-right: auto;">
         {% if perms.invite.add_invitation %}
             <a href="/accounts/invite/" class="btn btn-large btn-block btn-primary" type="button">Send an Invitation</a>
-        {% else %}
-            <a href="#" class="btn btn-large btn-block disabled" type="button">Send an Invitation</a>
         {% endif %}
         {% if invites %}
             <div>
@@ -38,8 +36,8 @@
                 {% endfor %}
                 </table>
             </div>
-        {% endif %}
         <hr>
+        {% endif %}
         <div>
             <h3>Active Accounts:</h3>
         </div>
