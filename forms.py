@@ -146,6 +146,11 @@ class InviteItemForm(ModelForm):
                     'style': 'height: 100%; width: 150px;',
                 }
             ),
+            'is_super_user': CheckboxInput(
+                attrs={
+                    'style': '-webkit-transform: scale(3,3); -moz-transform: scale(3,3); -o-transform: scale(3,3);'
+                }
+            )
         }
 
 

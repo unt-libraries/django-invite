@@ -8,8 +8,9 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
 from django.contrib.auth.models import Permission
 import settings
-from invite.forms import *
-
+from .forms import SignupForm, InviteItemForm, LoginForm
+from .models import Invitation
+from django.contrib.auth.models import User, Permission, Group
 
 def log_out_user(request):
     logout(request)
@@ -50,20 +51,16 @@ def resend(request, code):
     i[0].send()
     return HttpResponseRedirect('/accounts/')
 
+def revoke(request, code):
+    i = Invitation.objects.filter(activation_code__exact=code)
+    i[0].delete()
+    return HttpResponseRedirect('/accounts/')
+
 
 def invite(request):
-    # This class is used to make empty formset forms required
-    # See http://stackoverflow.com/questions/2406537/django-formsets-make-first-required/4951032#4951032
-    class RequiredFormSet(BaseFormSet):
-        def __init__(self, *args, **kwargs):
-            super(RequiredFormSet, self).__init__(*args, **kwargs)
-            for form in self.forms:
-                form.empty_permitted = False
-
     InviteItemFormSet = formset_factory(
         InviteItemForm,
-        max_num=10,
-        formset=RequiredFormSet
+        formset=BaseFormSet
     )
 
     if request.method == 'POST':
@@ -86,8 +83,7 @@ def invite(request):
                     i.groups.add(group)
                 # send the email invitation
                 i.send()
-                invite_item = form.save(commit=False)
-                invite_item.save()
+                i.save()
             return HttpResponseRedirect('/accounts/') # Redirect to a 'success' page
     else:
         invite_item_formset = InviteItemFormSet()

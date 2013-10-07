@@ -95,43 +95,36 @@ $(document).ready(function() {
 
 <div class='span11'>
 <h3>
-Whom would you like to invite, {{ request.user }}?
+Whom would you like to invite, {{ request.user|title }}?
 </h3>
 <p id='add' class="btn btn-info btn-block" href="#"><i class='icon-plus icon-large'></i> add an additional invite</p>
 </div>
 <form class="span11" action="" method="POST">{% csrf_token %}
     {{ invite_item_formset.management_form }}
-    {% for form in invite_item_formset.forms %}
-    <div class="control-group">
+    <table class='table table-striped'>
+    {% for form in invite_item_formset %}
         {{ form.non_field_errors }}
-
-        <table class='table table-striped'>
-            <tr>
-                <td>
-                {{ form.first_name }}
-                {{ form.last_name }}
-                {{ form.email }}
-                {{ form.username }}
-                </td>
-                <td style='width:70%;'>
-                {{ form.greeting }}
-                {{ form.permissions }}
-                {{ form.groups }}
-                <td>
-                <span style="height: 140px;" class="btn disabled"><i class='icon-star icon-large'></i><i class='icon-user icon-large'></i><i class='icon-star icon-large'></i><br>Grant Superuser Status?
-                    <br><br>
-                    <div class="make-switch switch-small" data-on-label="Yes" data-off-label="No">
-                        {{ form.is_super_user }}
-                    </div>
-                </span>
-
-
-                <td>
-                <a class="delete btn btn-danger" style="height: 140px;" href="#"><i class='icon-remove icon-large'></i> D E L E T E</a>
-                </td>
-            </tr>
+        <tr id='{{ form.prefix }}-row' class='control-group'>
+            <td>
+            {{ form.first_name }}
+            {{ form.last_name }}
+            {{ form.email }}
+            {{ form.username }}
+            </td>
+            <td style='width:70%;'>
+            {{ form.greeting }}
+            {{ form.permissions }}
+            {{ form.groups }}
+            <td>
+            <span style="height: 140px;" class="btn disabled"><i class='icon-star icon-large'></i><i class='icon-user icon-large'></i><i class='icon-star icon-large'></i><br><strong><em>Grant Superuser Status?</em></strong>
+            <br><br>
+            {{ form.is_super_user }}
+            </span>
+            <td>
+            <a class="delete btn btn-danger" style="height: 140px;" href="#"><i class='icon-remove icon-large'></i> D E L E T E</a>
+            </td>
+        </tr>
         </table>
-    </div>
     {% endfor %}
 
 
@@ -140,7 +133,7 @@ Whom would you like to invite, {{ request.user }}?
 </form>
 {% else %}
     <h3>
-        <i class="icon-remove"></i> Sorry, {{ user.first_name|title }}, you don't have invite permission.
+        <i class="icon-remove"></i> Sorry {{ user.first_name|title }}, you don't have invite permission. <a href="/accounts/">Back to accounts page</a>
     </h3>
 {% endif %}
 

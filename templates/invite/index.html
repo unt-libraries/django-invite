@@ -28,6 +28,11 @@
                                 <input value='resend email' type='submit' class='btn btn-mini pull-right'>
                             </form>
                         </td>
+                        <td>
+                            <form action='revoke/{{i.activation_code}}/'>{% csrf_token %}
+                                <input value='revoke invite' type='submit' class='btn btn-mini pull-right'>
+                            </form>
+                        </td>
                         </tr>
                     {% endif %}
                 {% endfor %}
