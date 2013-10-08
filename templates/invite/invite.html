@@ -1,140 +1,163 @@
 {% extends 'invite/base.html' %}
-{% block title %}Invite Users{% endblock %}
+{% block title %}
+Invite Users
+{% endblock %}
 {% block head-extra %}
-<meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
-<link rel="stylesheet" href="/static/stylesheets/bootstrap-switch.css">
-<script src="/static/js/bootstrap-switch.js"></script>
+<script type="text/javascript" src="/static/stylesheets/well-note.css"></script>
 <script type="text/javascript">
 $(document).ready(function() {
-  // Code adapted from http://djangosnippets.org/snippets/1389/
+    // Code adapted from http://djangosnippets.org/snippets/1389/
 
-  function updateElementIndex(el, prefix, ndx) {
-    var id_regex = new RegExp('(' + prefix + '-\\d+-)');
-    var replacement = prefix + '-' + ndx + '-';
-    if ($(el).attr("for")) $(el).attr("for", $(el).attr("for").replace(id_regex,
+    function updateElementIndex(el, prefix, ndx) {
+        var id_regex = new RegExp('(' + prefix + '-\\d+-)');
+        var replacement = prefix + '-' + ndx + '-';
+        if ($(el).attr("for")) $(el).attr("for", $(el).attr("for").replace(id_regex,
  replacement));
-    if (el.id) el.id = el.id.replace(id_regex, replacement);
-    if (el.name) el.name = el.name.replace(id_regex, replacement);
-  }
-
-  function deleteForm(btn, prefix) {
-    var formCount = parseInt($('#id_' + prefix + '-TOTAL_FORMS').val());
-
-    if (formCount > 1) {
-      // Delete the item/form
-      $(btn).parents('.control-group').remove();
-
-      var forms = $('.control-group'); // Get all the forms
-
-      // Update the total number of forms (1 less than before)
-      $('#id_' + prefix + '-TOTAL_FORMS').val(forms.length);
-
-      var i = 0;
-      // Go through the forms and set their indices, names and IDs
-      for (formCount = forms.length; i < formCount; i++) {
-        $(forms.get(i)).children().children().each(function() {
-          updateElementIndex(this, prefix, i);
-        });
-      }
-
-    } // End if
-    else {
-        alert("You have to enter at least one invite");
+        if (el.id) el.id = el.id.replace(id_regex, replacement);
+        if (el.name) el.name = el.name.replace(id_regex, replacement);
     }
-    return false;
-  }
+
+    function deleteForm(btn, prefix) {
+        var formCount = parseInt($('#id_' + prefix + '-TOTAL_FORMS').val());
+
+        if (formCount > 1) {
+            // Delete the item/form
+            $(btn).parents('.control-group').remove();
+
+            var forms = $('.control-group'); // Get all the forms
+
+            // Update the total number of forms (1 less than before)
+            $('#id_' + prefix + '-TOTAL_FORMS').val(forms.length);
+
+            var i = 0;
+            // Go through the forms and set their indices, names and IDs
+            for (formCount = forms.length; i < formCount; i++) {
+                $(forms.get(i)).children().children().each(function() {
+                    updateElementIndex(this, prefix, i);
+                });
+            }
+
+        } // End if
+        else {
+                alert("You have to enter at least one invite");
+        }
+        return false;
+    }
 
 
-  function addForm(btn, prefix) {
-    var formCount = parseInt($('#id_' + prefix + '-TOTAL_FORMS').val());
+    function addForm(btn, prefix) {
+        var formCount = parseInt($('#id_' + prefix + '-TOTAL_FORMS').val());
 
-      // Clone a form (without event handlers) from the first form
-      var row = $(".control-group:first").clone(false).get(0);
-      // Insert it after the last form
-      $(row).removeAttr('id').hide().insertAfter(".control-group:last").slideDown(300);
+            // Clone a form (without event handlers) from the first form
+            var row = $(".control-group:first").clone(false).get(0);
+            // Insert it after the last form
+            $(row).removeAttr('id').hide().insertAfter(".control-group:last").slideDown(300);
 
-      // Remove the bits we don't want in the new row/form
-      // e.g. error messages
-      $(".errorlist", row).remove();
-      $(row).children().removeClass('error');
+            // Remove the bits we don't want in the new row/form
+            // e.g. error messages
+            $(".errorlist", row).remove();
+            $(row).children().removeClass('error');
 
-      // Relabel/rename all the relevant bits
-      $(row).children().children().each(function() {
-        updateElementIndex(this, prefix, formCount);
-        if ( $(this).attr('type') == 'text' )
-          $(this).val('');
-      });
+            // Relabel/rename all the relevant bits
+            $(row).children().children().each(function() {
+                updateElementIndex(this, prefix, formCount);
+                if ( $(this).attr('type') == 'text' )
+                    $(this).val('');
+            });
 
-      // Add an event handler for the delete item/form link
-      $(row).find('.delete').click(function() {
-        return deleteForm(this, prefix);
-      });
+            // Add an event handler for the delete item/form link
+            $(row).find('.delete').click(function() {
+                return deleteForm(this, prefix);
+            });
 
-      // Update the total form count
-      $('#id_' + prefix + '-TOTAL_FORMS').val(formCount + 1);
+            // Update the total form count
+            $('#id_' + prefix + '-TOTAL_FORMS').val(formCount + 1);
 
-    return false;
-  }
+        return false;
+    }
 
-  // Register the click event handlers
-  $("#add").click(function() {
-    return addForm(this, 'form');
-  });
+    // Register the click event handlers
+    $("#add").click(function() {
+        return addForm(this, 'form');
+    });
 
-  $(".delete").click(function() {
-    return deleteForm(this, 'form');
-  });
-
-
+    $(".delete").click(function() {
+        return deleteForm(this, 'form');
+    });
 });
 </script>
-
 {% endblock %}
 {% block content %}
 {% if perms.invite.add_invitation %}
-
-<div class='span11'>
 <h3>
-Whom would you like to invite, {{ request.user|title }}?
+    Whom would you like to invite, {{ request.user|title }}?
 </h3>
-<p id='add' class="btn btn-info btn-block" href="#"><i class='icon-plus icon-large'></i> add an additional invite</p>
-</div>
-<form class="span11" action="" method="POST">{% csrf_token %}
+<form method="POST">{% csrf_token %}
     {{ invite_item_formset.management_form }}
-    <table class='table table-striped'>
-    {% for form in invite_item_formset %}
-        {{ form.non_field_errors }}
-        <tr id='{{ form.prefix }}-row' class='control-group'>
-            <td>
-            {{ form.first_name }}
-            {{ form.last_name }}
-            {{ form.email }}
-            {{ form.username }}
-            </td>
-            <td style='width:70%;'>
-            {{ form.greeting }}
-            {{ form.permissions }}
-            {{ form.groups }}
-            <td>
-            <span style="height: 140px;" class="btn disabled"><i class='icon-star icon-large'></i><i class='icon-user icon-large'></i><i class='icon-star icon-large'></i><br><strong><em>Grant Superuser Status?</em></strong>
-            <br><br>
-            {{ form.is_super_user }}
-            </span>
-            <td>
-            <a class="delete btn btn-danger" style="height: 140px;" href="#"><i class='icon-remove icon-large'></i> D E L E T E</a>
-            </td>
-        </tr>
-        </table>
-    {% endfor %}
+    <div class='well'>
+        {% for form in invite_item_formset %}
+            <div id='{{ form.prefix }}-row' class='form-horizontal row control-group'>
+                <div class="span9" style='text-align: right;'>
+                    {{ form.first_name }}
+                    {{ form.last_name }}
+                    {{ form.email }}
+                    {{ form.username }}
+                    {{ form.is_super_user }} Superuser?
+                </div>
+                <div class="span1">
+                    <button class="delete btn btn-danger" href="#" style="height: 35px;"><i class='icon-remove'></i></button>
+                </div>
+            </div>
+        {% endfor %}
+        <div class='row'>
+            <div class="span9" style='text-align: right;'>
+            </div>
+            <div class="span1">
+                <button id='add' class="btn btn-info" href="#" style="height: 35px;"><i class='icon-plus'></i></button></span>
+            </div>
+        </div>
+    </div>
+    <div class='well'>
+        <div class="row-fluid">
+            <div class="span2 offset3" style='text-align: right;'>
+                Optional Greeting
+            </div>
+            <div class="span6" style='text-align: left;'>
+                {{ invite_item_formset.forms.0.greeting }}
+            </div>
+        </div>
+        <div class="row-fluid">
+            <div class="span2 offset3" style='text-align: right;'>
+                {{ invite_item_formset.forms.0.permissions.label }}
+            </div>
+            <div class="span6" style='text-align: left;'>
+                {{ invite_item_formset.forms.0.permissions }}
+            </div>
+        </div>
+        <div class="row-fluid">
+            <div class="span2 offset3" style='text-align: right;'>
+                {{ invite_item_formset.forms.0.groups.label }}
+            </div>
+            <div class="span6" style='text-align: left;'>
+                {{ invite_item_formset.forms.0.groups }}
+            </div>
+        </div>
+        <div class="row-fluid">
+            <div class="span2 offset3" style='text-align: right;'>
 
-
-    <input class="btn btn-primary btn-block" type="submit" value="Submit"/>
-
+            </div>
+            <div class="span6" style='text-align: left;'>
+                <input class="btn btn-primary btn-large" type="submit" value="Send email invitation(s)" style='width: 300px'/>
+            </div>
+        </div>
+        <!-- <img src="http://i.imgur.com/cT3r5Mh.jpg"> -->
+    </div>
 </form>
+
 {% else %}
-    <h3>
-        <i class="icon-remove"></i> Sorry {{ user.first_name|title }}, you don't have invite permission. <a href="/accounts/">Back to accounts page</a>
-    </h3>
+<h3>
+    <i class="icon-remove"></i> Sorry {{ user.first_name|title }}, you don't have invite permission. <a href="/accounts/">Back to accounts page</a>
+</h3>
 {% endif %}
 
 {% endblock %}

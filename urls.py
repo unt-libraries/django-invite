@@ -9,4 +9,5 @@ urlpatterns = patterns('',
     url(r'^logout/$', 'invite.views.log_out_user'),
     url(r'^signup/$', 'invite.views.signup', name="account_signup"),
     url(r'^about/$', 'invite.views.about', name="about"),
+
 )

@@ -12,6 +12,7 @@ from .forms import SignupForm, InviteItemForm, LoginForm
 from .models import Invitation
 from django.contrib.auth.models import User, Permission, Group
 
+
 def log_out_user(request):
     logout(request)
     # Redirect to a success page.
@@ -76,10 +77,10 @@ def invite(request):
                     email=form.cleaned_data['email'],
                     is_super_user=form.cleaned_data['is_super_user'],
                 )
-                # set m2m relationships seperate from initial object creation
-                for permission in form.cleaned_data['permissions']:
+                # set m2m relationships from initial object creation
+                for permission in invite_item_formset.forms[0].cleaned_data['permissions']:
                     i.permissions.add(permission)
-                for group in form.cleaned_data['groups']:
+                for group in invite_item_formset.forms[0].cleaned_data['groups']:
                     i.groups.add(group)
                 # send the email invitation
                 i.send()
@@ -102,6 +103,14 @@ def about(request):
         request,
         'invite/about.html',
         {'login_form': LoginForm()},
+        context_instance=RequestContext(request)
+    )
+
+def pizza(request):
+    return render(
+        request,
+        'invite/pizza.html',
+        {},
         context_instance=RequestContext(request)
     )
 

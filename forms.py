@@ -103,8 +103,7 @@ class InviteItemForm(ModelForm):
         widgets = {
             'greeting': Textarea(
                 attrs={
-                    'placeholder': 'Optional Greeting',
-                    'style': 'height: 140px;',
+                    'style': 'height: 80px; width: 286px; resize: none;',
                 }
             ),
             'first_name': TextInput(
@@ -138,17 +137,17 @@ class InviteItemForm(ModelForm):
             ),
             'permissions': SelectMultiple(
                 attrs={
-                    'style': 'height: 100%; width: 300px;',
+                    'style': 'height: 150px; width: 300px;',
                 }
             ),
             'groups': SelectMultiple(
                 attrs={
-                    'style': 'height: 100%; width: 150px;',
+                    'style': 'height: 80px; width: 300px;',
                 }
             ),
             'is_super_user': CheckboxInput(
                 attrs={
-                    'style': '-webkit-transform: scale(3,3); -moz-transform: scale(3,3); -o-transform: scale(3,3);'
+                    'class': 'span1',
                 }
             )
         }

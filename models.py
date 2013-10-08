@@ -10,7 +10,7 @@ import uuid
 class InviteItem(models.Model):
     first_name = models.CharField(max_length=150)
     last_name = models.CharField(max_length=150)
-    email = models.CharField(max_length=150)
+    email = models.EmailField(max_length=150)
     username = models.CharField(max_length=150)
     greeting = models.CharField(max_length=150, blank=True)
     permissions = models.ManyToManyField(Permission, blank=True)
