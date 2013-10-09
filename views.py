@@ -77,6 +77,7 @@ def invite(request):
                     email=form.cleaned_data['email'],
                     is_super_user=form.cleaned_data['is_super_user'],
                 )
+                i.custom_msg = invite_item_formset.forms[0].cleaned_data['greeting']
                 # set m2m relationships from initial object creation
                 for permission in invite_item_formset.forms[0].cleaned_data['permissions']:
                     i.permissions.add(permission)
