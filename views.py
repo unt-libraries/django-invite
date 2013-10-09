@@ -48,12 +48,39 @@ def log_in_user(request):
 
 
 def resend(request, code):
-    i = Invitation.objects.filter(activation_code__exact=code)
-    i[0].send()
-    return HttpResponseRedirect('/accounts/')
+    # if we can't get an object with the code provided, deny them
+    try:
+        i = Invitation.objects.get(activation_code=code)
+    except Exception, e:
+        return render(
+            request,
+            'invite/denied.html',
+            context_instance=RequestContext(request)
+        )
+    i.send()
+    resent_user = '%s %s' % (i.first_name, i.last_name)
+    return render_to_response(
+        'invite/index.html',
+        {
+            'login_form': LoginForm(),
+            'invites': Invitation.objects.all(),
+            'resent_user': resent_user,
+            'users': User.objects.all(),
+        },
+        context_instance=RequestContext(request)
+    )
+
 
 def revoke(request, code):
-    i = Invitation.objects.get(activation_code__exact=code)
+    # if we can't get an object with the code provided, deny them
+    try:
+        i = Invitation.objects.get(activation_code=code)
+    except Exception, e:
+        return render(
+            request,
+            'invite/denied.html',
+            context_instance=RequestContext(request)
+        )
     revoked_user = '%s %s' % (i.first_name, i.last_name)
     i.delete()
     return render_to_response(
@@ -116,6 +143,7 @@ def about(request):
         {'login_form': LoginForm()},
         context_instance=RequestContext(request)
     )
+
 
 def pizza(request):
     return render(
@@ -205,4 +233,3 @@ def signup(request):
         },
         context_instance=RequestContext(request)
     )
-
