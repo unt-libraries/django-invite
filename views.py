@@ -53,9 +53,19 @@ def resend(request, code):
     return HttpResponseRedirect('/accounts/')
 
 def revoke(request, code):
-    i = Invitation.objects.filter(activation_code__exact=code)
-    i[0].delete()
-    return HttpResponseRedirect('/accounts/')
+    i = Invitation.objects.get(activation_code__exact=code)
+    revoked_user = '%s %s' % (i.first_name, i.last_name)
+    i.delete()
+    return render_to_response(
+        'invite/index.html',
+        {
+            'login_form': LoginForm(),
+            'invites': Invitation.objects.all(),
+            'revoked_user': revoked_user,
+            'users': User.objects.all(),
+        },
+        context_instance=RequestContext(request)
+    )
 
 
 def invite(request):

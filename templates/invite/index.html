@@ -10,7 +10,7 @@
                 <h3>Open Invitations:</h3>
             </div>
             <div>
-                <table class='table  table-striped'>
+                <table class='table table-striped'>
                 {% for i in invites %}
                     <tr>
                     <td colspan='2'><i class="icon-user"></i> {{ i.first_name|title }} {{ i.last_name|title }} was <i class="icon-envelope"></i> emailed an invitation on <i class="icon-calendar"></i> {{ i.date_invited }}</td>
@@ -37,6 +37,9 @@
                 </table>
             </div>
         <hr>
+        {% endif %}
+        {% if revoked_user %}
+            <label class='label label-info'><em>Revoked invitation for {{ revoked_user }}</em></label>
         {% endif %}
         <div>
             <h3>Active Accounts:</h3>

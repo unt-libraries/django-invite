@@ -97,6 +97,9 @@ $(document).ready(function() {
     <div class='well'>
         {% for form in invite_item_formset %}
             <div id='{{ form.prefix }}-row' class='form-horizontal row control-group'>
+                {% if form.email.errors %}
+                    <label class='label label-warning'><em>{{ form.email.errors.as_text }}</em></label><br>
+                {% endif %}
                 <div class="span9" style='text-align: right;'>
                     {{ form.first_name }}
                     {{ form.last_name }}
