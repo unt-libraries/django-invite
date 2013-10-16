@@ -15,7 +15,7 @@ class FunctionalTestCase(unittest.TestCase):
 
 
 class TestFunctional(FunctionalTestCase):
-    def test_one_invite(self):
+    def test_one_basic_invite(self):
         # joey opens the browser and goes to the  url
         self.browser.get('http://129.120.93.131:8000/accounts/')
         self.browser.find_element_by_name('username').send_keys('test')
@@ -33,6 +33,30 @@ class TestFunctional(FunctionalTestCase):
         time.sleep(1)
         self.assertIn('Jayjay', body.text)
         self.browser.find_element_by_xpath('//*[@id="body"]/div[2]/div/div/div[2]/table/tbody/tr[2]/td[3]/form/input').click()
+
+    def test_ten_basic_invites(self):
+        # joey opens the browser and goes to the  url
+        self.browser.get('http://129.120.93.131:8000/accounts/')
+        self.browser.find_element_by_name('username').send_keys('test')
+        self.browser.find_element_by_name('password').send_keys('test')
+        self.browser.find_element_by_xpath('//*[@id="body"]/div[2]/div/form/input').click()
+        self.browser.find_element_by_xpath('//*[@id="body"]/div[2]/div/div/a').click()
+        for i in range(10):
+            self.browser.find_element_by_xpath('//*[@id="add"]/i').click()
+        for i in range(11):
+            # type in data
+            self.browser.find_element_by_name('form-%s-first_name' % i).send_keys('jayjay')
+            self.browser.find_element_by_name('form-%s-last_name' % i).send_keys('jetplane')
+            self.browser.find_element_by_name('form-%s-username' % i).send_keys('jetplane')
+            self.browser.find_element_by_name('form-%s-email' % i).send_keys('asdf@asdf.asdf')
+        # notice a link to the EOT_PDF model admin and click it
+        self.browser.find_element_by_xpath('//*[@id="body"]/div[2]/div/form/div[3]/div[4]/div[2]/input').click()
+        body = self.browser.find_element_by_tag_name('body')
+        time.sleep(1)
+        self.assertIn('Jayjay', body.text)
+        # delete the invites
+        for i in range(11):
+            self.browser.find_element_by_xpath('//*[@id="body"]/div[2]/div/div/div[2]/table/tbody/tr[2]/td[3]/form/input').click()
 
 
 if __name__ == '__main__':

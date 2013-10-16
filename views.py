@@ -47,6 +47,18 @@ def log_in_user(request):
     )
 
 
+def index(request):
+    return render_to_response(
+        'invite/index.html',
+        {
+            'login_form': LoginForm(),
+            'invites': Invitation.objects.all(),
+            'users': User.objects.all(),
+        },
+        context_instance=RequestContext(request)
+    )
+
+
 def resend(request, code):
     # if we can't get an object with the code provided, deny them
     try:
@@ -83,16 +95,7 @@ def revoke(request, code):
         )
     revoked_user = '%s %s' % (i.first_name, i.last_name)
     i.delete()
-    return render_to_response(
-        'invite/index.html',
-        {
-            'login_form': LoginForm(),
-            'invites': Invitation.objects.all(),
-            'revoked_user': revoked_user,
-            'users': User.objects.all(),
-        },
-        context_instance=RequestContext(request)
-    )
+    return index(request)
 
 
 def invite(request):
@@ -150,18 +153,6 @@ def pizza(request):
         request,
         'invite/pizza.html',
         {},
-        context_instance=RequestContext(request)
-    )
-
-
-def index(request):
-    return render_to_response(
-        'invite/index.html',
-        {
-            'login_form': LoginForm(),
-            'invites': Invitation.objects.all(),
-            'users': User.objects.all(),
-        },
         context_instance=RequestContext(request)
     )
 
