@@ -103,6 +103,7 @@ class InviteItemForm(ModelForm):
         widgets = {
             'greeting': Textarea(
                 attrs={
+                    'placeholder': 'This optional greeting will be delivered to all recipients.',
                     'style': 'height: 80px; width: 286px; resize: none;',
                 }
             ),
@@ -138,7 +139,7 @@ class InviteItemForm(ModelForm):
             'permissions': SelectMultiple(
                 attrs={
                     'style': 'height: 150px; width: 300px;',
-                }
+                },
             ),
             'groups': SelectMultiple(
                 attrs={
@@ -167,7 +168,7 @@ class LoginForm(forms.Form):
     password = forms.CharField(
         widget=forms.PasswordInput(attrs=\
             {
-                'placeholder': 'password',
+                'placeholder': 'Password',
                 'style': 'width: 75%',
                 'required': 'true',
             }
