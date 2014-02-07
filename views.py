@@ -202,7 +202,7 @@ def signup(request):
                 if user.is_active:
                     login(request, user)
                     # Redirect to accounts page.
-                    return HttpResponseRedirect('/accounts/')
+                    return HttpResponseRedirect(settings.SIGNUP_REDIRECT_PATH)
     else:
         # GET request, just show the form with some initial values
         form = SignupForm(

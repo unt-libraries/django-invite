@@ -67,19 +67,17 @@ class Invitation(models.Model):
         return "%s, %s: %s" % (self.last_name, self.first_name, self.date_invited)
 
     def send(self):
-            """
-            Send an invitation email to ``email``.
-            """
+        """Sends an invitation email to ``self.email``."""
 
-            subject = 'You have been invited to join %s' % (settings.SERVICE_NAME)
-            message = render_to_string(
-                'invite/invitation_email.txt',
-                {
-                    'domain': Site.objects.get_current().domain,
-                    'service_name': settings.SERVICE_NAME,
-                    'activation_code': self.activation_code,
-                    'custom_msg': self.custom_msg,
-                }
-            )
+        subject = 'You have been invited to join the %s' % (settings.SERVICE_NAME)
+        message = render_to_string(
+            'invite/invitation_email.txt',
+            {
+                'domain': Site.objects.get_current().domain,
+                'service_name': settings.SERVICE_NAME,
+                'activation_code': self.activation_code,
+                'custom_msg': self.custom_msg,
+            }
+        )
 
-            send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [self.email])
+        send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [self.email])

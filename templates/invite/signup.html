@@ -3,7 +3,7 @@
 
 {% block content %}
     <div class='span6 well' style="float: none; margin-left: auto; margin-right: auto;">
-        <h3><i class="icon-thumbs-up"></i> Welcome to {{ service_name }}, {{ form.first_name.value|title }}!</h3>
+        <h3><i class="icon-thumbs-up"></i> Welcome to the {{ service_name }}, {{ form.first_name.value|title }}!</h3>
         <form action='/accounts/signup/?code={{ activation_code }}' method="POST">{% csrf_token %}
             <small>{{ form.first_name.errors.as_text }}</small>
             <small>{{ form.last_name.errors.as_text }}</small>
