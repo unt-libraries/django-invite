@@ -52,7 +52,7 @@ def index(request):
         'invite/index.html',
         {
             'login_form': LoginForm(),
-            'invites': Invitation.objects.all(),
+            'invites': Invitation.objects.all().order_by('-date_invited'),
             'users': User.objects.all(),
         },
         context_instance=RequestContext(request)

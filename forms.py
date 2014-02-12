@@ -27,7 +27,7 @@ class SignupForm(forms.Form):
             attrs={
                 'placeholder': 'First Name',
                 'class': 'input-medium',
-                'style': 'width: 45%',
+                'style': 'width: 50%',
                 'required': 'true',
             }
         ),
@@ -38,7 +38,7 @@ class SignupForm(forms.Form):
             attrs={
                 'placeholder': 'Last Name',
                 'class': 'input-medium',
-                'style': 'width: 45%',
+                'style': 'width: 50%',
                 'required': 'true',
             }
         ),
@@ -48,7 +48,7 @@ class SignupForm(forms.Form):
             attrs={
                 'placeholder': 'Email',
                 'class': 'input-medium',
-                'style': 'width: 45%',
+                'style': 'width: 50%',
                 'required': 'true',
             }
         ),
@@ -59,7 +59,7 @@ class SignupForm(forms.Form):
             attrs={
                 'placeholder': 'Username',
                 'class': 'input-medium',
-                'style': 'width: 45%',
+                'style': 'width: 50%',
                 'required': 'true',
             }
         ),
@@ -69,8 +69,8 @@ class SignupForm(forms.Form):
             {
                 'placeholder': 'choose a password',
                 'class': 'input-medium',
+                'style': 'width: 50%',
                 'required': 'true',
-
             }
         ),
         label="Choose a password"
@@ -80,6 +80,7 @@ class SignupForm(forms.Form):
             {
                 'placeholder': 'repeat password',
                 'class': 'input-medium',
+                'style': 'width: 50%',
                 'required': 'true',
             }
         ),
