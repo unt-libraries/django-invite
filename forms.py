@@ -29,6 +29,7 @@ class SignupForm(forms.Form):
                 'class': 'input-medium',
                 'style': 'width: 50%',
                 'required': 'true',
+                'tabindex': '1',
             }
         ),
     )
@@ -40,6 +41,7 @@ class SignupForm(forms.Form):
                 'class': 'input-medium',
                 'style': 'width: 50%',
                 'required': 'true',
+                'tabindex': '2',
             }
         ),
     )
@@ -50,6 +52,7 @@ class SignupForm(forms.Form):
                 'class': 'input-medium',
                 'style': 'width: 50%',
                 'required': 'true',
+                'tabindex': '3',
             }
         ),
     )
@@ -61,6 +64,7 @@ class SignupForm(forms.Form):
                 'class': 'input-medium',
                 'style': 'width: 50%',
                 'required': 'true',
+                'tabindex': '4',
             }
         ),
     )
@@ -71,6 +75,7 @@ class SignupForm(forms.Form):
                 'class': 'input-medium',
                 'style': 'width: 50%',
                 'required': 'true',
+                'tabindex': '5',
             }
         ),
         label="Choose a password"
@@ -82,6 +87,7 @@ class SignupForm(forms.Form):
                 'class': 'input-medium',
                 'style': 'width: 50%',
                 'required': 'true',
+                'tabindex': '6',
             }
         ),
         label="Repeat your password"
