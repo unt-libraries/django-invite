@@ -13,11 +13,10 @@ class UserField(forms.CharField):
         try:
             User.objects.get(username=value)
             raise forms.ValidationError(
-                "Name taken. Pick another."
+                "That username is already taken by another user. Please choose another."
             )
         except User.DoesNotExist:
             return value
-
 
 
 class SignupForm(forms.Form):
