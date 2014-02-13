@@ -11,11 +11,12 @@ from cStringIO import StringIO
 
 
 class InviteItem(models.Model):
+    '''This is the model using to generate the forms'''
     first_name = models.CharField(max_length=150)
     last_name = models.CharField(max_length=150)
     email = models.EmailField(max_length=150)
     username = models.CharField(max_length=150)
-    greeting = models.CharField(max_length=150, blank=True)
+    greeting = models.TextField(blank=True)
     permissions = models.ManyToManyField(Permission, blank=True)
     groups = models.ManyToManyField(Group, blank=True)
     is_super_user = models.BooleanField()
@@ -49,8 +50,8 @@ class Invitation(models.Model):
         max_length=41,
         help_text="the potential member's email address",
     )
-    custom_msg = models.CharField(
-        max_length=256,
+    custom_msg = models.TextField(
+        blank=True,
     )
     date_invited = models.DateField(
         auto_now=True,

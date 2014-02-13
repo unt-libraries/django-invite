@@ -7,12 +7,16 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
 from django.contrib.auth.models import Permission
+from django.contrib.auth.models import User, Permission, Group
+from django.views.decorators.csrf import csrf_protect
+
 import settings
 from .forms import SignupForm, InviteItemForm, LoginForm
 from .models import Invitation
-from django.contrib.auth.models import User, Permission, Group
+from edit_auth.views import require_edit_login
 
 
+@csrf_protect
 def log_out_user(request):
     logout(request)
     # Redirect to a success page.
@@ -23,6 +27,7 @@ def log_out_user(request):
     )
 
 
+@csrf_protect
 def log_in_user(request):
     if request.method == 'POST':
         form = LoginForm(request.POST)
@@ -47,6 +52,7 @@ def log_in_user(request):
     )
 
 
+@require_edit_login
 def index(request):
     return render_to_response(
         'invite/index.html',
@@ -59,6 +65,7 @@ def index(request):
     )
 
 
+@require_edit_login
 def resend(request, code):
     # if we can't get an object with the code provided, deny them
     try:
@@ -83,6 +90,7 @@ def resend(request, code):
     )
 
 
+@require_edit_login
 def revoke(request, code):
     # if we can't get an object with the code provided, deny them
     try:
@@ -98,6 +106,7 @@ def revoke(request, code):
     return index(request)
 
 
+@require_edit_login
 def invite(request):
     InviteItemFormSet = formset_factory(
         InviteItemForm,
@@ -139,6 +148,7 @@ def invite(request):
     )
 
 
+@require_edit_login
 def about(request):
     return render(
         request,
@@ -148,15 +158,7 @@ def about(request):
     )
 
 
-def pizza(request):
-    return render(
-        request,
-        'invite/pizza.html',
-        {},
-        context_instance=RequestContext(request)
-    )
-
-
+@csrf_protect
 def signup(request):
     code = request.GET.get('code')
     # if we can't get an object with the code provided, deny the signup
