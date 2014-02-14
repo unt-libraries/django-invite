@@ -47,7 +47,7 @@
         <div>
             <h3>Active Accounts:</h3>
         </div>
-            {% for u in users %}
+            {% for u in users reversed %}
                 <table class='table'>
                 <code><i class="icon-user"></i> {{ u }}</code> registered on {{ u.date_joined }}
                 </table>
