@@ -3,20 +3,13 @@ from django import forms
 from django.forms import ModelForm, Textarea, TextInput, SelectMultiple, CheckboxInput
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User, Permission, Group
-from django.contrib.auth import authenticate, login
 from django.core import validators
+from django.core.exceptions import ValidationError
 
 
-class UserField(forms.CharField):
-    def clean(self, value):
-        super(UserField, self).clean(value)
-        try:
-            User.objects.get(username=value)
-            raise forms.ValidationError(
-                "That username is already taken by another user. Please choose another."
-            )
-        except User.DoesNotExist:
-            return value
+def validate_username(value):
+    if value in User.objects.all().values_list('username', flat=True):
+        raise ValidationError('Username taken, choose another')
 
 
 class SignupForm(forms.Form):
@@ -55,7 +48,8 @@ class SignupForm(forms.Form):
             }
         ),
     )
-    username = UserField(
+    username = forms.CharField(
+        validators=[validate_username],
         max_length=30,
         widget=forms.TextInput(
             attrs={
@@ -103,7 +97,27 @@ class SignupForm(forms.Form):
 
 
 class InviteItemForm(ModelForm):
-
+    username = forms.CharField(
+        validators=[validate_username],
+        max_length=30,
+        widget=forms.TextInput(
+            attrs={
+                'placeholder': 'Username',
+                'required': 'true',
+                'class': 'input-medium',
+            }
+        ),
+    )
+    email = forms.EmailField(
+        validators=[validators.validate_email],
+        widget=forms.TextInput(
+            attrs={
+                'placeholder': 'Email',
+                'class': 'input-medium',
+                'required': 'true',
+            }
+        ),
+    )
     class Meta:
         model = InviteItem
         widgets = {
@@ -123,21 +137,6 @@ class InviteItemForm(ModelForm):
             'last_name': TextInput(
                 attrs={
                     'placeholder': 'Last Name',
-                    'class': 'input-medium',
-                    'required': 'true',
-                }
-            ),
-            'email': TextInput(
-                attrs={
-                    'placeholder': 'Email',
-                    'class': 'input-medium',
-                    'type': 'email',
-                    'required': 'true',
-                }
-            ),
-            'username': TextInput(
-                attrs={
-                    'placeholder': 'Username',
                     'class': 'input-medium',
                     'required': 'true',
                 }

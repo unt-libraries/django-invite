@@ -86,6 +86,7 @@ $(document).ready(function() {
     });
 });
 </script>
+
 {% endblock %}
 {% block content %}
 {% if perms.invite.add_invitation %}
@@ -96,9 +97,14 @@ $(document).ready(function() {
     {{ invite_item_formset.management_form }}
     <div class='well well-small'>
         {% for form in invite_item_formset %}
-            {% if form.email.errors %}
+             {% if form.errors %}
                 <div class="alert alert-error">
-                    {{ form.email.errors.as_text }}
+                    <button type="button" class="close" data-dismiss="alert">×</button>
+                    {% for field in form %}
+                        {% if field.errors %}
+                        <li>{{ field.label }}: {{ field.errors|striptags }}</li>
+                        {% endif %}
+                    {% endfor %}
                 </div>
             {% endif %}
             <div id='{{ form.prefix }}-row' class='form-horizontal row control-group'>
