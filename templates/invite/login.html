@@ -3,14 +3,15 @@
 <div class='centered'>
 
     {% if user.is_authenticated %}
-        <div class='well'>
-            <h3>{{ user.first_name }}, you're already logged in. If your username is not {{ user }}, please logout of the system.</h3>
+        <div class='span3 well'>
+            <h3>{{ user.first_name }}, you're already signed in. If your username is not {{ user }}, please signout of the system.</h3>
         <div>
     {% else %}
         <div class='span3 well'>
-            <form action='/accounts/login/?next={{ next }}' method="post">{% csrf_token %}
+            <form action='/accounts/signin/?next={{ next }}' method="post">{% csrf_token %}
                 {{ form.as_p }}
                 <input type="submit" value="Submit" />
+                <a href='/accounts/amnesia/'>I forgot</a>
             </form>
         </div>
     {% endif %}

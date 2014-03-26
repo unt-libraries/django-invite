@@ -82,3 +82,38 @@ class Invitation(models.Model):
         )
 
         send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [self.email])
+
+
+class PasswordResetInvitation(Invitation):
+
+    def send(self):
+        """Sends an invitation email to ``self.email``."""
+
+        subject = 'Password Reset: %s' % (settings.SERVICE_NAME)
+        message = render_to_string(
+            'invite/reset_email.txt',
+            {
+                'first_name': self.first_name,
+                'username': self.username,
+                'domain': Site.objects.get_current().domain,
+                'reset_code': self.activation_code,
+            }
+        )
+
+        send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [self.email])
+
+    def send_confirm(self):
+        """Sends an confirmation email to ``self.email``."""
+
+        subject = 'Password Changed: %s' % (settings.SERVICE_NAME)
+        message = render_to_string(
+            'invite/reset_confirmation_email.txt',
+            {
+                'first_name': self.first_name,
+                'username': self.username,
+                'domain': Site.objects.get_current().domain,
+                'reset_code': self.activation_code,
+            }
+        )
+
+        send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [self.email])

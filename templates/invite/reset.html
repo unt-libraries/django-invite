@@ -1,0 +1,15 @@
+{% extends 'invite/base.html' %}
+{% block content %}
+<div class='centered'>
+    <div class='span3 well'>
+        Enter your new password twice and click submit to reset your password.
+        You should receive a confirmation email afterwards.
+        <form action='/accounts/reset/' method="post">{% csrf_token %}
+            <input type="hidden" value="{{ username }}" name="username">
+            {{ resetform.password }}
+            {{ resetform.password2 }}
+            <input type="submit" value="Submit" />
+        </form>
+    </div>
+</div>
+{% endblock %}

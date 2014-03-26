@@ -1,0 +1,12 @@
+{% extends 'invite/base.html' %}
+{% block content %}
+    <div class='offset5 pagination-centered span3 well'>
+        Forgotten your password?<br>No sweat.<br>Enter your e-mail address below, and we'll send you an e-mail allowing you to reset it.<hr>
+        <form action='/accounts/amnesia/?next={{ next }}' method="post">{% csrf_token %}
+            {{ iforgotform.email }}
+            <input type="submit" value="Submit" />
+        </form>
+        <hr>
+        Nevermind, <a href='/accounts/signin/'>I remembered it</a> .
+    </div>
+{% endblock %}

@@ -39,13 +39,13 @@
                 </li>
                 <li><a href="/accounts/about/">About</a></li>
                 {% if user.is_authenticated %}
-                    <li><a href="/accounts/logout/"><i class="icon-white icon-road"></i> Logout</a></li>
+                    <li><a href="/accounts/signout/"><i class="icon-white icon-road"></i> Sign out</a></li>
                 {% else %}
-                    <li><a href="/accounts/login/"><i class="icon-white icon-key"></i> Login</a></li>
+                    <li><a href="/accounts/signin/"><i class="icon-white icon-key"></i> Sign in</a></li>
                 {% endif %}
                 <li class="divider-vertical"></li>
                 {% if user.is_authenticated %}
-                <li class='pull-right'><a><small>Logged in as <i class="icon-white icon-user"></i> {{ user }}</small></a></li>
+                <li class='pull-right'><a><small>Signed in as: <i class="icon-white icon-user"></i> {{ user }}</small></a></li>
                 {% endif %}
             </ul>
 
@@ -63,13 +63,11 @@
             <strong>{{ maintenance_message }}</strong>
         </div>
         {% endif %}
-        {% if request.user.is_authenticated or 'signup' in request.path %}
-            <div class="pagination-centered">
-                {% block content %}{% endblock %}
-            </div>
+        {% if user.is_authenticated or 'signup' in request.path or 'amnesia' in request.path or 'reset' in request.path %}
+            {% block content %}{% endblock %}
         {% else %}
             <div class='pagination-centered well span2' style="float: none; margin-left: auto; margin-right: auto;">
-                <form action='/accounts/login/' method="post">{% csrf_token %}
+                <form action='/accounts/signin/' method="post">{% csrf_token %}
                     {{ login_form.non_field_errors }}
                     {{ login_form.username.errors }}
                     <div class="input-prepend">
@@ -82,6 +80,7 @@
                         {{ login_form.password }}
                     </div>
                     <input type='submit' value='Login' class="btn btn-block btn-primary" type="button">
+                    <br><a href='/accounts/amnesia/'>I forgot my username or password.</a>
                 </form>
             </div>
         {% endif %}

@@ -6,14 +6,66 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
-from django.contrib.auth.models import Permission
 from django.contrib.auth.models import User, Permission, Group
 from django.views.decorators.csrf import csrf_protect
 
 import settings
-from .forms import SignupForm, InviteItemForm, LoginForm
-from .models import Invitation
+from .forms import SignupForm, InviteItemForm, LoginForm, IForgotForm, ResetForm
+from .models import Invitation, PasswordResetInvitation
 from edit_auth.views import require_edit_login
+
+
+def reset(request):
+    '''users land here to reset their django user passwords'''
+    if request.method == 'POST':
+        form = ResetForm(request.POST)
+        if form.is_valid():
+            # determine user from code.
+            user = User.objects.get(username=request.POST['username'])
+            # get invitation object so we can deleted it afterwards
+            psi = PasswordResetInvitation.objects.get(username=request.POST['username'])
+            user.set_password(form.cleaned_data['password'])
+            user.save()
+            psi.send_confirm()
+            psi.delete()
+            return HttpResponseRedirect('/accounts/') # Redirect to a 'success' page
+    elif request.method == 'GET':
+        i = PasswordResetInvitation(activation_code=request.GET['reset_code'])
+        username = i.username
+        return render_to_response(
+            'invite/reset.html',
+            {
+                'user': username,
+                'resetform': ResetForm(),
+            },
+            context_instance=RequestContext(request)
+        )
+
+
+def amnesia(request):
+    # iforgot form.
+    if request.method == 'POST':
+        form = IForgotForm(request.POST)
+        if form.is_valid():
+            # determine user from email address.
+            user = User.objects.get(email=form.cleaned_data['email'])
+            # make password reset invitation from form
+            i = PasswordResetInvitation.objects.create(
+                first_name=user.first_name,
+                last_name=user.last_name,
+                username=user.username,
+                email=form.cleaned_data['email'],
+            )
+            # send the email reset link
+            i.send()
+            i.save()
+            return HttpResponseRedirect('/accounts/') # Redirect to a 'success' page
+    elif request.method == 'GET':
+        return render_to_response(
+            'invite/amnesia.html',
+            {'iforgotform': IForgotForm()},
+            context_instance=RequestContext(request)
+        )
 
 
 @csrf_protect

@@ -11,6 +11,9 @@ def validate_username(value):
     if value in User.objects.all().values_list('username', flat=True):
         raise ValidationError('Username taken, choose another')
 
+def validate_email(value):
+    if value not in User.objects.all().values_list('email', flat=True):
+        raise ValidationError('Email doesn\'t belong to any user')
 
 class SignupForm(forms.Form):
     first_name = forms.CharField(
@@ -188,4 +191,59 @@ class LoginForm(forms.Form):
         user = authenticate(username=username, password=password)
         if not user or not user.is_active:
             raise forms.ValidationError("Incorrect username or password")
+        return self.cleaned_data
+
+
+class IForgotForm(forms.Form):
+    email = forms.EmailField(
+        validators=[validate_email],
+        widget=forms.TextInput(
+            attrs={
+                'placeholder': 'Email',
+                'class': 'input-medium',
+                'required': 'true',
+            }
+        ),
+    )
+
+    def clean_email(self):
+        '''throw an error if we can't resolve the given email to a user'''
+        if not User.objects.get(email=self.data['email']):
+            raise forms.ValidationError('No user found with that email address')
+        return self.data['email']
+
+    def clean(self, *args, **kwargs):
+        self.clean_email()
+        return self.cleaned_data
+
+
+class ResetForm(forms.Form):
+    password = forms.CharField(
+        widget=forms.PasswordInput(attrs=\
+            {
+                'placeholder': 'choose a password',
+                'class': 'input-medium',
+                'required': 'true',
+            }
+        ),
+        label="Choose a password"
+    )
+    password2 = forms.CharField(
+        widget=forms.PasswordInput(attrs=\
+            {
+                'placeholder': 'repeat password',
+                'class': 'input-medium',
+                'required': 'true',
+            }
+        ),
+        label="Repeat your password"
+    )
+
+    def clean_password(self):
+        if self.data['password'] != self.data['password2']:
+            raise forms.ValidationError('Passwords are not the same')
+        return self.data['password']
+
+    def clean(self, *args, **kwargs):
+        self.clean_password()
         return self.cleaned_data
