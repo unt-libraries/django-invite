@@ -11,9 +11,9 @@ def validate_username(value):
     if value in User.objects.all().values_list('username', flat=True):
         raise ValidationError('Username taken, choose another')
 
-def validate_email(value):
+def validate_user_email(value):
     if value not in User.objects.all().values_list('email', flat=True):
-        raise ValidationError('Email doesn\'t belong to any user')
+        raise ValidationError('Email doesnt belong to any user')
 
 class SignupForm(forms.Form):
     first_name = forms.CharField(
@@ -196,25 +196,21 @@ class LoginForm(forms.Form):
 
 class IForgotForm(forms.Form):
     email = forms.EmailField(
-        validators=[validate_email],
+        validators=[validate_user_email],
         widget=forms.TextInput(
             attrs={
                 'placeholder': 'Email',
-                'class': 'input-medium',
                 'required': 'true',
             }
         ),
     )
 
-    def clean_email(self):
-        '''throw an error if we can't resolve the given email to a user'''
-        if not User.objects.get(email=self.data['email']):
-            raise forms.ValidationError('No user found with that email address')
-        return self.data['email']
-
-    def clean(self, *args, **kwargs):
-        self.clean_email()
-        return self.cleaned_data
+    # def clean(self):
+    #     data = self.data
+    #     email = data.get("email")
+    #     if email not in User.objects.all().values_list('email', flat=True):
+    #         raise forms.ValidationError('no one has that email')
+    #     return self.cleaned_data
 
 
 class ResetForm(forms.Form):

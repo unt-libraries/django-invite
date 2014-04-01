@@ -107,7 +107,7 @@ class PasswordResetInvitation(Invitation):
 
         subject = 'Password Changed: %s' % (settings.SERVICE_NAME)
         message = render_to_string(
-            'invite/reset_confirmation_email.txt',
+            'invite/reset_confirm_email.txt',
             {
                 'first_name': self.first_name,
                 'username': self.username,

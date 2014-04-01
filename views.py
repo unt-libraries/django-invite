@@ -18,24 +18,48 @@ from edit_auth.views import require_edit_login
 def reset(request):
     '''users land here to reset their django user passwords'''
     if request.method == 'POST':
+        reset_code = request.GET.get('reset_code')
         form = ResetForm(request.POST)
         if form.is_valid():
-            # determine user from code.
-            user = User.objects.get(username=request.POST['username'])
             # get invitation object so we can deleted it afterwards
-            psi = PasswordResetInvitation.objects.get(username=request.POST['username'])
+            pri = PasswordResetInvitation.objects.get(activation_code=reset_code)
+            # determine user from password reset invitation.
+            user = User.objects.get(username=pri.username)
             user.set_password(form.cleaned_data['password'])
             user.save()
-            psi.send_confirm()
-            psi.delete()
-            return HttpResponseRedirect('/accounts/') # Redirect to a 'success' page
+            pri.send_confirm()
+            pri.delete()
+            user = authenticate(
+                username=pri.username,
+                password=form.cleaned_data['password'],
+            )
+            if user is not None:
+                if user.is_active:
+                    login(request, user)
+                    # Redirect to accounts page.
+                    return HttpResponseRedirect(settings.SIGNUP_REDIRECT_PATH)        
+        else:
+            return render_to_response(
+                'invite/reset.html',
+                {
+                    'resetform': form,
+                    'reset_code': reset_code,
+                },
+                context_instance=RequestContext(request)
+            )
     elif request.method == 'GET':
-        i = PasswordResetInvitation(activation_code=request.GET['reset_code'])
-        username = i.username
+        try:
+            pri = PasswordResetInvitation.objects.get(activation_code=request.GET.get('reset_code'))
+        except PasswordResetInvitation.DoesNotExist:
+            return render(
+                request,
+                'invite/denied.html',
+                context_instance=RequestContext(request)
+            )
         return render_to_response(
             'invite/reset.html',
             {
-                'user': username,
+                'reset_code': pri.activation_code,
                 'resetform': ResetForm(),
             },
             context_instance=RequestContext(request)
@@ -59,8 +83,14 @@ def amnesia(request):
             # send the email reset link
             i.send()
             i.save()
-            return HttpResponseRedirect('/accounts/') # Redirect to a 'success' page
-    elif request.method == 'GET':
+            return HttpResponseRedirect('/accounts/amnesia/')
+        else:
+            return render_to_response(
+                'invite/amnesia.html',
+                {'iforgotform': form},
+                context_instance=RequestContext(request)
+            )
+    else:
         return render_to_response(
             'invite/amnesia.html',
             {'iforgotform': IForgotForm()},
@@ -122,7 +152,7 @@ def resend(request, code):
     # if we can't get an object with the code provided, deny them
     try:
         i = Invitation.objects.get(activation_code=code)
-    except Exception, e:
+    except Invitation.DoesNotExist:
         return render(
             request,
             'invite/denied.html',
@@ -147,7 +177,7 @@ def revoke(request, code):
     # if we can't get an object with the code provided, deny them
     try:
         i = Invitation.objects.get(activation_code=code)
-    except Exception, e:
+    except Invitation.DoesNotExist:
         return render(
             request,
             'invite/denied.html',
@@ -216,7 +246,7 @@ def signup(request):
     # if we can't get an object with the code provided, deny the signup
     try:
         i = Invitation.objects.get(activation_code=code)
-    except Exception, e:
+    except Invitation.DoesNotExist:
         return render(
             request,
             'invite/denied.html',

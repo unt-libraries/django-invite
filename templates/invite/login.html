@@ -4,11 +4,11 @@
 
     {% if user.is_authenticated %}
         <div class='span3 well'>
-            <h3>{{ user.first_name }}, you're already signed in. If your username is not {{ user }}, please signout of the system.</h3>
+            <h3>{{ user.first_name }}, you're already signed in. If your username is not {{ user }}, please log out of the system.</h3>
         <div>
     {% else %}
         <div class='span3 well'>
-            <form action='/accounts/signin/?next={{ next }}' method="post">{% csrf_token %}
+            <form action='/accounts/login/' method="post">{% csrf_token %}
                 {{ form.as_p }}
                 <input type="submit" value="Submit" />
                 <a href='/accounts/amnesia/'>I forgot</a>

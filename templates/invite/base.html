@@ -39,9 +39,9 @@
                 </li>
                 <li><a href="/accounts/about/">About</a></li>
                 {% if user.is_authenticated %}
-                    <li><a href="/accounts/signout/"><i class="icon-white icon-road"></i> Sign out</a></li>
+                    <li><a href="/accounts/logout/"><i class="icon-white icon-road"></i> Log out</a></li>
                 {% else %}
-                    <li><a href="/accounts/signin/"><i class="icon-white icon-key"></i> Sign in</a></li>
+                    <li><a href="/accounts/login/"><i class="icon-white icon-key"></i> Log in</a></li>
                 {% endif %}
                 <li class="divider-vertical"></li>
                 {% if user.is_authenticated %}
@@ -67,7 +67,7 @@
             {% block content %}{% endblock %}
         {% else %}
             <div class='pagination-centered well span2' style="float: none; margin-left: auto; margin-right: auto;">
-                <form action='/accounts/signin/' method="post">{% csrf_token %}
+                <form action='/accounts/login/' method="post">{% csrf_token %}
                     {{ login_form.non_field_errors }}
                     {{ login_form.username.errors }}
                     <div class="input-prepend">

@@ -1,11 +1,22 @@
 {% extends 'invite/base.html' %}
 {% block content %}
 <div class='centered'>
-    <div class='span3 well'>
+    <div class='offset5 pagination-centered span3 well'>
         Enter your new password twice and click submit to reset your password.
+        <br>
+        <br>
         You should receive a confirmation email afterwards.
-        <form action='/accounts/reset/' method="post">{% csrf_token %}
-            <input type="hidden" value="{{ username }}" name="username">
+        {% if resetform.errors %}
+            <div class="alert alert-error">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                {% for field in resetform %}
+                    {% if field.errors %}
+                    <li>{{ field.label }}: {{ field.errors|striptags }}</li>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% endif %}
+        <form action='/accounts/reset/?reset_code={{ reset_code }}' method="POST">{% csrf_token %}
             {{ resetform.password }}
             {{ resetform.password2 }}
             <input type="submit" value="Submit" />
