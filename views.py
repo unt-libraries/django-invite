@@ -48,23 +48,44 @@ def reset(request):
                 context_instance=RequestContext(request)
             )
     elif request.method == 'GET':
-        try:
-            pri = PasswordResetInvitation.objects.get(activation_code=request.GET.get('reset_code'))
-        except PasswordResetInvitation.DoesNotExist:
-            return render(
-                request,
-                'invite/denied.html',
+        # they come bearing a reset_code
+        if 'reset_code' in request.GET.keys():
+            try:
+                pri = PasswordResetInvitation.objects.get(activation_code=request.GET.get('reset_code'))
+            except PasswordResetInvitation.DoesNotExist:
+                return render(
+                    request,
+                    'invite/denied.html',
+                    context_instance=RequestContext(request)
+                )
+            return render_to_response(
+                'invite/reset.html',
+                {
+                    'reset_code': pri.activation_code,
+                    'resetform': ResetForm(),
+                },
                 context_instance=RequestContext(request)
             )
-        return render_to_response(
-            'invite/reset.html',
-            {
-                'reset_code': pri.activation_code,
-                'resetform': ResetForm(),
-            },
-            context_instance=RequestContext(request)
-        )
-
+        # or an email address
+        elif 'email' in request.GET.keys():
+            return render_to_response(
+                'invite/confirm_reset.html',
+                {
+                    'email': request.GET.get('email'),
+                    'resetform': ResetForm(),
+                },
+                context_instance=RequestContext(request)
+            )
+        # otherwise tell em to scram
+        else:
+            return render_to_response(
+                'invite/index.html',
+                {
+                    'resetform': ResetForm(),
+                },
+                context_instance=RequestContext(request)
+            )
+            
 
 def amnesia(request):
     # iforgot form.
@@ -83,7 +104,7 @@ def amnesia(request):
             # send the email reset link
             i.send()
             i.save()
-            return HttpResponseRedirect('/accounts/amnesia/')
+            return HttpResponseRedirect('/accounts/reset/?email=%s' % form.cleaned_data['email'])
         else:
             return render_to_response(
                 'invite/amnesia.html',
