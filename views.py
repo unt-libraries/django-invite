@@ -36,7 +36,7 @@ def reset(request):
             if user is not None:
                 if user.is_active:
                     login(request, user)
-                    # Redirect to accounts page.
+                    # Redirect to main edit dashboard
                     return HttpResponseRedirect(settings.SIGNUP_REDIRECT_PATH)        
         else:
             return render_to_response(
@@ -85,7 +85,7 @@ def reset(request):
                 },
                 context_instance=RequestContext(request)
             )
-            
+
 
 def amnesia(request):
     # iforgot form.
@@ -215,7 +215,6 @@ def invite(request):
         InviteItemForm,
         formset=BaseFormSet
     )
-
     if request.method == 'POST':
         # Create a formset from the submitted data
         invite_item_formset = InviteItemFormSet(request.POST, request.FILES)
@@ -238,7 +237,7 @@ def invite(request):
                 # send the email invitation
                 i.send()
                 i.save()
-            return HttpResponseRedirect('/accounts/') # Redirect to a 'success' page
+            return HttpResponseRedirect('/accounts/')
     else:
         invite_item_formset = InviteItemFormSet()
     return render_to_response(
@@ -251,7 +250,6 @@ def invite(request):
     )
 
 
-@require_edit_login
 def about(request):
     return render(
         request,

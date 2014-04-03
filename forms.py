@@ -1,4 +1,4 @@
-from invite.models import * # Change as necessary
+from invite.models import InviteItem
 from django import forms
 from django.forms import ModelForm, Textarea, TextInput, SelectMultiple, CheckboxInput
 from django.contrib.auth import authenticate, login
@@ -11,9 +11,11 @@ def validate_username(value):
     if value in User.objects.all().values_list('username', flat=True):
         raise ValidationError('Username taken, choose another')
 
+
 def validate_user_email(value):
     if value not in User.objects.all().values_list('email', flat=True):
         raise ValidationError('Email doesnt belong to any user')
+
 
 class SignupForm(forms.Form):
     first_name = forms.CharField(
@@ -196,7 +198,7 @@ class LoginForm(forms.Form):
 
 class IForgotForm(forms.Form):
     email = forms.EmailField(
-        validators=[validate_user_email],
+        validators=[validate_user_email, validators.validate_email],
         widget=forms.TextInput(
             attrs={
                 'placeholder': 'Email',
@@ -204,13 +206,6 @@ class IForgotForm(forms.Form):
             }
         ),
     )
-
-    # def clean(self):
-    #     data = self.data
-    #     email = data.get("email")
-    #     if email not in User.objects.all().values_list('email', flat=True):
-    #         raise forms.ValidationError('no one has that email')
-    #     return self.cleaned_data
 
 
 class ResetForm(forms.Form):
