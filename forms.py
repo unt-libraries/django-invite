@@ -14,7 +14,7 @@ def validate_username(value):
 
 def validate_user_email(value):
     if value not in User.objects.all().values_list('email', flat=True):
-        raise ValidationError('Email doesnt belong to any user')
+        raise ValidationError('The email provided doesn\'t belong to any user')
 
 
 class SignupForm(forms.Form):

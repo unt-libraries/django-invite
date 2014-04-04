@@ -2,7 +2,7 @@
 {% block content %}
 <div class='centered'>
     <div class='offset5 pagination-centered span3 well'>
-        Enter your new password twice and click submit to reset your password.
+        Enter your new password <em>twice</em> and click submit to reset your password.
         <br>
         <br>
         You should receive a confirmation email afterwards.
@@ -17,9 +17,9 @@
             </div>
         {% endif %}
         <form action='/accounts/reset/?reset_code={{ reset_code }}' method="POST">{% csrf_token %}
-            {{ resetform.password }}
-            {{ resetform.password2 }}
-            <input type="submit" value="Submit" />
+            <div>{{ resetform.password }}</div>
+            <div>{{ resetform.password2 }}</div>
+            <div><input type="submit" value="Submit" /></div>
         </form>
     </div>
 </div>

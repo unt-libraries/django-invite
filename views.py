@@ -122,12 +122,8 @@ def amnesia(request):
 @csrf_protect
 def log_out_user(request):
     logout(request)
-    # Redirect to a success page.
-    return render_to_response(
-        'invite/base.html',
-        {'login_form': LoginForm()},
-        context_instance=RequestContext(request)
-    )
+    # redirect on logout to root
+    return HttpResponseRedirect(settings.SIGNUP_REDIRECT_PATH)        
 
 
 @csrf_protect
