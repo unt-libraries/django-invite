@@ -1,5 +1,5 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
-        "http://www.w3.org/TR/html4/strict.dtd">
+    "http://www.w3.org/TR/html4/strict.dtd">
 <html lang="en">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -12,60 +12,60 @@
     <script type="text/javascript" src="http://netdna.bootstrapcdn.com/twitter-bootstrap/latest/js/bootstrap.min.js"></script>
 
     <link
-            rel="stylesheet"
-            href="http://code.jquery.com/ui/1.9.2/themes/base/jquery-ui.css"
-            type="text/css"
-            media="all">
+    rel="stylesheet"
+    href="http://code.jquery.com/ui/1.9.2/themes/base/jquery-ui.css"
+    type="text/css"
+    media="all">
     <script src="http://code.jquery.com/ui/1.9.2/jquery-ui.js" type="text/javascript"></script>
 
     {% block head-extra %}{% endblock %}
 </head>
 <body>
-<div class="navbar navbar-inverse navbar-fixed navbar-fixed-top">
-    <div class="navbar-inner">
-        <div class="container-fluid" style="padding-left: 40px;">
-            <ul class="nav">
-                <li><a class="brand" href="/accounts/">Invite</a></li>
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                        Menu
-                        <i class="icon-white icon-chevron-down"></i>
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li class="nav-header">Invite</li>
-                        <li><a href="/accounts/">Accounts</a></li>
-                        <li><a href="/accounts/invite/">Invite</a></li>
-                    </ul>
-                </li>
-                <li><a href="/accounts/about/">About</a></li>
-                {% if user.is_authenticated %}
+    <div class="navbar navbar-inverse navbar-fixed navbar-fixed-top">
+        <div class="navbar-inner">
+            <div class="container-fluid" style="padding-left: 40px;">
+                <ul class="nav">
+                    <li><a class="brand" href="/accounts/">Invite</a></li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            Menu
+                            <i class="icon-white icon-chevron-down"></i>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li class="nav-header">Invite</li>
+                            <li><a href="/accounts/">Accounts</a></li>
+                            <li><a href="/accounts/invite/">Invite</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="/accounts/about/">About</a></li>
+                    {% if user.is_authenticated %}
                     <li><a href="/accounts/logout/"><i class="icon-white icon-road"></i> Log out</a></li>
-                {% else %}
+                    {% else %}
                     <li><a href="/accounts/login/"><i class="icon-white icon-key"></i> Log in</a></li>
-                {% endif %}
-                <li class="divider-vertical"></li>
-                {% if user.is_authenticated %}
-                <li class='pull-right'><a><small>Signed in as: <i class="icon-white icon-user"></i> {{ user }}</small></a></li>
-                {% endif %}
-            </ul>
+                    {% endif %}
+                    <li class="divider-vertical"></li>
+                    {% if user.is_authenticated %}
+                    <li class='pull-right'><a><small>Signed in as: <i class="icon-white icon-user"></i> {{ user }}</small></a></li>
+                    {% endif %}
+                </ul>
 
+            </div>
         </div>
     </div>
-</div>
-<div id="body">
-    {% block body %}
-    <div class="content_title">
-        {% block content_title %}{% endblock %}
-    </div>
-    <div class="content container-fluid">
-        {% if maintenance_message %}
-        <div class="alert alert-block alert-error">
-            <strong>{{ maintenance_message }}</strong>
+    <div id="body">
+        {% block body %}
+        <div class="content_title">
+            {% block content_title %}{% endblock %}
         </div>
-        {% endif %}
-        {% if user.is_authenticated or 'signup' in request.path or 'amnesia' in request.path or 'reset' in request.path %}
+        <div class="content container-fluid">
+            {% if maintenance_message %}
+            <div class="alert alert-block alert-error">
+                <strong>{{ maintenance_message }}</strong>
+            </div>
+            {% endif %}
+            {% if user.is_authenticated or 'signup' in request.path or 'amnesia' in request.path or 'reset' in request.path %}
             {% block content %}{% endblock %}
-        {% else %}
+            {% else %}
             <div class='pagination-centered well span2' style="float: none; margin-left: auto; margin-right: auto;">
                 <form action='/accounts/login/' method="post">{% csrf_token %}
                     {{ login_form.non_field_errors }}
@@ -83,9 +83,9 @@
                     <br><a href='/accounts/amnesia/'>I forgot my username or password.</a>
                 </form>
             </div>
-        {% endif %}
+            {% endif %}
+        </div>
+        {% endblock %}
     </div>
-    {% endblock %}
-</div>
 </body>
 </html>

@@ -1,56 +1,56 @@
 {% extends 'invite/base.html' %}
 {% block title %}Accounts{% endblock %}
 {% block content %}
-    <div class='span7 text-left well' style="float: none; margin-left: auto; margin-right: auto;">
-        {% if perms.invite.add_invitation %}
-            <a href="/accounts/invite/" class="btn btn-large btn-block btn-primary" type="button">Send an Invitation</a>
-        {% endif %}
-        {% if invites %}
-            <div>
-                <h3>Open Invitations:</h3>
-            </div>
-            <div>
-                <table class='table table-striped'>
-                {% for i in invites %}
-                    <tr>
-                    <td colspan='2'><i class="icon-user"></i> {{ i.first_name|title }} {{ i.last_name|title }} was <i class="icon-envelope"></i> emailed an invitation on <i class="icon-calendar"></i> {{ i.date_invited }}</td>
-                    <td></td>
-                    </tr>
-                    {% if user.is_superuser or perms.invite.add_invitation %}
-                        <tr>
-                        <td>
-                            <small>signup link: <a href="http://{{ request.META.HTTP_HOST }}/accounts/signup/?code={{ i.activation_code }}">http://{{ request.META.HTTP_HOST }}/accounts/signup/?code={{ i.activation_code }}</a></small>
-                        </td>
-                        <td>
-                            <form action='/accounts/resend/{{i.activation_code}}/'>{% csrf_token %}
-                                <input value='resend email' type='submit' class='btn btn-mini pull-right'>
-                            </form>
-                        </td>
-                        <td>
-                            <form action='/accounts/revoke/{{i.activation_code}}/'>{% csrf_token %}
-                                <input value='revoke invite' type='submit' class='btn btn-mini pull-right'>
-                            </form>
-                        </td>
-                        </tr>
-                    {% endif %}
-                {% endfor %}
-                </table>
-            </div>
-        {% endif %}
-        {% if revoked_user %}
-            <label class='label label-info'><em>Revoked invitation for {{ revoked_user }}</em></label>
-        {% endif %}
-        {% if resent_user %}
-            <label class='label label-info'><em>Resent invitation email for {{ resent_user }}</em></label>
-        {% endif %}
-        <hr>
-        <div>
-            <h3>Active Accounts:</h3>
-        </div>
-            {% for u in users reversed %}
-                <table class='table'>
-                <code><i class="icon-user"></i> {{ u }}</code> registered on {{ u.date_joined }}
-                </table>
-            {% endfor %}
+<div class='span7 text-left well' style="float: none; margin-left: auto; margin-right: auto;">
+    {% if perms.invite.add_invitation %}
+    <a href="/accounts/invite/" class="btn btn-large btn-block btn-primary" type="button">Send an Invitation</a>
+    {% endif %}
+    {% if invites %}
+    <div>
+        <h3>Open Invitations:</h3>
     </div>
+    <div>
+        <table class='table table-striped'>
+            {% for i in invites %}
+            <tr>
+                <td colspan='2'><i class="icon-user"></i> {{ i.first_name|title }} {{ i.last_name|title }} was <i class="icon-envelope"></i> emailed an invitation on <i class="icon-calendar"></i> {{ i.date_invited }}</td>
+                <td></td>
+            </tr>
+            {% if user.is_superuser or perms.invite.add_invitation %}
+            <tr>
+                <td>
+                    <small>signup link: <a href="http://{{ request.META.HTTP_HOST }}/accounts/signup/?code={{ i.activation_code }}">http://{{ request.META.HTTP_HOST }}/accounts/signup/?code={{ i.activation_code }}</a></small>
+                </td>
+                <td>
+                    <form action='/accounts/resend/{{i.activation_code}}/'>{% csrf_token %}
+                        <input value='resend email' type='submit' class='btn btn-mini pull-right'>
+                    </form>
+                </td>
+                <td>
+                    <form action='/accounts/revoke/{{i.activation_code}}/'>{% csrf_token %}
+                        <input value='revoke invite' type='submit' class='btn btn-mini pull-right'>
+                    </form>
+                </td>
+            </tr>
+            {% endif %}
+            {% endfor %}
+        </table>
+    </div>
+    {% endif %}
+    {% if revoked_user %}
+    <label class='label label-info'><em>Revoked invitation for {{ revoked_user }}</em></label>
+    {% endif %}
+    {% if resent_user %}
+    <label class='label label-info'><em>Resent invitation email for {{ resent_user }}</em></label>
+    {% endif %}
+    <hr>
+    <div>
+        <h3>Active Accounts:</h3>
+    </div>
+    {% for u in users reversed %}
+    <table class='table'>
+        <code><i class="icon-user"></i> {{ u }}</code> registered on <i class="icon-calendar"></i> {{ u.date_joined.year }}-{{ u.date_joined.month }}-{{ u.date_joined.day }}
+    </table>
+    {% endfor %}
+</div>
 {% endblock %}
