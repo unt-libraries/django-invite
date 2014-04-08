@@ -96,8 +96,14 @@ class SignupForm(forms.Form):
             raise forms.ValidationError('Passwords are not the same')
         return self.data['password']
 
+    def clean_email(self):
+        if self.data['email'] in User.objects.all().values_list('email', flat=True):
+            raise forms.ValidationError('Email exists on other user')
+        return self.data['email']
+
     def clean(self, *args, **kwargs):
         self.clean_password()
+        self.clean_email()
         return self.cleaned_data
 
 
@@ -163,6 +169,16 @@ class InviteItemForm(ModelForm):
             )
         }
 
+    def clean_email(self):
+        for k in range(0, eval(self.data['form-TOTAL_FORMS'])):
+            if self.data['form-%s-email' % k] in User.objects.all().values_list('email', flat=True):
+                raise forms.ValidationError('Email exists on other user')
+            return self.data['form-%s-email' % k]
+        
+    def clean(self, *args, **kwargs):
+        self.clean_email()
+        return self.cleaned_data
+
 
 class LoginForm(forms.Form):
     username = forms.CharField(
@@ -198,7 +214,7 @@ class LoginForm(forms.Form):
 
 class IForgotForm(forms.Form):
     email = forms.EmailField(
-        validators=[validate_user_email, validators.validate_email],
+        validators=[validators.validate_email],
         widget=forms.TextInput(
             attrs={
                 'placeholder': 'Email',
@@ -206,7 +222,15 @@ class IForgotForm(forms.Form):
             }
         ),
     )
+    
+    def clean_email(self):
+        if self.data['email'] not in User.objects.all().values_list('email', flat=True):
+            raise forms.ValidationError('Email doesnt belong to any user')
+        return self.data['email']
 
+    def clean(self, *args, **kwargs):
+        self.clean_email()
+        return self.cleaned_data
 
 class ResetForm(forms.Form):
     password = forms.CharField(

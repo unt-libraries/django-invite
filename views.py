@@ -300,7 +300,7 @@ def signup(request):
             if user is not None:
                 if user.is_active:
                     login(request, user)
-                    # Redirect to accounts page.
+                    # Redirect to edit system.
                     return HttpResponseRedirect(settings.SIGNUP_REDIRECT_PATH)
     else:
         # GET request, just show the form with some initial values
