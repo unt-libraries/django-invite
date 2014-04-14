@@ -1,4 +1,6 @@
 {% extends 'bootstrap.html' %}
+{% block visible-title %} Edit System{% endblock %}
+
 {% block content %}
 <div class='offset5 pagination-centered span3 well'>
     Forgotten your username or password?
@@ -9,7 +11,7 @@
         <button type="button" class="close" data-dismiss="alert">×</button>
         {% for field in iforgotform %}
         {% if field.errors %}
-        <li>{{ field.label }}: {{ field.errors|striptags }}</li>
+        <li>{{ field.errors.0|striptags }}</li>
         {% endif %}
         {% endfor %}
     </div>
