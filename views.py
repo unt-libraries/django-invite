@@ -209,19 +209,20 @@ def revoke(request, code):
 def invite(request):
     InviteItemFormSet = formset_factory(
         InviteItemForm,
-        formset=BaseFormSet
+        formset=BaseFormSet,
+        extra=2
     )
     if request.method == 'POST':
         # Create a formset from the submitted data
         invite_item_formset = InviteItemFormSet(request.POST, request.FILES)
         if invite_item_formset.is_valid():
-            for form in invite_item_formset.forms:
+            for index, form in enumerate(invite_item_formset.forms):
                 # make invite for each form
                 i = Invitation.objects.create(
                     first_name=form.cleaned_data['first_name'],
                     last_name=form.cleaned_data['last_name'],
                     username=form.cleaned_data['username'],
-                    email=form.cleaned_data['email'],
+                    email=request.POST.get('form-%s-email' % index),
                     is_super_user=form.cleaned_data['is_super_user'],
                 )
                 i.custom_msg = invite_item_formset.forms[0].cleaned_data['greeting']

@@ -2,7 +2,7 @@ from invite.models import InviteItem
 from django import forms
 from django.forms import ModelForm, Textarea, TextInput, SelectMultiple, CheckboxInput
 from django.contrib.auth import authenticate, login
-from django.contrib.auth.models import User, Permission, Group
+from django.contrib.auth.models import User, Permission
 from django.core import validators
 from django.core.exceptions import ValidationError
 

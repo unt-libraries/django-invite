@@ -118,6 +118,44 @@ class TestViews(unittest.TestCase):
             last_name='test',
         )
 
+    def test_multiple_email_send(self):
+        '''
+        make sure that the multiple email invitation sends to all emails.
+        '''
+        my_admin = User.objects.create_superuser('test', 'myemail@test.com', 'test')
+        self.c.login(username='test', password='test')
+        response = self.c.post(
+            '/accounts/invite/',
+            {
+                u'form-INITIAL_FORMS': [u'0'],
+                u'form-MAX_NUM_FORMS': [u''],
+                u'form-TOTAL_FORMS': [u'3'],
+                u'form-1-username': [u'two'],
+                u'form-1-email': [u'two@two.two'],
+                u'form-1-first_name': [u'ieie'],
+                u'form-1-last_name': [u'ueueu'],
+                u'form-2-email': [u'thr@thr.the'],
+                u'form-2-first_name': [u'oiawbeg'],
+                u'form-2-username': [u'three'],
+                u'form-2-last_name': [u'oaweinf'],
+                u'form-0-email': [u'asdf@one.one'],
+                u'form-0-username': [u'one'],
+                u'form-0-last_name': [u'fdsa'],
+                u'form-0-first_name': [u'asdf'],
+                u'form-0-greeting': [u''],
+            },
+        )
+        invite0 = Invitation.objects.get(email='asdf@one.one')
+        invite1 = Invitation.objects.get(email='two@two.two')
+        invite2 = Invitation.objects.get(email='thr@thr.the')
+        # assert the distint emails are attached to separate invites
+        self.assertEqual(invite0.email, 'asdf@one.one')
+        self.assertEqual(invite0.username, 'one')
+        self.assertEqual(invite1.email, 'two@two.two')
+        self.assertEqual(invite1.username, 'two')
+        self.assertEqual(invite2.email, 'thr@thr.the')
+        self.assertEqual(invite2.username, 'three')
+
     def test_amnesia_email_submit(self):
         response = self.c.post('/accounts/amnesia/', {'email': 'avowin@test.test'})
         self.assertIn('Email doesnt belong to any user', response.content)
