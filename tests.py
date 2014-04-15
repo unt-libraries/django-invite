@@ -8,6 +8,8 @@ from django.test.client import Client
 from django.contrib.auth.models import User
 
 import unittest
+from unittest import skipIf
+import platform
 import time
 import requests
 try: import simplejson as json
@@ -118,6 +120,11 @@ class TestViews(unittest.TestCase):
             last_name='test',
         )
 
+    def tearDown(self):
+        User.objects.all().delete()
+        PasswordResetInvitation.objects.all().delete()
+        Invitation.objects.all().delete()
+
     def test_multiple_email_send(self):
         '''
         make sure that the multiple email invitation sends to all emails.
@@ -227,7 +234,7 @@ class FunctionalTestCase(unittest.TestCase):
         self.browser.quit()
         self.browser2.quit()
 
-
+@skipIf(True, platform.node() in ['LibDigiVmAubrey', 'libdigital3test'])
 class TestFunctional(FunctionalTestCase):
     def test_one_basic_invite(self):
         # joey opens the browser and goes to the  url
@@ -323,7 +330,6 @@ class TestFunctional(FunctionalTestCase):
         self.browser.find_element_by_xpath('//*[@id="body"]/div[2]/div/div/div/form/input[2]').click()
         time.sleep(5)
         email = requests.get('https://api.mailinator.com/api/inbox?token=6346fe2574a246eab17f7e1ab75ce993')
-        print email
 
 if __name__ == '__main__':
     unittest.main()
