@@ -210,19 +210,18 @@ def invite(request):
     InviteItemFormSet = formset_factory(
         InviteItemForm,
         formset=BaseFormSet,
-        extra=2
     )
     if request.method == 'POST':
         # Create a formset from the submitted data
         invite_item_formset = InviteItemFormSet(request.POST, request.FILES)
         if invite_item_formset.is_valid():
-            for index, form in enumerate(invite_item_formset.forms):
+            for form in invite_item_formset.forms:
                 # make invite for each form
                 i = Invitation.objects.create(
                     first_name=form.cleaned_data['first_name'],
                     last_name=form.cleaned_data['last_name'],
                     username=form.cleaned_data['username'],
-                    email=request.POST.get('form-%s-email' % index),
+                    email=form.cleaned_data['email'],
                     is_super_user=form.cleaned_data['is_super_user'],
                 )
                 i.custom_msg = invite_item_formset.forms[0].cleaned_data['greeting']
@@ -230,7 +229,12 @@ def invite(request):
                 for permission in invite_item_formset.forms[0].cleaned_data['permissions']:
                     i.permissions.add(permission)
                 for group in invite_item_formset.forms[0].cleaned_data['groups']:
-                    i.groups.add(group)
+                    # because m2m is not ordered, we need to collect the sorted groups here in the same way we do in the form
+                    ordered_groups = enumerate(Group.objects.all().values_list().order_by('name'), start=1)
+                    # now pass through the sorted groups and match by order to object ID
+                    for group_index, g in ordered_groups:
+                        if group_index == int(group):
+                            i.groups.add(g[0])
                 # send the email invitation
                 i.send()
                 i.save()

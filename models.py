@@ -22,7 +22,7 @@ class InviteItem(models.Model):
     is_super_user = models.BooleanField()
 
     def __unicode__(self):
-        return self.name + " (" + str(self.list) + ")"
+        return self.first_name + ' ' + self.last_name
 
 
 class Invitation(models.Model):

@@ -2,7 +2,7 @@ from invite.models import InviteItem
 from django import forms
 from django.forms import ModelForm, Textarea, TextInput, SelectMultiple, CheckboxInput
 from django.contrib.auth import authenticate, login
-from django.contrib.auth.models import User, Permission
+from django.contrib.auth.models import User, Permission, Group
 from django.core import validators
 from django.core.exceptions import ValidationError
 
@@ -15,6 +15,10 @@ def validate_username(value):
 def validate_user_email(value):
     if value not in User.objects.all().values_list('email', flat=True):
         raise ValidationError('The email provided doesn\'t belong to any user')
+
+def validate_user_email_exists(value):
+    if value in User.objects.all().values_list('email', flat=True):
+        raise ValidationError('The email provided: \'%s\' already belongs to a user' % value)
 
 
 class SignupForm(forms.Form):
@@ -108,11 +112,15 @@ class SignupForm(forms.Form):
 
 
 class InviteItemForm(ModelForm):
+    # construct group choices list because many to many fields do not have an order
+    GROUPS = [(n,x) for n, x in enumerate(Group.objects.all().values_list('name', flat=True), start=1)]
+
     username = forms.CharField(
         validators=[validate_username],
         max_length=30,
         widget=forms.TextInput(
             attrs={
+                'onkeydown': 'if (event.keyCode == 13) { this.form.submit(); return false; }',
                 'placeholder': 'Username',
                 'required': 'true',
                 'class': 'input-medium',
@@ -120,14 +128,24 @@ class InviteItemForm(ModelForm):
         ),
     )
     email = forms.EmailField(
-        validators=[validators.validate_email],
+        validators=[validators.validate_email, validate_user_email_exists],
         widget=forms.TextInput(
             attrs={
+                'onkeydown': 'if (event.keyCode == 13) { this.form.submit(); return false; }',
                 'placeholder': 'Email',
                 'class': 'input-medium',
                 'required': 'true',
             }
         ),
+    )
+    groups = forms.MultipleChoiceField(
+        required=False,
+        choices=GROUPS,
+        widget=forms.SelectMultiple(
+            attrs={
+                'style': 'height: 150px; width: 300px;',
+            }
+        )
     )
     class Meta:
         model = InviteItem
@@ -140,6 +158,7 @@ class InviteItemForm(ModelForm):
             ),
             'first_name': TextInput(
                 attrs={
+                    'onkeydown': 'if (event.keyCode == 13) { this.form.submit(); return false; }',
                     'placeholder': 'First Name',
                     'class': 'input-medium',
                     'required': 'true',
@@ -147,6 +166,7 @@ class InviteItemForm(ModelForm):
             ),
             'last_name': TextInput(
                 attrs={
+                    'onkeydown': 'if (event.keyCode == 13) { this.form.submit(); return false; }',
                     'placeholder': 'Last Name',
                     'class': 'input-medium',
                     'required': 'true',
@@ -157,27 +177,12 @@ class InviteItemForm(ModelForm):
                     'style': 'height: 150px; width: 300px;',
                 },
             ),
-            'groups': SelectMultiple(
-                attrs={
-                    'style': 'height: 80px; width: 300px;',
-                }
-            ),
             'is_super_user': CheckboxInput(
                 attrs={
                     'class': 'span1',
                 }
             )
         }
-
-    def clean_email(self):
-        for k in range(0, eval(self.data['form-TOTAL_FORMS'])):
-            if self.data['form-%s-email' % k] in User.objects.all().values_list('email', flat=True):
-                raise forms.ValidationError('Email exists on other user')
-            return self.data['form-%s-email' % k]
-        
-    def clean(self, *args, **kwargs):
-        self.clean_email()
-        return self.cleaned_data
 
 
 class LoginForm(forms.Form):
