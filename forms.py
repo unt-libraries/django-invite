@@ -113,7 +113,6 @@ class SignupForm(forms.Form):
 
 class InviteItemForm(ModelForm):
     # construct group choices list because many to many fields do not have an order
-    GROUPS = [(n,x) for n, x in enumerate(Group.objects.all().values_list('name', flat=True), start=1)]
 
     username = forms.CharField(
         validators=[validate_username],
@@ -137,15 +136,6 @@ class InviteItemForm(ModelForm):
                 'required': 'true',
             }
         ),
-    )
-    groups = forms.MultipleChoiceField(
-        required=False,
-        choices=GROUPS,
-        widget=forms.SelectMultiple(
-            attrs={
-                'style': 'height: 150px; width: 300px;',
-            }
-        )
     )
     class Meta:
         model = InviteItem
@@ -173,6 +163,11 @@ class InviteItemForm(ModelForm):
                 }
             ),
             'permissions': SelectMultiple(
+                attrs={
+                    'style': 'height: 150px; width: 300px;',
+                },
+            ),
+            'groups': SelectMultiple(
                 attrs={
                     'style': 'height: 150px; width: 300px;',
                 },

@@ -119,23 +119,11 @@ class TestViews(unittest.TestCase):
             first_name='test',
             last_name='test',
         )
-        prod_groups = [
-            'UNT Archives',
-            'Boyce',
-            'Palestine',
-            'texgen',
-            'unt rare books',
-            'archives civil war',
-            'unt college of visual arts',
-        ]
-        for g in prod_groups:
-            Group.objects.create(name=g)
 
     def tearDown(self):
         User.objects.all().delete()
         PasswordResetInvitation.objects.all().delete()
         Invitation.objects.all().delete()
-        Group.objects.all().delete()
 
     def test_multiple_email(self):
         '''
@@ -180,6 +168,18 @@ class TestViews(unittest.TestCase):
         since we have to do some hacky group ordering chop around stuff,
         let's make sure that the invitation retains the right group.
         '''
+        prod_groups = [
+            'UNT Archives',
+            'Boyce',
+            'Palestine',
+            'texgen',
+            'unt rare books',
+            'archives civil war',
+            'unt college of visual arts',
+        ]
+        for g in prod_groups:
+            Group.objects.create(name=g)
+
         my_admin = User.objects.create_superuser('test', 'myemail@test.com', 'test')
         self.c.login(username='test', password='test')
         response = self.c.post(
@@ -189,7 +189,7 @@ class TestViews(unittest.TestCase):
                 u'form-0-email': [u'joeyliechty@gmail.com'],
                 u'form-TOTAL_FORMS': [u'1'],
                 # archives civil war, boyce ditto, texas general land office
-                u'form-0-groups': [u'1', u'2', u'4'],
+                u'form-0-groups': [u'2', u'4', u'1'],
                 u'form-0-username': [u'jejfi'],
                 u'form-INITIAL_FORMS': [u'0'],
                 u'form-0-last_name': [u'a'],
@@ -201,7 +201,7 @@ class TestViews(unittest.TestCase):
         # assert the invitation has the correct groups
         self.assertEqual(invite0.groups.all()[0].name, 'Boyce')
         self.assertEqual(invite0.groups.all()[1].name, 'texgen')
-        self.assertEqual(invite0.groups.all()[2].name, 'archives civil war')
+        self.assertEqual(invite0.groups.all()[2].name, 'UNT Archives')
 
     def test_amnesia_email_submit(self):
         response = self.c.post('/accounts/amnesia/', {'email': 'avowin@test.test'})
