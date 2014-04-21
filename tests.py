@@ -42,7 +42,7 @@ class TestOperations(unittest.TestCase):
         message = render_to_string(
             'invite/invitation_email.txt',
             {
-                'domain': Site.objects.get_current().domain,
+                'domain': 'example.com',
                 'service_name': settings.SERVICE_NAME,
                 'activation_code': i.activation_code,
                 'custom_msg': i.custom_msg,
@@ -83,7 +83,7 @@ class TestOperations(unittest.TestCase):
             {
                 'first_name': i.first_name,
                 'username': i.username,
-                'domain': Site.objects.get_current().domain,
+                'domain': 'example.com',
                 'reset_code': i.activation_code,
             }
         )
