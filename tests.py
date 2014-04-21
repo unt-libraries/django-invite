@@ -1,6 +1,3 @@
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support.ui import Select
-from selenium import webdriver
 from django.conf import settings
 from django.contrib.sites.models import Site
 from django.template.loader import render_to_string
