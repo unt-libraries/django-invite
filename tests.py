@@ -11,10 +11,10 @@ import time
 import requests
 try: import simplejson as json
 except ImportError: import json
-import settings
 import mock
 from .models import Invitation, PasswordResetInvitation
 
+settings.SITE_ID = 1
 
 class TestOperations(unittest.TestCase):
 
@@ -39,6 +39,7 @@ class TestOperations(unittest.TestCase):
             first_name='test',
             last_name='test',
         )
+
         message = render_to_string(
             'invite/invitation_email.txt',
             {
