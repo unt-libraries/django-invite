@@ -1,9 +1,10 @@
-{% extends 'bootstrap.html' %}
+{% extends 'base.html' %}
 {% block visible-title %} Edit System{% endblock %}
 
 {% block content %}
-<div class='centered'>
-    <div class='offset5 pagination-centered span3 well'>
+<div class="container theme-showcase" role="main">
+
+    <div class='jumbotron'>
         Enter your new password <em>twice</em> and click submit to reset your password.
         <br>
         <br>
@@ -19,8 +20,9 @@
             </div>
         {% endif %}
         <form action='/accounts/reset/?reset_code={{ reset_code }}' method="POST">{% csrf_token %}
-            <div>{{ resetform.password }}</div>
-            <div>{{ resetform.password2 }}</div>
+            {{ resetform.password }}
+            <br>
+            {{ resetform.password2 }}
             <div><input type="submit" value="Submit" /></div>
         </form>
     </div>

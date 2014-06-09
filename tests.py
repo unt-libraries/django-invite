@@ -5,8 +5,6 @@ from django.test.client import Client
 from django.contrib.auth.models import User, Group
 
 import unittest
-from unittest import skipIf
-import platform
 import time
 import requests
 try: import simplejson as json
