@@ -93,7 +93,7 @@ def amnesia(request):
         form = IForgotForm(request.POST)
         if form.is_valid():
             # determine user from email address.
-            user = User.objects.get(email=form.cleaned_data['email'])
+            user = User.objects.get(email__iexact=form.cleaned_data['email'])
             # make password reset invitation from form
             i = PasswordResetInvitation.objects.create(
                 first_name=user.first_name,

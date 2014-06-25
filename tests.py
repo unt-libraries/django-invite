@@ -201,7 +201,11 @@ class TestViews(unittest.TestCase):
 
     def test_amnesia_email_submit(self):
         response = self.c.post('/accounts/amnesia/', {'email': 'avowin@test.test'})
-        self.assertIn('Email doesnt belong to any user', response.content)
+        self.assertIn('The email provided', response.content)
+    
+    def test_amnesia_email_submit_case_sensitive(self):
+        response = self.c.post('/accounts/amnesia/', {'email': 'TEST@TEST.TEST'}, follow=True)
+        self.assertIn('An email was sent to TEST@TEST.TEST', response.content)
 
     def test_signup_submit_same_email(self):
         response = self.c.post(

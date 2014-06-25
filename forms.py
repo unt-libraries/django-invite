@@ -13,7 +13,9 @@ def validate_username(value):
 
 
 def validate_user_email(value):
-    if value not in User.objects.all().values_list('email', flat=True):
+    insensitive_emails = [e.lower() for e in User.objects.all().values_list('email', flat=True)]
+    assert False, insensitive_emails
+    if value.lower() not in insensitive_emails:
         raise ValidationError('The email provided doesn\'t belong to any user')
 
 def validate_user_email_exists(value):
@@ -224,8 +226,9 @@ class IForgotForm(forms.Form):
     )
     
     def clean_email(self):
-        if self.data['email'] not in User.objects.all().values_list('email', flat=True):
-            raise forms.ValidationError('Email doesnt belong to any user')
+        insensitive_emails = [e.lower() for e in User.objects.all().values_list('email', flat=True)]
+        if self.data['email'].lower() not in insensitive_emails:
+            raise ValidationError('The email provided doesn\'t belong to any user')
         return self.data['email']
 
     def clean(self, *args, **kwargs):
