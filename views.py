@@ -37,7 +37,7 @@ def reset(request):
                 if user.is_active:
                     login(request, user)
                     # Redirect to main edit dashboard
-                    return HttpResponseRedirect(settings.SIGNUP_REDIRECT_PATH)        
+                    return HttpResponseRedirect(settings.SIGNUP_REDIRECT_PATH)
         else:
             return render_to_response(
                 'invite/reset.html',
@@ -123,7 +123,7 @@ def amnesia(request):
 def log_out_user(request):
     logout(request)
     # redirect on logout to root
-    return HttpResponseRedirect(settings.SIGNUP_REDIRECT_PATH)        
+    return HttpResponseRedirect(settings.SIGNUP_REDIRECT_PATH)
 
 
 @csrf_protect
@@ -158,7 +158,7 @@ def index(request):
         {
             'login_form': LoginForm(),
             'invites': Invitation.objects.all().order_by('-date_invited'),
-            'users': User.objects.all(),
+            'users': User.objects.all().order_by('date_joined'),
         },
         context_instance=RequestContext(request)
     )

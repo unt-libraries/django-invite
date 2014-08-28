@@ -7,7 +7,6 @@ Invite Users
 <script type="text/javascript">
 $(document).ready(function() {
     // Code adapted from http://djangosnippets.org/snippets/1389/
-
     function updateElementIndex(el, prefix, ndx) {
         var id_regex = new RegExp('(' + prefix + '-\\d+-)');
         var replacement = prefix + '-' + ndx + '-';
@@ -44,7 +43,6 @@ $(document).ready(function() {
         return false;
     }
 
-
     function addForm(btn, prefix) {
         var formCount = parseInt($('#id_' + prefix + '-TOTAL_FORMS').val());
 
@@ -76,6 +74,18 @@ $(document).ready(function() {
         return false;
     }
 
+    $("#invite").on('submit',function(e){
+        var $form = $(this);
+        if ($form.data('submitted') === true) {
+            // Previously submitted - don't submit again
+            e.preventDefault();
+        } else {
+            // Mark it so that the next submit can be ignored
+            $("#invite-button").removeClass("btn-primary").addClass("btn-inverse").addClass("disabled");
+            $form.data('submitted', true);
+        }
+    });
+
     // Register the click event handlers
     $("#add").click(function() {
         return addForm(this, 'form');
@@ -93,7 +103,7 @@ $(document).ready(function() {
 <h3>
     Whom would you like to invite, {{ request.user|title }}?
 </h3>
-<form class="navbar-form" method="POST">{% csrf_token %}
+<form id='invite' class="navbar-form" method="POST">{% csrf_token %}
     {{ invite_item_formset.management_form }}
     <div class='well well-small'>
         {% for form in invite_item_formset %}
@@ -159,7 +169,7 @@ $(document).ready(function() {
 
             </div>
             <div class="span6" style='text-align: left;'>
-                <input class="btn btn-primary btn-large" type="submit" value="Send email invitation(s)" style='width: 300px'/>
+                <input name="invite-button" id="invite-button" class="btn btn-primary btn-large" type="submit" value="Send email invitation(s)" style='width: 300px'/>
             </div>
         </div>
     </div>
