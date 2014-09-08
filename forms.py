@@ -219,12 +219,13 @@ class IForgotForm(forms.Form):
         validators=[validators.validate_email],
         widget=forms.TextInput(
             attrs={
+                'class': 'form-control',
                 'placeholder': 'Email',
                 'required': 'true',
             }
         ),
     )
-    
+
     def clean_email(self):
         insensitive_emails = [e.lower() for e in User.objects.all().values_list('email', flat=True)]
         if self.data['email'].lower() not in insensitive_emails:

@@ -5,9 +5,7 @@
 <div class="container theme-showcase" role="main">
 
     <div class='jumbotron'>
-        Forgotten your username or password?
-        <br>No sweat.<br>
-        Enter your e-mail address below, and we'll send you an e-mail with your username and a link allowing you to reset your password.<hr>
+        Enter your e-mail address. You'll get an email with your username and password reset link.<hr>
         {% if iforgotform.errors %}
         <div class="alert alert-error">
             <button type="button" class="close" data-dismiss="alert">×</button>
@@ -19,8 +17,13 @@
         </div>
         {% endif %}
         <form method="POST">{% csrf_token %}
-            {{ iforgotform.email }}
-            <input class="btn btn-info" type="submit" value="I forgot" />
+            <div class="input-group">
+                <span class="input-group-addon"><i class="fa fa-envelope fa-fw"></i></span>
+                {{ iforgotform.email }}
+                <span class="input-group-btn">
+                    <input class="btn btn-info" type="submit" value='I forgot!'/>
+                </span>
+            </div><!-- /input-group -->
         </form>
         <hr>
         Nevermind, <a href='/'>I remembered it</a> .
