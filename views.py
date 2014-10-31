@@ -9,7 +9,7 @@ from django.contrib.auth import logout
 from django.contrib.auth.models import User, Permission, Group
 from django.views.decorators.csrf import csrf_protect
 
-import settings
+from django.conf import settings
 from .forms import SignupForm, InviteItemForm, LoginForm, IForgotForm, ResetForm
 from .models import Invitation, PasswordResetInvitation
 from edit_auth.views import require_edit_login
