@@ -6,6 +6,6 @@ Having trouble remembering your password? Don't fret, we can reset it for you.
 Your username is: {{ username }}
 
 Your password can be reset at this unique page. Do not share this URL with anyone.
-http://{{ domain }}/accounts/reset/?reset_code={{ reset_code }}
+http://{{ domain }}{% url 'invite:reset' %}?reset_code={{ reset_code }}
 
 If you didn't ask for your password to be reset, it is likely that someone made an error when they entered their email address. If that's the case, you can disregard this email.
