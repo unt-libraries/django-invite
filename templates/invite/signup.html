@@ -3,7 +3,7 @@
 
 {% block content %}
     <div class='span6 well' style="float: none; margin-left: auto; margin-right: auto;">
-        <form action="{% url 'invite:accout_signup' %}?code={{ activation_code }}" method="POST">{% csrf_token %}
+        <form action="{% url 'invite:account_signup' %}?code={{ activation_code }}" method="POST">{% csrf_token %}
             <legend><i class="icon-thumbs-up"></i> Welcome to the {{ service_name }}, {{ form.first_name.value|title }}!</legend>
             {% if form.errors %}
                 <div class="alert alert-error">
