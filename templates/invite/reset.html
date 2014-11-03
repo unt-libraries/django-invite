@@ -19,7 +19,7 @@
                 {% endfor %}
             </div>
         {% endif %}
-        <form action='/accounts/reset/?reset_code={{ reset_code }}' method="POST">{% csrf_token %}
+        <form action="{% url 'invite_reset' %}?reset_code={{ reset_code }}" method="POST">{% csrf_token %}
             {{ resetform.password }}
             <br>
             {{ resetform.password2 }}
