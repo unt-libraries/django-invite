@@ -1,5 +1,6 @@
 from django.shortcuts import render, render_to_response
 from django.core.context_processors import csrf
+from django.core.urlresolvers import reverse
 from django.template import RequestContext
 from django.forms.formsets import formset_factory, BaseFormSet
 from django.http import HttpResponse, HttpResponseRedirect
@@ -139,7 +140,7 @@ def log_in_user(request):
                 if user.is_active:
                     login(request, user)
                     # Redirect to next page.
-                    return HttpResponseRedirect('/accounts/')
+                    return HttpResponseRedirect(reverse('index'))
     else:
         form = LoginForm()
     return render(
