@@ -12,7 +12,8 @@ from django.views.decorators.csrf import csrf_protect
 from django.conf import settings
 from .forms import SignupForm, InviteItemForm, LoginForm, IForgotForm, ResetForm
 from .models import Invitation, PasswordResetInvitation
-from edit_auth.views import require_edit_login
+from . import settings as app_settings
+# from edit_auth.views import require_edit_login
 
 
 def reset(request):
@@ -123,7 +124,7 @@ def amnesia(request):
 def log_out_user(request):
     logout(request)
     # redirect on logout to root
-    return HttpResponseRedirect(settings.SIGNUP_REDIRECT_PATH)
+    return HttpResponseRedirect(app_settings.INVITE_LOGOUT_REDIRECT_URL)
 
 
 @csrf_protect
@@ -151,7 +152,7 @@ def log_in_user(request):
     )
 
 
-@require_edit_login
+# @require_edit_login
 def index(request):
     return render_to_response(
         'invite/index.html',
@@ -164,7 +165,7 @@ def index(request):
     )
 
 
-@require_edit_login
+# @require_edit_login
 def resend(request, code):
     # if we can't get an object with the code provided, deny them
     try:
@@ -189,7 +190,7 @@ def resend(request, code):
     )
 
 
-@require_edit_login
+# @require_edit_login
 def revoke(request, code):
     # if we can't get an object with the code provided, deny them
     try:
@@ -205,7 +206,7 @@ def revoke(request, code):
     return index(request)
 
 
-@require_edit_login
+# @require_edit_login
 def invite(request):
     InviteItemFormSet = formset_factory(
         InviteItemForm,
