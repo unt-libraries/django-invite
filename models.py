@@ -69,18 +69,18 @@ class Invitation(models.Model):
     def send(self):
         """Sends an invitation email to ``self.email``."""
 
-        subject = 'You have been invited to join the %s' % (settings.SERVICE_NAME)
+        subject = 'You have been invited to join the %s' % (app_settings.INVITE_SERVICE_NAME)
         message = render_to_string(
             'invite/invitation_email.txt',
             {
                 'domain': Site.objects.get_current().domain,
-                'service_name': settings.SERVICE_NAME,
+                'service_name': app_settings.INVITE_SERVICE_NAME,
                 'activation_code': self.activation_code,
                 'custom_msg': self.custom_msg,
             }
         )
 
-        send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [self.email])
+        send_mail(subject, message, app_settings.INVITE_DEFAULT_FROM_EMAIL, [self.email])
 
 
 class PasswordResetInvitation(Invitation):
@@ -88,7 +88,7 @@ class PasswordResetInvitation(Invitation):
     def send(self):
         """Sends an invitation email to ``self.email``."""
 
-        subject = 'Password Reset: %s' % (settings.SERVICE_NAME)
+        subject = 'Password Reset: %s' % (app_settings.INVITE_SERVICE_NAME)
         message = render_to_string(
             'invite/reset_email.txt',
             {
@@ -99,12 +99,12 @@ class PasswordResetInvitation(Invitation):
             }
         )
 
-        send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [self.email])
+        send_mail(subject, message, app_settings.INVITE_DEFAULT_FROM_EMAIL, [self.email])
 
     def send_confirm(self):
         """Sends an confirmation email to ``self.email``."""
 
-        subject = 'Password Changed: %s' % (settings.SERVICE_NAME)
+        subject = 'Password Changed: %s' % (app_settings.INVITE_SERVICE_NAME)
         message = render_to_string(
             'invite/reset_confirm_email.txt',
             {
@@ -115,4 +115,4 @@ class PasswordResetInvitation(Invitation):
             }
         )
 
-        send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [self.email])
+        send_mail(subject, message, app_settings.INVITE_DEFAULT_FROM_EMAIL, [self.email])
