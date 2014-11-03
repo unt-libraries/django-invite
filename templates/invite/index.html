@@ -19,7 +19,7 @@
             {% if user.is_superuser or perms.invite.add_invitation %}
             <tr>
                 <td>
-                    <small>signup link: <a href="http://{{ request.META.HTTP_HOST }}/accounts/signup/?code={{ i.activation_code }}">http://{{ request.META.HTTP_HOST }}/accounts/signup/?code={{ i.activation_code }}</a></small>
+                    <small>signup link: <a href="http://{{ request.get_host }}{% url 'invite:account_signup' %}?code={{ i.activation_code }}">http://{{ request.get_host }}{% url 'invite:account_signup' %}?code={{ i.activation_code }}</a></small>
                 </td>
                 <td>
                     <form action="{% url 'invite:resend' i.activation_code %}">{% csrf_token %}
