@@ -25,7 +25,7 @@
         <div class="navbar-inner">
             <div class="container-fluid" style="padding-left: 40px;">
                 <ul class="nav">
-                    <li><a class="brand" href="/accounts/">Invite</a></li>
+                    <li><a class="brand" href="{% url 'invite_index' %}">Invite</a></li>
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                             Menu
@@ -33,15 +33,15 @@
                         </a>
                         <ul class="dropdown-menu">
                             <li class="nav-header">Invite</li>
-                            <li><a href="/accounts/">Accounts</a></li>
-                            <li><a href="/accounts/invite/">Invite</a></li>
+                            <li><a href="{% url 'invite_index' %}">Accounts</a></li>
+                            <li><a href="{% url 'invite_invite' %}">Invite</a></li>
                         </ul>
                     </li>
-                    <li><a href="/accounts/about/">About</a></li>
+                    <li><a href="{% url 'invite_about' %}">About</a></li>
                     {% if user.is_authenticated %}
-                    <li><a href="/accounts/logout/"><i class="icon-white icon-road"></i> Log out</a></li>
+                    <li><a href="{% url 'invite_edit_logout' %}"><i class="icon-white icon-road"></i> Log out</a></li>
                     {% else %}
-                    <li><a href="/accounts/login/"><i class="icon-white icon-key"></i> Log in</a></li>
+                    <li><a href="{% url 'invite_login' %}"><i class="icon-white icon-key"></i> Log in</a></li>
                     {% endif %}
                     <li class="divider-vertical"></li>
                     {% if user.is_authenticated %}
@@ -67,7 +67,7 @@
             {% block content %}{% endblock %}
             {% else %}
             <div class='pagination-centered well span2' style="float: none; margin-left: auto; margin-right: auto;">
-                <form action='/accounts/login/' method="post">{% csrf_token %}
+                <form action="{% url 'invite_login' %}" method="post">{% csrf_token %}
                     {{ login_form.non_field_errors }}
                     {{ login_form.username.errors }}
                     <div class="input-prepend">
@@ -80,7 +80,7 @@
                         {{ login_form.password }}
                     </div>
                     <input type='submit' value='Login' class="btn btn-block btn-primary" type="button">
-                    <br><a href='/accounts/amnesia/'>I forgot my username or password.</a>
+                    <br><a href="{% url 'invite_amnesia' %}">I forgot my username or password.</a>
                 </form>
             </div>
             {% endif %}
