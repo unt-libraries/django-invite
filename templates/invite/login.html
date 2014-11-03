@@ -8,10 +8,10 @@
         <div>
     {% else %}
         <div class='span3 well'>
-            <form action="{% url 'invite_login' %}" method="post">{% csrf_token %}
+            <form action="{% url 'invite:login' %}" method="post">{% csrf_token %}
                 {{ form.as_p }}
                 <input type="submit" value="Submit" />
-                <a href="{% url 'invite_amnesia' %}">I forgot</a>
+                <a href="{% url 'invite:amnesia' %}">I forgot</a>
             </form>
         </div>
     {% endif %}

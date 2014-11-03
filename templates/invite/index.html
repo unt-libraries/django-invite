@@ -3,7 +3,7 @@
 {% block content %}
 <div class='span7 text-left well' style="float: none; margin-left: auto; margin-right: auto;">
     {% if perms.invite.add_invitation %}
-    <a href="{% url 'invite_invite' %}" class="btn btn-large btn-block btn-primary" type="button">Send an Invitation</a>
+    <a href="{% url 'invite:invite' %}" class="btn btn-large btn-block btn-primary" type="button">Send an Invitation</a>
     {% endif %}
     {% if invites %}
     <div>
@@ -22,12 +22,12 @@
                     <small>signup link: <a href="http://{{ request.META.HTTP_HOST }}/accounts/signup/?code={{ i.activation_code }}">http://{{ request.META.HTTP_HOST }}/accounts/signup/?code={{ i.activation_code }}</a></small>
                 </td>
                 <td>
-                    <form action="{% url 'invite_resend' i.activation_code %}">{% csrf_token %}
+                    <form action="{% url 'invite:resend' i.activation_code %}">{% csrf_token %}
                         <input value='resend email' type='submit' class='btn btn-mini pull-right'>
                     </form>
                 </td>
                 <td>
-                    <form action="{% url 'invite_revoke' i.activation_code %}">{% csrf_token %}
+                    <form action="{% url 'invite:revoke' i.activation_code %}">{% csrf_token %}
                         <input value='revoke invite' type='submit' class='btn btn-mini pull-right'>
                     </form>
                 </td>
