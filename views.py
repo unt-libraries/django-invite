@@ -39,7 +39,7 @@ def reset(request):
                 if user.is_active:
                     login(request, user)
                     # Redirect to main edit dashboard
-                    return HttpResponseRedirect(settings.SIGNUP_REDIRECT_PATH)
+                    return HttpResponseRedirect(settings.INVITE_SIGNUP_REDIRECT_PATH)
         else:
             return render_to_response(
                 'invite/reset.html',
@@ -106,7 +106,8 @@ def amnesia(request):
             # send the email reset link
             i.send()
             i.save()
-            return HttpResponseRedirect('/accounts/reset/?email=%s' % form.cleaned_data['email'])
+            redirect = '{0}?email={1}'.format(reverse('invite:reset'), form.cleaned_data['email'])
+            return HttpResponseRedirect(redirect)
         else:
             return render_to_response(
                 'invite/amnesia.html',
@@ -140,7 +141,7 @@ def log_in_user(request):
                 if user.is_active:
                     login(request, user)
                     # Redirect to next page.
-                    return HttpResponseRedirect(reverse('index'))
+                    return HttpResponseRedirect(reverse('invite:index'))
     else:
         form = LoginForm()
     return render(
@@ -235,7 +236,7 @@ def invite(request):
                 # send the email invitation
                 i.send()
                 i.save()
-            return HttpResponseRedirect('/accounts/')
+            return HttpResponseRedirect(reverse('invite:index'))
     else:
         invite_item_formset = InviteItemFormSet()
     return render_to_response(
@@ -303,7 +304,7 @@ def signup(request):
                 if user.is_active:
                     login(request, user)
                     # Redirect to edit system.
-                    return HttpResponseRedirect(settings.SIGNUP_REDIRECT_PATH)
+                    return HttpResponseRedirect(app_settings.INVITE_SIGNUP_REDIRECT_PATH)
     else:
         # GET request, just show the form with some initial values
         form = SignupForm(
@@ -320,7 +321,7 @@ def signup(request):
         {
             'request': request,
             'form': form,
-            'service_name': settings.SERVICE_NAME,
+            'service_name': app_settings.INVITE_SERVICE_NAME,
             'activation_code': code,
         },
         context_instance=RequestContext(request)
