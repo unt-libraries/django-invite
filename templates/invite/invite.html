@@ -177,7 +177,7 @@ $(document).ready(function() {
 
 {% else %}
 <h3>
-    <i class="icon-remove"></i> Sorry {{ user.first_name|title }}, you don't have invite permission. <a href="/accounts/">Back to accounts page</a>
+    <i class="icon-remove"></i> Sorry {{ user.first_name|title }}, you don't have invite permission. <a href="{% url 'invite_index' %}">Back to accounts page</a>
 </h3>
 {% endif %}
 
