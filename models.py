@@ -18,7 +18,7 @@ class InviteItem(models.Model):
     greeting = models.TextField(blank=True)
     permissions = models.ManyToManyField(Permission, blank=True)
     groups = models.ManyToManyField(Group, blank=True)
-    is_super_user = models.BooleanField()
+    is_super_user = models.BooleanField(default=False)
 
     def __unicode__(self):
         return self.first_name + ' ' + self.last_name
@@ -58,7 +58,7 @@ class Invitation(models.Model):
     )
     permissions = models.ManyToManyField(Permission)
     groups = models.ManyToManyField(Group)
-    is_super_user = models.BooleanField()
+    is_super_user = models.BooleanField(default=False)
 
     class Meta:
         ordering = ["date_invited"]
