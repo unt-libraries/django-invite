@@ -36,7 +36,7 @@ def reset(request):
                 if user.is_active:
                     login(request, user)
                     # Redirect to main edit dashboard
-                    return HttpResponseRedirect(settings.INVITE_SIGNUP_REDIRECT_PATH)
+                    return HttpResponseRedirect(app_settings.INVITE_SIGNUP_REDIRECT_PATH)
         else:
             return render_to_response(
                 'invite/reset.html',
@@ -151,7 +151,7 @@ def log_in_user(request):
     )
 
 
-# @require_edit_login
+@login_required(login_url=reverse_lazy('invite:login'))
 def index(request):
     return render_to_response(
         'invite/index.html',
@@ -164,7 +164,6 @@ def index(request):
     )
 
 
-# @require_edit_login
 def resend(request, code):
     # if we can't get an object with the code provided, deny them
     try:
@@ -189,7 +188,6 @@ def resend(request, code):
     )
 
 
-# @require_edit_login
 def revoke(request, code):
     # if we can't get an object with the code provided, deny them
     try:
@@ -200,12 +198,10 @@ def revoke(request, code):
             'invite/denied.html',
             context_instance=RequestContext(request)
         )
-    revoked_user = '%s %s' % (i.first_name, i.last_name)
     i.delete()
     return index(request)
 
 
-# @require_edit_login
 def invite(request):
     InviteItemFormSet = formset_factory(
         InviteItemForm,
@@ -276,16 +272,16 @@ def signup(request):
                 email=form.cleaned_data['email'],
                 password=form.cleaned_data['password'],
             )
-            u.first_name=form.cleaned_data['first_name']
-            u.last_name=form.cleaned_data['last_name']
+            u.first_name = form.cleaned_data['first_name']
+            u.last_name = form.cleaned_data['last_name']
             # add permissions
             for permission in i.permissions.all():
                 u.user_permissions.add(permission)
             # add group memberships
             for group in i.groups.all():
                 group.user_set.add(u)
-            #set superuser status and save
-            if i.is_super_user == True:
+            # set superuser status and save
+            if i.is_super_user is True:
                 u.is_superuser = True
             else:
                 u.is_superuser = False
