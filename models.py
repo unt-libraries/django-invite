@@ -77,6 +77,7 @@ class Invitation(models.Model):
                 'service_name': app_settings.INVITE_SERVICE_NAME,
                 'activation_code': self.activation_code,
                 'custom_msg': self.custom_msg,
+                'permissions': self.permissions.all()
             }
         )
 
