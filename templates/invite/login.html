@@ -1,19 +1,21 @@
 {% extends 'invite/base.html' %}
-{% block content %}
-<div class='centered'>
+{% block title %}Login{% endblock %}
 
-    {% if user.is_authenticated %}
-        <div class='span3 well'>
-            <h3>{{ user.first_name }}, you're already signed in. If your username is not {{ user }}, please log out of the system.</h3>
-        <div>
-    {% else %}
-        <div class='span3 well'>
-            <form action="{% url 'invite:login' %}" method="post">{% csrf_token %}
-                {{ form.as_p }}
-                <input type="submit" value="Submit" />
-                <a href="{% url 'invite:amnesia' %}">I forgot</a>
-            </form>
-        </div>
-    {% endif %}
-</div>
+{% block content %}
+    <div class='centered'>
+
+        {% if user.is_authenticated %}
+            <div class='span3 well'>
+                <h3>{{ user.first_name }}, you're already signed in. If your username is not {{ user }}, please log out of the system.</h3>
+            <div>
+        {% else %}
+            <div class='span3 well'>
+                <form action="{% url 'invite:login' %}" method="post">{% csrf_token %}
+                    {{ form.as_p }}
+                    <input type="submit" value="Submit" />
+                    <a href="{% url 'invite:amnesia' %}">I forgot</a>
+                </form>
+            </div>
+        {% endif %}
+    </div>
 {% endblock %}
