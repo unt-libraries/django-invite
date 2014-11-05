@@ -4,12 +4,13 @@ from django.template import RequestContext
 from django.forms.formsets import formset_factory, BaseFormSet
 from django.http import HttpResponseRedirect
 from django.contrib.auth import authenticate, login
-from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
 from django.contrib.auth.models import User
 from django.views.decorators.csrf import csrf_protect
 
-from .forms import SignupForm, InviteItemForm, LoginForm, IForgotForm, ResetForm
+# from .forms import SignupForm, InviteItemForm, LoginForm, IForgotForm, ResetForm
+from . import forms
 from .models import Invitation, PasswordResetInvitation
 from . import settings as app_settings
 
@@ -18,10 +19,12 @@ def reset(request):
     '''users land here to reset their django user passwords'''
     if request.method == 'POST':
         reset_code = request.GET.get('reset_code')
-        form = ResetForm(request.POST)
+        form = forms.ResetForm(request.POST)
         if form.is_valid():
             # get invitation object so we can deleted it afterwards
-            pri = PasswordResetInvitation.objects.get(activation_code=reset_code)
+            pri = (PasswordResetInvitation
+                   .objects
+                   .get(activation_code=reset_code))
             # determine user from password reset invitation.
             user = User.objects.get(username=pri.username)
             user.set_password(form.cleaned_data['password'])
@@ -36,7 +39,8 @@ def reset(request):
                 if user.is_active:
                     login(request, user)
                     # Redirect to main edit dashboard
-                    return HttpResponseRedirect(app_settings.INVITE_SIGNUP_REDIRECT_PATH)
+                    return HttpResponseRedirect(
+                        app_settings.INVITE_SIGNUP_REDIRECT_PATH)
         else:
             return render_to_response(
                 'invite/reset.html',
@@ -50,7 +54,8 @@ def reset(request):
         # they come bearing a reset_code
         if 'reset_code' in request.GET.keys():
             try:
-                pri = PasswordResetInvitation.objects.get(activation_code=request.GET.get('reset_code'))
+                pri = PasswordResetInvitation.objects.get(
+                    activation_code=request.GET.get('reset_code'))
             except PasswordResetInvitation.DoesNotExist:
                 return render(
                     request,
@@ -61,7 +66,7 @@ def reset(request):
                 'invite/reset.html',
                 {
                     'reset_code': pri.activation_code,
-                    'resetform': ResetForm(),
+                    'resetform': forms.ResetForm(),
                 },
                 context_instance=RequestContext(request)
             )
@@ -71,7 +76,7 @@ def reset(request):
                 'invite/confirm_reset.html',
                 {
                     'email': request.GET.get('email'),
-                    'resetform': ResetForm(),
+                    'resetform': forms.ResetForm(),
                 },
                 context_instance=RequestContext(request)
             )
@@ -80,7 +85,7 @@ def reset(request):
             return render_to_response(
                 'invite/index.html',
                 {
-                    'resetform': ResetForm(),
+                    'resetform': forms.ResetForm(),
                 },
                 context_instance=RequestContext(request)
             )
@@ -89,7 +94,7 @@ def reset(request):
 def amnesia(request):
     # iforgot form.
     if request.method == 'POST':
-        form = IForgotForm(request.POST)
+        form = forms.IForgotForm(request.POST)
         if form.is_valid():
             # determine user from email address.
             user = User.objects.get(email__iexact=form.cleaned_data['email'])
@@ -103,7 +108,9 @@ def amnesia(request):
             # send the email reset link
             i.send()
             i.save()
-            redirect = '{0}?email={1}'.format(reverse('invite:reset'), form.cleaned_data['email'])
+            redirect = '{0}?email={1}'.format(
+                reverse('invite:reset'),
+                form.cleaned_data['email'])
             return HttpResponseRedirect(redirect)
         else:
             return render_to_response(
@@ -114,7 +121,7 @@ def amnesia(request):
     else:
         return render_to_response(
             'invite/amnesia.html',
-            {'iforgotform': IForgotForm()},
+            {'iforgotform': forms.IForgotForm()},
             context_instance=RequestContext(request)
         )
 
@@ -129,7 +136,7 @@ def log_out_user(request):
 @csrf_protect
 def log_in_user(request):
     if request.method == 'POST':
-        form = LoginForm(request.POST)
+        form = forms.LoginForm(request.POST)
         if form.is_valid():
             username = form.cleaned_data['username']
             password = form.cleaned_data['password']
@@ -140,7 +147,7 @@ def log_in_user(request):
                     # Redirect to next page.
                     return HttpResponseRedirect(reverse('invite:index'))
     else:
-        form = LoginForm()
+        form = forms.LoginForm()
     return render(
         request,
         'invite/base.html',
@@ -156,7 +163,7 @@ def index(request):
     return render_to_response(
         'invite/index.html',
         {
-            'login_form': LoginForm(),
+            'login_form': forms.LoginForm(),
             'invites': Invitation.objects.all().order_by('-date_invited'),
             'users': User.objects.all().order_by('date_joined'),
         },
@@ -179,7 +186,7 @@ def resend(request, code):
     return render_to_response(
         'invite/index.html',
         {
-            'login_form': LoginForm(),
+            'login_form': forms.LoginForm(),
             'invites': Invitation.objects.all(),
             'resent_user': resent_user,
             'users': User.objects.all(),
@@ -204,7 +211,7 @@ def revoke(request, code):
 
 def invite(request):
     InviteItemFormSet = formset_factory(
-        InviteItemForm,
+        forms.InviteItemForm,
         formset=BaseFormSet,
     )
     if request.method == 'POST':
@@ -220,7 +227,11 @@ def invite(request):
                     email=form.cleaned_data['email'],
                     is_super_user=form.cleaned_data['is_super_user'],
                 )
-                i.custom_msg = invite_item_formset.forms[0].cleaned_data['greeting']
+                i.custom_msg = (
+                    invite_item_formset
+                    .forms[0]
+                    .cleaned_data['greeting']
+                )
                 # set m2m relationships from initial object creation
                 for permission in invite_item_formset.forms[0].cleaned_data['permissions']:
                     i.permissions.add(permission)
@@ -235,7 +246,7 @@ def invite(request):
     return render_to_response(
         'invite/invite.html',
         {
-            'login_form': LoginForm(),
+            'login_form': forms.LoginForm(),
             'invite_item_formset': invite_item_formset,
         },
         context_instance=RequestContext(request),
@@ -246,7 +257,7 @@ def about(request):
     return render(
         request,
         'invite/about.html',
-        {'login_form': LoginForm()},
+        {'login_form': forms.LoginForm()},
         context_instance=RequestContext(request)
     )
 
@@ -265,7 +276,7 @@ def signup(request):
         )
     # if the form is submitted
     if request.method == 'POST':
-        form = SignupForm(request.POST)
+        form = forms.SignupForm(request.POST)
         if form.is_valid():
             u = User.objects.create_user(
                 username=form.cleaned_data['username'],
@@ -297,10 +308,11 @@ def signup(request):
                 if user.is_active:
                     login(request, user)
                     # Redirect to edit system.
-                    return HttpResponseRedirect(app_settings.INVITE_SIGNUP_REDIRECT_PATH)
+                    return HttpResponseRedirect(
+                        app_settings.INVITE_SIGNUP_REDIRECT_PATH)
     else:
         # GET request, just show the form with some initial values
-        form = SignupForm(
+        form = forms.SignupForm(
             initial={
                 'first_name': i.first_name,
                 'last_name': i.last_name,
