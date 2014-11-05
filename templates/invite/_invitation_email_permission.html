@@ -1,0 +1,6 @@
+{% load i18n %}
+{% for perm in permissions %}
+{% if 'add_invitation' in perm.codename %}
+{% trans "You have been granted permission to add additional users. To do so, go to" %} http://{{ domain }}{% url 'invite:index' %} {% trans "once you have accepted your invitation." %}
+{% endif %}
+{% endfor %}
