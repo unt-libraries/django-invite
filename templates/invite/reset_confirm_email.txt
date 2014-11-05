@@ -3,4 +3,4 @@ Hello, {{ first_name }}.
 
 The password for username '{{ username }}' has been successfully updated.
 
-If you were not anticipating this email, something is probably amiss. Contact the Digital Projects Unit asap.
+{% include 'invite/reset_confirm_email_message.txt' %}
