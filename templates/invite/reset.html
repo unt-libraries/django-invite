@@ -2,29 +2,28 @@
 {% block visible-title %} Edit System{% endblock %}
 
 {% block content %}
-<div class="container theme-showcase" role="main">
-
-    <div class='jumbotron'>
-        Enter your new password <em>twice</em> and click submit to reset your password.
-        <br>
-        <br>
-        You should receive a confirmation email afterwards.
-        {% if resetform.errors %}
-            <div class="alert alert-error">
-                <button type="button" class="close" data-dismiss="alert">×</button>
-                {% for field in resetform %}
-                    {% if field.errors %}
-                    <li>{{ field.label }}: {{ field.errors|striptags }}</li>
-                    {% endif %}
-                {% endfor %}
-            </div>
-        {% endif %}
-        <form action="{% url 'invite:reset' %}?reset_code={{ reset_code }}" method="POST">{% csrf_token %}
-            {{ resetform.password }}
+    <div class="container theme-showcase" role="main">
+        <div class='jumbotron'>
+            Enter your new password <em>twice</em> and click submit to reset your password.
             <br>
-            {{ resetform.password2 }}
-            <div><input type="submit" value="Submit" /></div>
-        </form>
+            <br>
+            You should receive a confirmation email afterwards.
+            {% if resetform.errors %}
+                <div class="alert alert-error">
+                    <button type="button" class="close" data-dismiss="alert">×</button>
+                    {% for field in resetform %}
+                        {% if field.errors %}
+                        <li>{{ field.label }}: {{ field.errors|striptags }}</li>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            {% endif %}
+            <form action="{% url 'invite:reset' %}?reset_code={{ reset_code }}" method="POST">{% csrf_token %}
+                {{ resetform.password }}
+                <br>
+                {{ resetform.password2 }}
+                <div><input type="submit" value="Submit" /></div>
+            </form>
+        </div>
     </div>
-</div>
 {% endblock %}
