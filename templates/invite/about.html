@@ -2,14 +2,14 @@
 {% block title %}About{% endblock %}
 
 {% block content %}
-<!-- simple introduction of Invite -->
-<div class='text-left container-fluid'>
-	<h1>All about Invite</h1>
-	<h3>Introduction</h3>
-	This application is used by superusers of the UNT Digital Libraries to trigger an invitation event, which results with registration email(s) delivered to potential user(s). Upon clicking the registration link, the email recipient is directed to a page where he/she may register as a user of a Django application by providing their name and password.
-	<h3>Inviting</h3>
-	Upon submission of the Invite form, if invalid, the user is prompted to fix validation errors and resubmit. If valid, the system creates an 'Invitation' and emails the recipient. The invitation email is then delivered to the invited user. Only superusers or users with explicit invite permission may create invitations.
-	<h3>Sign up</h3>
-	The sign up form is available to invitees who own the email address submitted by the inviter via the invitation form. The invitation link is delivered to the invitee only. The invitation link is unique and should not be shared with anyone. Upon submission of the sign up form, if invalid, the user is prompted to fix validation errors and resubmit. If valid, the system creates a 'User' in the system with the permissions alotted via the invitation and deletes the 'spent' invitation. The user is then redirected to the <a href="/">home editor system page</a>.
-</div>
+    <!-- simple introduction of Invite -->
+    <div class='text-left container-fluid'>
+        <h1>All about Invite</h1>
+        <h3>Introduction</h3>
+        <p>This application is used by superusers of the UNT Digital Libraries to trigger an invitation event, which results with registration email(s) delivered to potential user(s). Upon clicking the registration link, the email recipient is directed to a page where he/she may register as a user of a Django application by providing their name and password.</p>
+        <h3>Inviting</h3>
+        <p>Upon submission of the Invite form, if invalid, the user is prompted to fix validation errors and resubmit. If valid, the system creates an 'Invitation' and emails the recipient. The invitation email is then delivered to the invited user. Only superusers or users with explicit invite permission may create invitations.</p>
+        <h3>Sign up</h3>
+        <p>The sign up form is available to invitees who own the email address submitted by the inviter via the invitation form. The invitation link is delivered to the invitee only. The invitation link is unique and should not be shared with anyone. Upon submission of the sign up form, if invalid, the user is prompted to fix validation errors and resubmit. If valid, the system creates a 'User' in the system with the permissions alotted via the invitation and deletes the 'spent' invitation. The user is then redirected to the <a href="/">home editor system page</a>.</p>
+    </div>
 {% endblock %}
