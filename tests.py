@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.contrib.sites.models import Site
+from django.core.urlresolvers import reverse
 from django.template.loader import render_to_string
 from django.test.client import Client
 from django.contrib.auth.models import User, Group
@@ -11,6 +12,7 @@ try: import simplejson as json
 except ImportError: import json
 import mock
 from .models import Invitation, PasswordResetInvitation
+from . import settings as app_settings
 
 settings.SITE_ID = 1
 
@@ -42,16 +44,16 @@ class TestOperations(unittest.TestCase):
             'invite/invitation_email.txt',
             {
                 'domain': 'example.com',
-                'service_name': settings.SERVICE_NAME,
+                'service_name': app_settings.INVITE_SERVICE_NAME,
                 'activation_code': i.activation_code,
                 'custom_msg': i.custom_msg,
             }
         )
         i.send()
         mock_django_mailer.assert_called_with(
-            'You have been invited to join the %s' % (settings.SERVICE_NAME),
+            'You have been invited to join the %s' % (app_settings.INVITE_SERVICE_NAME),
             message,
-            settings.DEFAULT_FROM_EMAIL,
+            app_settings.INVITE_DEFAULT_FROM_EMAIL,
             [i.email],
         )
 
@@ -76,7 +78,7 @@ class TestOperations(unittest.TestCase):
             first_name='test',
             last_name='test',
         )
-        subject = 'Password Reset: %s' % (settings.SERVICE_NAME)
+        subject = 'Password Reset: %s' % (app_settings.INVITE_SERVICE_NAME)
         message = render_to_string(
             'invite/reset_email.txt',
             {
@@ -90,7 +92,7 @@ class TestOperations(unittest.TestCase):
         mock_django_mailer.assert_called_with(
             subject,
             message,
-            settings.DEFAULT_FROM_EMAIL,
+            app_settings.INVITE_DEFAULT_FROM_EMAIL,
             [i.email],
         )
 
@@ -128,7 +130,7 @@ class TestViews(unittest.TestCase):
         my_admin = User.objects.create_superuser('test', 'myemail@test.com', 'test')
         self.c.login(username='test', password='test')
         response = self.c.post(
-            '/accounts/invite/',
+            reverse('invite:invite'),
             {
                 u'form-INITIAL_FORMS': [u'0'],
                 u'form-MAX_NUM_FORMS': [u''],
@@ -179,7 +181,7 @@ class TestViews(unittest.TestCase):
         my_admin = User.objects.create_superuser('test', 'myemail@test.com', 'test')
         self.c.login(username='test', password='test')
         response = self.c.post(
-            '/accounts/invite/',
+            reverse('invite:invite'),
             {
                 u'form-MAX_NUM_FORMS': [u''],
                 u'form-0-email': [u'joeyliechty@gmail.com'],
@@ -195,21 +197,22 @@ class TestViews(unittest.TestCase):
         )
         invite0 = Invitation.objects.get(email='joeyliechty@gmail.com')
         # assert the invitation has the correct groups
-        self.assertEqual(invite0.groups.all()[0].name, 'Boyce')
-        self.assertEqual(invite0.groups.all()[1].name, 'texgen')
-        self.assertEqual(invite0.groups.all()[2].name, 'UNT Archives')
+        self.assertEqual(invite0.groups.all()[0].name, 'UNT Archives')
+        self.assertEqual(invite0.groups.all()[1].name, 'Boyce')
+        self.assertEqual(invite0.groups.all()[2].name, 'texgen')
 
     def test_amnesia_email_submit(self):
-        response = self.c.post('/accounts/amnesia/', {'email': 'avowin@test.test'})
+        response = self.c.post(reverse('invite:amnesia'), {'email': 'avowin@test.test'})
         self.assertIn('The email provided', response.content)
     
     def test_amnesia_email_submit_case_sensitive(self):
-        response = self.c.post('/accounts/amnesia/', {'email': 'TEST@TEST.TEST'}, follow=True)
+        response = self.c.post(reverse('invite:amnesia'), {'email': 'TEST@TEST.TEST'}, follow=True)
         self.assertIn('An email was sent to TEST@TEST.TEST', response.content)
 
     def test_signup_submit_same_email(self):
+        url = '{0}?code={1}'.format(reverse('invite:account_signup'), self.i.activation_code)
         response = self.c.post(
-            '/accounts/signup/?code=%s' % self.i.activation_code,
+            url,
             {
                 'username': 'don',
                 'first_name': 'wrigley',
@@ -225,7 +228,7 @@ class TestViews(unittest.TestCase):
         my_admin = User.objects.create_superuser('test', 'myemail@test.com', 'test')
         self.c.login(username='test', password='test')
         response = self.c.post(
-            '/accounts/invite/',
+            reverse('invite:invite'),
             {
                 u'form-MAX_NUM_FORMS': [u''],
                 u'form-0-email': [u'test@test.test'],
@@ -253,24 +256,25 @@ class TestViews(unittest.TestCase):
             first_name='test',
             last_name='test',
         )
-        response = self.c.post('/accounts/reset/', {'password': 'test', 'password2': 'pest'})
+        response = self.c.post(reverse('invite:reset'), {'password': 'test', 'password2': 'pest'})
         self.assertIn('Passwords are not the same', response.content)
+        url = '{0}?reset_code={1}'.format(reverse('invite:reset'), psi.activation_code)
         response = self.c.post(
-            '/accounts/reset/?reset_code=%s' % psi.activation_code,
+            url,
             {'password': 'test', 'password2': 'test'},
             follow=True
         )
-        self.assertIn('The UNT Digital Library: Dashboard', response.content)
+        self.assertEqual(200, response.status_code)
 
     def test_forgotten_password(self):
         '''user forgets his password test'''
-        response = self.c.post('/accounts/amnesia/', {'email': 'test@test.test'}, follow=True)
+        response = self.c.post(reverse('invite:amnesia'), {'email': 'test@test.test'}, follow=True)
         pri = PasswordResetInvitation.objects.get(email='test@test.test')
-        reset_link = '/accounts/reset/?reset_code=%s' % pri.activation_code
+        reset_link = '{0}?reset_code={1}'.format(reverse('invite:reset'), pri.activation_code)
         response = self.c.get(reset_link)
         self.assertIn('Enter your new password', response.content)
         response = self.c.post(reset_link, {'password': 'kookaburra', 'password2': 'kookaburra'}, follow=True)
-        self.assertIn('Log Out', response.content)
+        self.assertIn('Log out', response.content)
 
 
 if __name__ == '__main__':
