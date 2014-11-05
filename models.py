@@ -3,7 +3,6 @@ from django.template.loader import render_to_string
 from django.contrib.sites.models import Site
 from django.core.mail import send_mail
 from django.db import models
-from django.conf import settings
 import uuid
 
 from . import settings as app_settings
@@ -64,12 +63,16 @@ class Invitation(models.Model):
         ordering = ["date_invited"]
 
     def __unicode__(self):
-        return "%s, %s: %s" % (self.last_name, self.first_name, self.date_invited)
+        return "%s, %s: %s" % (
+            self.last_name,
+            self.first_name,
+            self.date_invited)
 
     def send(self):
         """Sends an invitation email to ``self.email``."""
 
-        subject = 'You have been invited to join the %s' % (app_settings.INVITE_SERVICE_NAME)
+        subject = 'You have been invited to join the %s' % (
+            app_settings.INVITE_SERVICE_NAME)
         message = render_to_string(
             'invite/invitation_email.txt',
             {
@@ -81,7 +84,11 @@ class Invitation(models.Model):
             }
         )
 
-        send_mail(subject, message, app_settings.INVITE_DEFAULT_FROM_EMAIL, [self.email])
+        send_mail(
+            subject,
+            message,
+            app_settings.INVITE_DEFAULT_FROM_EMAIL,
+            [self.email])
 
 
 class PasswordResetInvitation(Invitation):
@@ -100,7 +107,11 @@ class PasswordResetInvitation(Invitation):
             }
         )
 
-        send_mail(subject, message, app_settings.INVITE_DEFAULT_FROM_EMAIL, [self.email])
+        send_mail(
+            subject,
+            message,
+            app_settings.INVITE_DEFAULT_FROM_EMAIL,
+            [self.email])
 
     def send_confirm(self):
         """Sends an confirmation email to ``self.email``."""
@@ -116,4 +127,8 @@ class PasswordResetInvitation(Invitation):
             }
         )
 
-        send_mail(subject, message, app_settings.INVITE_DEFAULT_FROM_EMAIL, [self.email])
+        send_mail(
+            subject,
+            message,
+            app_settings.INVITE_DEFAULT_FROM_EMAIL,
+            [self.email])
