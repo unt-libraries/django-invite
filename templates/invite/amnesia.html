@@ -1,32 +1,33 @@
 {% extends 'invite/base.html' %}
 {% block visible-title %} Edit System{% endblock %}
+
 {% block content %}
-<div class="container theme-showcase" role="main">
-    <div class='jumbotron'>
-        Forgotten your username or password?<br>
-        No sweat.<br>
-        Enter your e-mail address. You'll get an email with your username and password reset link.<hr>
-        {% if iforgotform.errors %}
-        <div class="alert alert-error">
-            <button type="button" class="close" data-dismiss="alert">×</button>
-            {% for field in iforgotform %}
-            {% if field.errors %}
-            <li>{{ field.errors.0|striptags }}</li>
+    <div class="container theme-showcase" role="main">
+        <div class='jumbotron'>
+            Forgotten your username or password?<br>
+            No sweat.<br>
+            Enter your e-mail address. You'll get an email with your username and password reset link.<hr>
+            {% if iforgotform.errors %}
+                <div class="alert alert-error">
+                    <button type="button" class="close" data-dismiss="alert">×</button>
+                    {% for field in iforgotform %}
+                        {% if field.errors %}
+                            <li>{{ field.errors.0|striptags }}</li>
+                        {% endif %}
+                    {% endfor %}
+                </div>
             {% endif %}
-            {% endfor %}
+            <form method="POST">{% csrf_token %}
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="fa fa-envelope fa-fw"></i></span>
+                    {{ iforgotform.email }}
+                    <span class="input-group-btn">
+                        <input class="btn btn-info" type="submit" value='I forgot!'/>
+                    </span>
+                </div><!-- /input-group -->
+            </form>
+            <hr>
+            Nevermind, <a href='/'>I remembered it</a> .
         </div>
-        {% endif %}
-        <form method="POST">{% csrf_token %}
-            <div class="input-group">
-                <span class="input-group-addon"><i class="fa fa-envelope fa-fw"></i></span>
-                {{ iforgotform.email }}
-                <span class="input-group-btn">
-                    <input class="btn btn-info" type="submit" value='I forgot!'/>
-                </span>
-            </div><!-- /input-group -->
-        </form>
-        <hr>
-        Nevermind, <a href='/'>I remembered it</a> .
     </div>
-</div>
 {% endblock %}
