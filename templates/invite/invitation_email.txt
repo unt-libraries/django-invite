@@ -6,3 +6,5 @@ http://{{ domain }}{% url 'invite:account_signup' %}?code={{ activation_code }}
 {% trans "to join!" %}
 
 {{ custom_msg }}
+
+{% include 'invite/_invitation_email_permission.html' %}
