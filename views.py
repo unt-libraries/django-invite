@@ -157,7 +157,8 @@ def log_in_user(request):
     )
 
 
-@login_required(login_url=reverse_lazy('invite:login'))
+@login_required(redirect_field_name=None,
+                login_url=reverse_lazy('invite:login'))
 def index(request):
     return render_to_response(
         'invite/index.html',
@@ -169,7 +170,8 @@ def index(request):
     )
 
 
-@login_required(login_url=reverse_lazy('invite:login'))
+@login_required(redirect_field_name=None,
+                login_url=reverse_lazy('invite:login'))
 def resend(request, code):
     # if we can't get an object with the code provided, deny them
     try:
@@ -193,7 +195,8 @@ def resend(request, code):
     )
 
 
-@login_required(login_url=reverse_lazy('invite:login'))
+@login_required(redirect_field_name=None,
+                login_url=reverse_lazy('invite:login'))
 def revoke(request, code):
     # if we can't get an object with the code provided, deny them
     try:
@@ -208,7 +211,8 @@ def revoke(request, code):
     return index(request)
 
 
-@login_required(login_url=reverse_lazy('invite:login'))
+@login_required(redirect_field_name=None,
+                login_url=reverse_lazy('invite:login'))
 def invite(request):
     InviteItemFormSet = formset_factory(
         forms.InviteItemForm,
@@ -253,7 +257,8 @@ def invite(request):
 
 
 
-@login_required(login_url=reverse_lazy('invite:login'))
+@login_required(redirect_field_name=None,
+                login_url=reverse_lazy('invite:login'))
 def about(request):
     return render(
         request,
