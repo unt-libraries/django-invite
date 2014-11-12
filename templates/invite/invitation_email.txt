@@ -1,5 +1,5 @@
 {% load i18n %}
-You have been invited to join the {{ service_name }}.
+You have been invited to join {{ service_name }}.
 
 {% trans "Go to" %}
 http://{{ domain }}{% url 'invite:account_signup' %}?code={{ activation_code }}
