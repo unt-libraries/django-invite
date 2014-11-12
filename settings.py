@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.core.urlresolvers import reverse_lazy
+from django.contrib.sites.models import Site
 
 
 INVITE_LOGOUT_REDIRECT_URL = getattr(
@@ -8,7 +9,7 @@ INVITE_LOGOUT_REDIRECT_URL = getattr(
     reverse_lazy('invite:index')
 )
 
-INVITE_SIGNUP_REDIRECT_PATH = getattr(
+INVITE_SIGNUP_SUCCESS_URL = getattr(
     settings,
     'INVITE_SIGNUP_REDIRECT_PATH',
     reverse_lazy('invite:index')
@@ -17,7 +18,7 @@ INVITE_SIGNUP_REDIRECT_PATH = getattr(
 INVITE_SERVICE_NAME = getattr(
     settings,
     'INVITE_SERVICE_NAME',
-    'Invite App App'
+    Site.objects.get_current().domain
 )
 
 INVITE_DEFAULT_FROM_EMAIL = getattr(
