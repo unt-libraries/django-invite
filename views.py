@@ -39,7 +39,7 @@ def reset(request):
                     login(request, user)
                     # Redirect to main edit dashboard
                     return HttpResponseRedirect(
-                        app_settings.INVITE_SIGNUP_REDIRECT_PATH)
+                        app_settings.INVITE_SIGNUP_SUCCESS_URL)
         else:
             return render_to_response(
                 'invite/reset.html',
@@ -149,7 +149,7 @@ def log_in_user(request):
         form = forms.LoginForm()
     return render(
         request,
-        'invite/base.html',
+        'invite/login.html',
         {
             'login_form': form,
         },
@@ -162,7 +162,6 @@ def index(request):
     return render_to_response(
         'invite/index.html',
         {
-            'login_form': forms.LoginForm(),
             'invites': Invitation.objects.all().order_by('-date_invited'),
             'users': User.objects.all().order_by('date_joined'),
         },
@@ -170,6 +169,7 @@ def index(request):
     )
 
 
+@login_required(login_url=reverse_lazy('invite:login'))
 def resend(request, code):
     # if we can't get an object with the code provided, deny them
     try:
@@ -185,7 +185,6 @@ def resend(request, code):
     return render_to_response(
         'invite/index.html',
         {
-            'login_form': forms.LoginForm(),
             'invites': Invitation.objects.all(),
             'resent_user': resent_user,
             'users': User.objects.all(),
@@ -208,6 +207,7 @@ def revoke(request, code):
     return index(request)
 
 
+@login_required(login_url=reverse_lazy('invite:login'))
 def invite(request):
     InviteItemFormSet = formset_factory(
         forms.InviteItemForm,
@@ -245,18 +245,18 @@ def invite(request):
     return render_to_response(
         'invite/invite.html',
         {
-            'login_form': forms.LoginForm(),
             'invite_item_formset': invite_item_formset,
         },
         context_instance=RequestContext(request),
     )
 
 
+
+@login_required(login_url=reverse_lazy('invite:login'))
 def about(request):
     return render(
         request,
         'invite/about.html',
-        {'login_form': forms.LoginForm()},
         context_instance=RequestContext(request)
     )
 
@@ -308,7 +308,7 @@ def signup(request):
                     login(request, user)
                     # Redirect to edit system.
                     return HttpResponseRedirect(
-                        app_settings.INVITE_SIGNUP_REDIRECT_PATH)
+                        app_settings.INVITE_SIGNUP_SUCCESS_URL)
     else:
         # GET request, just show the form with some initial values
         form = forms.SignupForm(
