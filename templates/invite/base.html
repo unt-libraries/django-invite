@@ -66,28 +66,9 @@
                             <strong>{{ maintenance_message }}</strong>
                         </div>
                     {% endif %}
-
-                    {% if user.is_authenticated or 'signup' in request.path or 'amnesia' in request.path or 'reset' in request.path %}
+                    <div class="row-fluid">
                         {% block content %}{% endblock %}
-                    {% else %}
-                        <div class='pagination-centered well span2' style="float: none; margin-left: auto; margin-right: auto;">
-                            <form action="{% url 'invite:login' %}" method="post">{% csrf_token %}
-                                {{ login_form.non_field_errors }}
-                                {{ login_form.username.errors }}
-                                <div class="input-prepend">
-                                    <span class="add-on"><i class="icon-user"></i></span>
-                                    {{ login_form.username }}
-                                </div>
-                                {{ login_form.password.errors }}
-                                <div class="input-prepend">
-                                    <span class="add-on"><i class="icon-key"></i></span>
-                                    {{ login_form.password }}
-                                </div>
-                                <input type='submit' value='Login' class="btn btn-block btn-primary" type="button">
-                                <br><a href="{% url 'invite:amnesia' %}">I forgot my username or password.</a>
-                            </form>
-                        </div>
-                    {% endif %}
+                    </div>
                 </div>
             {% endblock %}
         </div>
