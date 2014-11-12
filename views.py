@@ -193,6 +193,7 @@ def resend(request, code):
     )
 
 
+@login_required(login_url=reverse_lazy('invite:login'))
 def revoke(request, code):
     # if we can't get an object with the code provided, deny them
     try:
