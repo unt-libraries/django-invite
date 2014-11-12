@@ -188,6 +188,7 @@ class LoginForm(forms.Form):
         widget=forms.TextInput(
             attrs={
                 'placeholder': 'Username',
+                'style': 'width: 75%;',
                 'required': 'true',
             }
         ),
@@ -196,6 +197,7 @@ class LoginForm(forms.Form):
         widget=forms.PasswordInput(attrs=\
             {
                 'placeholder': 'Password',
+                'style': 'width: 75%;',
                 'required': 'true',
             }
         ),

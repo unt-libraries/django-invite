@@ -2,14 +2,14 @@
 {% block title %}Login{% endblock %}
 
 {% block content %}
-    <div class='centered'>
+    <div class='row-fluid'>
 
         {% if user.is_authenticated %}
             <div class="span4 offset4 well">
                 <h3>{{ user.first_name }}, you're already signed in. If your username is not {{ user }}, please log out of the system.</h3>
             <div>
         {% else %}
-            <div class="well span4 offset4">
+            <div class='pagination-centered well span2' style="float: none; margin-left: auto; margin-right: auto;">
                 <form action="{% url 'invite:login' %}" method="post">{% csrf_token %}
                     {{ login_form.non_field_errors }}
                     {{ login_form.username.errors }}
