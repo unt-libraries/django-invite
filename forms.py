@@ -1,8 +1,7 @@
 from invite.models import InviteItem
 from django import forms
-from django.forms import ModelForm, Textarea, TextInput, SelectMultiple, CheckboxInput
-from django.contrib.auth import authenticate, login
-from django.contrib.auth.models import User, Permission, Group
+from django.contrib.auth import authenticate
+from django.contrib.auth.models import User
 from django.core import validators
 from django.core.exceptions import ValidationError
 
@@ -13,14 +12,18 @@ def validate_username(value):
 
 
 def validate_user_email(value):
-    insensitive_emails = [e.lower() for e in User.objects.all().values_list('email', flat=True)]
+    insensitive_emails = (
+        [e.lower() for e in User.objects.all().values_list('email', flat=True)]
+    )
     assert False, insensitive_emails
     if value.lower() not in insensitive_emails:
         raise ValidationError('The email provided doesn\'t belong to any user')
 
+
 def validate_user_email_exists(value):
     if value in User.objects.all().values_list('email', flat=True):
-        raise ValidationError('The email provided: \'%s\' already belongs to a user' % value)
+        raise ValidationError(
+            'The email provided: \'%s\' already belongs to a user' % value)
 
 
 class SignupForm(forms.Form):
@@ -73,8 +76,8 @@ class SignupForm(forms.Form):
         ),
     )
     password = forms.CharField(
-        widget=forms.PasswordInput(attrs=\
-            {
+        widget=forms.PasswordInput(
+            attrs={
                 'placeholder': 'choose a password',
                 'class': 'input-medium',
                 'style': 'width: 50%',
@@ -85,8 +88,8 @@ class SignupForm(forms.Form):
         label="Choose a password"
     )
     password2 = forms.CharField(
-        widget=forms.PasswordInput(attrs=\
-            {
+        widget=forms.PasswordInput(
+            attrs={
                 'placeholder': 'repeat password',
                 'class': 'input-medium',
                 'style': 'width: 50%',
@@ -103,7 +106,8 @@ class SignupForm(forms.Form):
         return self.data['password']
 
     def clean_email(self):
-        if self.data['email'] in User.objects.all().values_list('email', flat=True):
+        user_emails = User.objects.all().values_list('email', flat=True)
+        if self.data['email'] in user_emails:
             raise forms.ValidationError('Email exists on other user')
         return self.data['email']
 
@@ -113,8 +117,9 @@ class SignupForm(forms.Form):
         return self.cleaned_data
 
 
-class InviteItemForm(ModelForm):
-    # construct group choices list because many to many fields do not have an order
+class InviteItemForm(forms.ModelForm):
+    # Construct group choices list because many to many fields do not have
+    # an order
 
     username = forms.CharField(
         validators=[validate_username],
@@ -139,16 +144,17 @@ class InviteItemForm(ModelForm):
             }
         ),
     )
+
     class Meta:
         model = InviteItem
         widgets = {
-            'greeting': Textarea(
+            'greeting': forms.Textarea(
                 attrs={
                     'placeholder': 'This optional greeting will be delivered to all recipients.',
                     'style': 'height: 80px; width: 286px; resize: none;',
                 }
             ),
-            'first_name': TextInput(
+            'first_name': forms.TextInput(
                 attrs={
                     'onkeydown': 'if (event.keyCode == 13) { this.form.submit(); return false; }',
                     'placeholder': 'First Name',
@@ -156,7 +162,7 @@ class InviteItemForm(ModelForm):
                     'required': 'true',
                 }
             ),
-            'last_name': TextInput(
+            'last_name': forms.TextInput(
                 attrs={
                     'onkeydown': 'if (event.keyCode == 13) { this.form.submit(); return false; }',
                     'placeholder': 'Last Name',
@@ -164,17 +170,17 @@ class InviteItemForm(ModelForm):
                     'required': 'true',
                 }
             ),
-            'permissions': SelectMultiple(
+            'permissions': forms.SelectMultiple(
                 attrs={
                     'style': 'height: 150px; width: 300px;',
                 },
             ),
-            'groups': SelectMultiple(
+            'groups': forms.SelectMultiple(
                 attrs={
                     'style': 'height: 150px; width: 300px;',
                 },
             ),
-            'is_super_user': CheckboxInput(
+            'is_super_user': forms.CheckboxInput(
                 attrs={
                     'class': 'span1',
                 }
@@ -194,8 +200,8 @@ class LoginForm(forms.Form):
         ),
     )
     password = forms.CharField(
-        widget=forms.PasswordInput(attrs=\
-            {
+        widget=forms.PasswordInput(
+            attrs={
                 'placeholder': 'Password',
                 'style': 'width: 75%;',
                 'required': 'true',
@@ -229,17 +235,19 @@ class IForgotForm(forms.Form):
     def clean_email(self):
         insensitive_emails = [e.lower() for e in User.objects.all().values_list('email', flat=True)]
         if self.data['email'].lower() not in insensitive_emails:
-            raise ValidationError('The email provided doesn\'t belong to any user')
+            raise ValidationError(
+                'The email provided doesn\'t belong to any user')
         return self.data['email']
 
     def clean(self, *args, **kwargs):
         self.clean_email()
         return self.cleaned_data
 
+
 class ResetForm(forms.Form):
     password = forms.CharField(
-        widget=forms.PasswordInput(attrs=\
-            {
+        widget=forms.PasswordInput(
+            attrs={
                 'placeholder': 'choose a password',
                 'class': 'input-medium',
                 'required': 'true',
@@ -248,8 +256,8 @@ class ResetForm(forms.Form):
         label="Choose a password"
     )
     password2 = forms.CharField(
-        widget=forms.PasswordInput(attrs=\
-            {
+        widget=forms.PasswordInput(
+            attrs={
                 'placeholder': 'repeat password',
                 'class': 'input-medium',
                 'required': 'true',
