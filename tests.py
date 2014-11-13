@@ -44,14 +44,14 @@ class TestOperations(unittest.TestCase):
             'invite/invitation_email.txt',
             {
                 'domain': 'example.com',
-                'service_name': app_settings.INVITE_SERVICE_NAME,
+                'service_name': Site.objects.get_current().name,
                 'activation_code': i.activation_code,
                 'custom_msg': i.custom_msg,
             }
         )
         i.send()
         mock_django_mailer.assert_called_with(
-            'You have been invited to join the %s' % (app_settings.INVITE_SERVICE_NAME),
+            'You have been invited to join the %s' % (Site.objects.get_current().name),
             message,
             app_settings.INVITE_DEFAULT_FROM_EMAIL,
             [i.email],
@@ -78,7 +78,7 @@ class TestOperations(unittest.TestCase):
             first_name='test',
             last_name='test',
         )
-        subject = 'Password Reset: %s' % (app_settings.INVITE_SERVICE_NAME)
+        subject = 'Password Reset: %s' % (Site.objects.get_current().name)
         message = render_to_string(
             'invite/reset_email.txt',
             {

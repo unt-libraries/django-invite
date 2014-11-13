@@ -7,6 +7,7 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
 from django.contrib.auth.models import User
+from django.contrib.sites.models import Site
 from django.views.decorators.csrf import csrf_protect
 
 from . import forms
@@ -85,8 +86,7 @@ def reset(request):
                 'invite/index.html',
                 {
                     'resetform': forms.ResetForm(),
-                },
-                context_instance=RequestContext(request)
+                }, context_instance=RequestContext(request)
             )
 
 
@@ -331,7 +331,7 @@ def signup(request):
         {
             'request': request,
             'form': form,
-            'service_name': app_settings.INVITE_SERVICE_NAME,
+            'service_name': Site.objects.get_current().name,
             'activation_code': code,
         },
         context_instance=RequestContext(request)

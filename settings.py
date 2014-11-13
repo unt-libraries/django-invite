@@ -15,11 +15,6 @@ INVITE_SIGNUP_SUCCESS_URL = getattr(
     reverse_lazy('invite:index')
 )
 
-INVITE_SERVICE_NAME = getattr(
-    settings,
-    'INVITE_SERVICE_NAME',
-    Site.objects.get_current().domain
-)
 
 INVITE_DEFAULT_FROM_EMAIL = getattr(
     settings,
