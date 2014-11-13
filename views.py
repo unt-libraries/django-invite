@@ -331,7 +331,7 @@ def signup(request):
         {
             'request': request,
             'form': form,
-            'service_name': Site.objects.get_current().name,
+            'service_name': app_settings.get_service_name(),
             'activation_code': code,
         },
         context_instance=RequestContext(request)

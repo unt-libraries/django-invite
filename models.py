@@ -72,12 +72,12 @@ class Invitation(models.Model):
         """Sends an invitation email to ``self.email``."""
 
         subject = 'You have been invited to join the %s' % (
-            app_settings.INVITE_SERVICE_NAME)
+            app_settings.get_service_name())
         message = render_to_string(
             'invite/invitation_email.txt',
             {
                 'domain': Site.objects.get_current().domain,
-                'service_name': app_settings.INVITE_SERVICE_NAME,
+                'service_name': app_settings.get_service_name(),
                 'activation_code': self.activation_code,
                 'custom_msg': self.custom_msg,
                 'permissions': self.permissions.all()
@@ -96,7 +96,7 @@ class PasswordResetInvitation(Invitation):
     def send(self):
         """Sends an invitation email to ``self.email``."""
 
-        subject = 'Password Reset: %s' % (app_settings.INVITE_SERVICE_NAME)
+        subject = 'Password Reset: %s' % (app_settings.get_service_name())
         message = render_to_string(
             'invite/reset_email.txt',
             {
@@ -116,7 +116,7 @@ class PasswordResetInvitation(Invitation):
     def send_confirm(self):
         """Sends an confirmation email to ``self.email``."""
 
-        subject = 'Password Changed: %s' % (app_settings.INVITE_SERVICE_NAME)
+        subject = 'Password Changed: %s' % (app_settings.get_service_name())
         message = render_to_string(
             'invite/reset_confirm_email.txt',
             {

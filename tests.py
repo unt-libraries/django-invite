@@ -1,5 +1,4 @@
 from django.conf import settings
-from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
 from django.template.loader import render_to_string
 from django.test.client import Client
@@ -44,14 +43,14 @@ class TestOperations(unittest.TestCase):
             'invite/invitation_email.txt',
             {
                 'domain': 'example.com',
-                'service_name': Site.objects.get_current().name,
+                'service_name': app_settings.get_service_name(),
                 'activation_code': i.activation_code,
                 'custom_msg': i.custom_msg,
             }
         )
         i.send()
         mock_django_mailer.assert_called_with(
-            'You have been invited to join the %s' % (Site.objects.get_current().name),
+            'You have been invited to join the %s' % (app_settings.get_service_name()),
             message,
             app_settings.INVITE_DEFAULT_FROM_EMAIL,
             [i.email],
@@ -78,7 +77,7 @@ class TestOperations(unittest.TestCase):
             first_name='test',
             last_name='test',
         )
-        subject = 'Password Reset: %s' % (Site.objects.get_current().name)
+        subject = 'Password Reset: %s' % (app_settings.get_service_name())
         message = render_to_string(
             'invite/reset_email.txt',
             {
