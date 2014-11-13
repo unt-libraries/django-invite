@@ -5,20 +5,17 @@ from django.test.client import Client
 from django.contrib.auth.models import User, Group
 
 import unittest
-import time
-import requests
-try: import simplejson as json
-except ImportError: import json
 import mock
 from .models import Invitation, PasswordResetInvitation
 from . import settings as app_settings
 
 settings.SITE_ID = 1
 
+
 class TestOperations(unittest.TestCase):
 
     def test_invite_creation(self):
-        '''creates an invite and check to see if we can send the email'''
+        """Creates an invite and check to see if we can send the email"""
         i = Invitation.objects.create(
             email='joeyliechty@supergreatmail.com',
         )
@@ -27,11 +24,11 @@ class TestOperations(unittest.TestCase):
 
     @mock.patch('invite.models.send_mail')
     def test_email_send(self, mock_django_mailer):
-        '''
-        since we trust the django mailer, and we don't want to do time wasting
+        """
+        Since we trust the django mailer, and we don't want to do time wasting
         tests that do actual network activity, we'll use mock to ensure that
         the mailer is called with the correct arguments by the model
-        '''
+        """
         i = Invitation.objects.create(
             email='1234testemail@noone.ghost',
             username='test',
@@ -50,14 +47,15 @@ class TestOperations(unittest.TestCase):
         )
         i.send()
         mock_django_mailer.assert_called_with(
-            'You have been invited to join the %s' % (app_settings.get_service_name()),
+            'You have been invited to join the {0}'.format(
+                app_settings.get_service_name()),
             message,
             app_settings.INVITE_DEFAULT_FROM_EMAIL,
             [i.email],
         )
 
     def test_password_reset_invite_creation(self):
-        '''creates an invite and check to see if we can send the email'''
+        """Creates an invite and check to see if we can send the email"""
         i = PasswordResetInvitation.objects.create(
             email='joeyliechty@supergreatmail.com',
         )
@@ -66,18 +64,18 @@ class TestOperations(unittest.TestCase):
 
     @mock.patch('invite.models.send_mail')
     def test_password_reset_email_send(self, mock_django_mailer):
-        '''
-        since we trust the django mailer, and we don't want to do time wasting
+        """
+        Since we trust the django mailer, and we don't want to do time wasting
         tests that do actual network activity, we'll use mock to ensure that
         the mailer is called with the correct arguments by the model
-        '''
+        """
         i = PasswordResetInvitation.objects.create(
             email='1234testemail@noone.ghost',
             username='test',
             first_name='test',
             last_name='test',
         )
-        subject = 'Password Reset: %s' % (app_settings.get_service_name())
+        subject = 'Password Reset: {0}'.format(app_settings.get_service_name())
         message = render_to_string(
             'invite/reset_email.txt',
             {
@@ -103,13 +101,13 @@ class TestViews(unittest.TestCase):
             username='kingkong',
             email='test@test.test',
             password='test',
-        ) 
+        )
         self.i = Invitation.objects.create(
             username='asdf',
             first_name='test',
             last_name='test',
             email='test@test.test'
-        ) 
+        )
         self.psi = PasswordResetInvitation.objects.create(
             email='1234testemail@noone.ghost',
             username='anotherape',
@@ -123,12 +121,12 @@ class TestViews(unittest.TestCase):
         Invitation.objects.all().delete()
 
     def test_multiple_email(self):
-        '''
-        make sure that the multiple email invitation sends to all emails.
-        '''
-        my_admin = User.objects.create_superuser('test', 'myemail@test.com', 'test')
+        """
+        Make sure that the multiple email invitation sends to all emails.
+        """
+        User.objects.create_superuser('test', 'myemail@test.com', 'test')
         self.c.login(username='test', password='test')
-        response = self.c.post(
+        self.c.post(
             reverse('invite:invite'),
             {
                 u'form-INITIAL_FORMS': [u'0'],
@@ -161,10 +159,10 @@ class TestViews(unittest.TestCase):
         self.assertEqual(invite2.username, 'three')
 
     def test_invite_correct_group_selected(self):
-        '''
-        since we have to do some hacky group ordering chop around stuff,
+        """
+        Since we have to do some hacky group ordering chop around stuff,
         let's make sure that the invitation retains the right group.
-        '''
+        """
         prod_groups = [
             'UNT Archives',
             'Boyce',
@@ -177,9 +175,9 @@ class TestViews(unittest.TestCase):
         for g in prod_groups:
             Group.objects.create(name=g)
 
-        my_admin = User.objects.create_superuser('test', 'myemail@test.com', 'test')
+        User.objects.create_superuser('test', 'myemail@test.com', 'test')
         self.c.login(username='test', password='test')
-        response = self.c.post(
+        self.c.post(
             reverse('invite:invite'),
             {
                 u'form-MAX_NUM_FORMS': [u''],
@@ -201,15 +199,28 @@ class TestViews(unittest.TestCase):
         self.assertEqual(invite0.groups.all()[2].name, 'texgen')
 
     def test_amnesia_email_submit(self):
-        response = self.c.post(reverse('invite:amnesia'), {'email': 'avowin@test.test'})
+        response = self.c.post(
+            reverse('invite:amnesia'),
+            {'email': 'avowin@test.test'}
+        )
+
         self.assertIn('The email provided', response.content)
-    
+
     def test_amnesia_email_submit_case_sensitive(self):
-        response = self.c.post(reverse('invite:amnesia'), {'email': 'TEST@TEST.TEST'}, follow=True)
+        response = self.c.post(
+            reverse('invite:amnesia'),
+            {'email': 'TEST@TEST.TEST'},
+            follow=True
+        )
+
         self.assertIn('An email was sent to TEST@TEST.TEST', response.content)
 
     def test_signup_submit_same_email(self):
-        url = '{0}?code={1}'.format(reverse('invite:account_signup'), self.i.activation_code)
+        url = '{0}?code={1}'.format(
+            reverse('invite:account_signup'),
+            self.i.activation_code
+        )
+
         response = self.c.post(
             url,
             {
@@ -224,7 +235,7 @@ class TestViews(unittest.TestCase):
         self.assertIn('Email exists on other user', response.content)
 
     def test_invite_submit_same_email(self):
-        my_admin = User.objects.create_superuser('test', 'myemail@test.com', 'test')
+        User.objects.create_superuser('test', 'myemail@test.com', 'test')
         self.c.login(username='test', password='test')
         response = self.c.post(
             reverse('invite:invite'),
@@ -242,7 +253,7 @@ class TestViews(unittest.TestCase):
         self.assertIn('already belongs to a user', response.content)
 
     def test_reset_submit(self):
-        user = User.objects.create(
+        User.objects.create(
             username='django',
             email='1234testemail@noone.ghost',
             password='test',
@@ -255,9 +266,17 @@ class TestViews(unittest.TestCase):
             first_name='test',
             last_name='test',
         )
-        response = self.c.post(reverse('invite:reset'), {'password': 'test', 'password2': 'pest'})
+        response = self.c.post(
+            reverse('invite:reset'),
+            {'password': 'test', 'password2': 'pest'}
+        )
+
         self.assertIn('Passwords are not the same', response.content)
-        url = '{0}?reset_code={1}'.format(reverse('invite:reset'), psi.activation_code)
+
+        url = '{0}?reset_code={1}'.format(
+            reverse('invite:reset'),
+            psi.activation_code
+        )
         response = self.c.post(
             url,
             {'password': 'test', 'password2': 'test'},
@@ -266,13 +285,25 @@ class TestViews(unittest.TestCase):
         self.assertEqual(200, response.status_code)
 
     def test_forgotten_password(self):
-        '''user forgets his password test'''
-        response = self.c.post(reverse('invite:amnesia'), {'email': 'test@test.test'}, follow=True)
+        """User forgets his password test"""
+        response = self.c.post(
+            reverse('invite:amnesia'),
+            {'email': 'test@test.test'},
+            follow=True
+        )
+
         pri = PasswordResetInvitation.objects.get(email='test@test.test')
-        reset_link = '{0}?reset_code={1}'.format(reverse('invite:reset'), pri.activation_code)
+        reset_link = '{0}?reset_code={1}'.format(
+            reverse('invite:reset'), pri.activation_code)
+
         response = self.c.get(reset_link)
         self.assertIn('Enter your new password', response.content)
-        response = self.c.post(reset_link, {'password': 'kookaburra', 'password2': 'kookaburra'}, follow=True)
+
+        response = self.c.post(
+            reset_link,
+            {'password': 'kookaburra', 'password2': 'kookaburra'},
+            follow=True
+        )
         self.assertIn('Log out', response.content)
 
 
