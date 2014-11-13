@@ -7,7 +7,6 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
 from django.contrib.auth.models import User
-from django.contrib.sites.models import Site
 from django.views.decorators.csrf import csrf_protect
 
 from . import forms
@@ -237,9 +236,20 @@ def invite(request):
                     .cleaned_data['greeting']
                 )
                 # set m2m relationships from initial object creation
-                for permission in invite_item_formset.forms[0].cleaned_data['permissions']:
+                permissions = (
+                    invite_item_formset
+                    .forms[0]
+                    .cleaned_data['permissions']
+                )
+                groups = (
+                    invite_item_formset
+                    .forms[0]
+                    .cleaned_data['groups']
+                )
+
+                for permission in permissions:
                     i.permissions.add(permission)
-                for group in invite_item_formset.forms[0].cleaned_data['groups']:
+                for group in groups:
                     i.groups.add(group)
                 # send the email invitation
                 i.send()
@@ -254,7 +264,6 @@ def invite(request):
         },
         context_instance=RequestContext(request),
     )
-
 
 
 @login_required(redirect_field_name=None,
