@@ -20,7 +20,7 @@ setup(
     long_description=README,
     keywords="django invite invitation",
     author="University of North Texas Libraries",
-    url="https://github.com/unt-libraries/django-invitation",
+    url="https://github.com/unt-libraries/django-invite",
     classifiers=[
         "Environment :: Web Environment",
         "Framework :: Django",
