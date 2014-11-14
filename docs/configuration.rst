@@ -15,7 +15,7 @@ Settings
 
 **Default** : ``reverse('invite:index')``
 
-Where your users should be redirected to upon logging out from within the Invite app.
+Where your users ld be redirected to upon logging out from within the Invite app.
 
 
 ``INVITE_SIGNUP_SUCCESS_URL``
@@ -25,7 +25,7 @@ Where your users should be redirected to upon logging out from within the Invite
 
 **Default** : ``reverse('invite:index')``
 
-Upon successfully completed the signup form, the user will be redirected to the the value of this settings.
+Where the user will be redirected to upon successfully completing the signup form.
 
 ``INVITE_SERVICE_NAME``
 .......................
@@ -34,7 +34,7 @@ Upon successfully completed the signup form, the user will be redirected to the 
 
 **Default** : ``Site.objects.get_current().domain``
 
-This settings is used in the to create a customized email that is sent to the invited user. 
+This setting is used in the to create a customized email that is sent to the invited user. 
 
 
 ``INVITE_DEFAULT_FROM_EMAIL``
@@ -44,5 +44,5 @@ This settings is used in the to create a customized email that is sent to the in
 
 **Default** : ``django.conf.settings.DEFAULT_FROM_EMAIL``
 
-This is used to populate the 'From' field in the invitation email.
+The 'From' field for emails sent via the Invite app.
 
