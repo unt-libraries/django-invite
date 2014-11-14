@@ -1,6 +1,10 @@
 *.pyc
 *.swp
 *.swo
-_static
-_build
-_templates
+docs/_static
+docs/_build
+docs/_templates
+
+build
+dist
+*.egg-info
