@@ -23,6 +23,7 @@ See LICENSE.
 Invite was developed at the UNT Libraries.
 
 Contributors:
-* [Joey Liechty](http://github.com/yeahdef)
-* [Damon Kelley](http://github.com/damonkelley)
-* [Mark Phillips](http://github.com/vphill)
+
+- [Joey Liechty](http://github.com/yeahdef)
+- [Damon Kelley](http://github.com/damonkelley)
+- [Mark Phillips](http://github.com/vphill)
