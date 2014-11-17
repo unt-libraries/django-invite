@@ -16,11 +16,3 @@ Contents:
    permissions
    password-reset
 
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
-
