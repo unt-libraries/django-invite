@@ -11,7 +11,7 @@ Invite is a Django app for inviting new users to your new or existing Django pro
 
 Documentation, including installation instructions, can be viewed online at:
 
-insert readthdocs url here
+[http://django-invite.readthedocs.org](http://django-invite.readthedocs.org)
 
 
 ## License
