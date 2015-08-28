@@ -25,7 +25,7 @@ $ cd django-invite
 
 Install the requirements.
 ```sh
-$ pip install -r requirement.txt
+$ pip install -r requirements.txt
 ```
 
 Run the development server.
