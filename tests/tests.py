@@ -6,8 +6,8 @@ from django.contrib.auth.models import User, Group
 
 import unittest
 import mock
-from .models import Invitation, PasswordResetInvitation
-from . import settings as app_settings
+from invite.models import Invitation, PasswordResetInvitation
+from invite import settings as app_settings
 
 settings.SITE_ID = 1
 
