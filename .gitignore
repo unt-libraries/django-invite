@@ -1,6 +1,9 @@
 *.pyc
 *.swp
 *.swo
+
+.tox/
+
 docs/_static
 docs/_build
 docs/_templates
