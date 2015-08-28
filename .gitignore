@@ -5,6 +5,8 @@ docs/_static
 docs/_build
 docs/_templates
 
+tests/db.sqlite3
+
 build
 dist
 *.egg-info
