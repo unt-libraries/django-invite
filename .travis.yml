@@ -10,7 +10,6 @@ env:
     - TOX_ENV=py27-djangomaster
 matrix:
     allow_failures:
-        - env: TOX_ENV=flake8
         - env: TOX_ENV=py27-django18
         - env: TOX_ENV=py27-djangomaster
 install:
