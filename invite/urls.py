@@ -1,6 +1,7 @@
 from django.conf.urls import url, patterns
 
-urlpatterns = patterns('',
+urlpatterns = patterns(
+    '',
     url(r'^$', 'invite.views.index', name='index'),
     url(r'^invite/$', 'invite.views.invite', name='invite'),
     url(r'^resend/(?P<code>.*)/$', 'invite.views.resend', name='resend'),
