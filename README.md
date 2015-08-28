@@ -1,4 +1,6 @@
-# Django Invite
+# Django Invite  
+
+[![Build Status](https://travis-ci.org/unt-libraries/django-invite.svg?branch=master)](https://travis-ci.org/unt-libraries/django-invite)
 
 Invite is a Django app for inviting new users to your new or existing Django project.
 
