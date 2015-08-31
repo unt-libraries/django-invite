@@ -25,7 +25,7 @@ class InviteItem(models.Model):
         return self.first_name + ' ' + self.last_name
 
 
-class Invitation(models.Model):
+class AbstractInvitation(models.Model):
 
     def make_uuid():
         return str(uuid.uuid4())
@@ -37,35 +37,39 @@ class Invitation(models.Model):
         unique=True,
         help_text="unique id, generated on email submission",
     )
+
     first_name = models.CharField(
         max_length=36,
     )
+
     last_name = models.CharField(
         max_length=36,
     )
-    username = models.CharField(
-        max_length=36,
-    )
+
+    username = models.CharField(max_length=36)
+
     email = models.EmailField(
         max_length=41,
         help_text="the potential member's email address",
     )
-    custom_msg = models.TextField(
-        blank=True,
-    )
+
+    custom_msg = models.TextField(blank=True)
+
     date_invited = models.DateField(
         auto_now=True,
         help_text="the day on which the superuser invited the potential member",
     )
+
     permissions = models.ManyToManyField(Permission)
     groups = models.ManyToManyField(Group)
     is_super_user = models.BooleanField()
 
     class Meta:
+        abstract = True
         ordering = ["date_invited"]
 
-    def __unicode__(self):
-        return "%s, %s: %s" % (self.last_name, self.first_name, self.date_invited)
+
+class Invitation(AbstractInvitation):
 
     def send(self):
         """Sends an invitation email to ``self.email``."""
@@ -84,7 +88,7 @@ class Invitation(models.Model):
         send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [self.email])
 
 
-class PasswordResetInvitation(Invitation):
+class PasswordResetInvitation(AbstractInvitation):
 
     def send(self):
         """Sends an invitation email to ``self.email``."""
