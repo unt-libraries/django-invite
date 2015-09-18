@@ -9,7 +9,8 @@ from . import settings as app_settings
 
 
 class InviteItem(models.Model):
-    '''This is the model using to generate the forms'''
+    """This is the model used to generate the forms."""
+
     first_name = models.CharField(max_length=150)
     last_name = models.CharField(max_length=150)
     email = models.EmailField(max_length=150)
@@ -24,13 +25,11 @@ class InviteItem(models.Model):
 
 
 class AbstractInvitation(models.Model):
-
-    def make_uuid():
-        return str(uuid.uuid4())
+    """Defines an abstract model with basic invitation fields."""
 
     activation_code = models.CharField(
         max_length=36,
-        default=make_uuid,
+        default=uuid.uuid4,
         editable=False,
         unique=True,
         help_text="unique id, generated on email submission",
@@ -74,6 +73,7 @@ class AbstractInvitation(models.Model):
 
 
 class Invitation(AbstractInvitation):
+    """Defines a model for new user invitations."""
 
     def send(self):
         """Sends an invitation email to ``self.email``."""
@@ -95,6 +95,7 @@ class Invitation(AbstractInvitation):
 
 
 class PasswordResetInvitation(AbstractInvitation):
+    """Defines a model for invitations created for password resets."""
 
     def send(self):
         """Sends an invitation email to ``self.email``."""
