@@ -1,6 +1,5 @@
-from django.shortcuts import render, render_to_response
+from django.shortcuts import render
 from django.core.urlresolvers import reverse, reverse_lazy
-from django.template import RequestContext
 from django.forms.formsets import formset_factory, BaseFormSet
 from django.http import HttpResponseRedirect
 from django.contrib.auth import authenticate, login
@@ -41,13 +40,13 @@ def reset(request):
                     return HttpResponseRedirect(
                         app_settings.INVITE_SIGNUP_SUCCESS_URL)
         else:
-            return render_to_response(
+            return render(
+                request,
                 'invite/reset.html',
                 {
                     'resetform': form,
                     'reset_code': reset_code,
-                },
-                context_instance=RequestContext(request)
+                }
             )
     elif request.method == 'GET':
         # they come bearing a reset_code
@@ -58,34 +57,34 @@ def reset(request):
             except PasswordResetInvitation.DoesNotExist:
                 return render(
                     request,
-                    'invite/denied.html',
-                    context_instance=RequestContext(request)
+                    'invite/denied.html'
                 )
-            return render_to_response(
+            return render(
+                request,
                 'invite/reset.html',
                 {
                     'reset_code': pri.activation_code,
                     'resetform': forms.ResetForm(),
-                },
-                context_instance=RequestContext(request)
+                }
             )
         # or an email address
         elif 'email' in request.GET.keys():
-            return render_to_response(
+            return render(
+                request,
                 'invite/confirm_reset.html',
                 {
                     'email': request.GET.get('email'),
                     'resetform': forms.ResetForm(),
-                },
-                context_instance=RequestContext(request)
+                }
             )
         # otherwise tell em to scram
         else:
-            return render_to_response(
+            return render(
+                request,
                 'invite/index.html',
                 {
                     'resetform': forms.ResetForm(),
-                }, context_instance=RequestContext(request)
+                }
             )
 
 
@@ -111,16 +110,16 @@ def amnesia(request):
                 form.cleaned_data['email'])
             return HttpResponseRedirect(redirect)
         else:
-            return render_to_response(
+            return render(
+                request,
                 'invite/amnesia.html',
-                {'iforgotform': form},
-                context_instance=RequestContext(request)
+                {'iforgotform': form}
             )
     else:
-        return render_to_response(
+        return render(
+            request,
             'invite/amnesia.html',
-            {'iforgotform': forms.IForgotForm()},
-            context_instance=RequestContext(request)
+            {'iforgotform': forms.IForgotForm()}
         )
 
 
@@ -151,21 +150,20 @@ def log_in_user(request):
         'invite/login.html',
         {
             'login_form': form,
-        },
-        context_instance=RequestContext(request)
+        }
     )
 
 
 @login_required(redirect_field_name=None,
                 login_url=reverse_lazy('invite:login'))
 def index(request):
-    return render_to_response(
+    return render(
+        request,
         'invite/index.html',
         {
             'invites': Invitation.objects.all().order_by('-date_invited'),
             'users': User.objects.all().order_by('date_joined'),
-        },
-        context_instance=RequestContext(request)
+        }
     )
 
 
@@ -178,19 +176,18 @@ def resend(request, code):
     except Invitation.DoesNotExist:
         return render(
             request,
-            'invite/denied.html',
-            context_instance=RequestContext(request)
+            'invite/denied.html'
         )
     i.send()
     resent_user = '%s %s' % (i.first_name, i.last_name)
-    return render_to_response(
+    return render(
+        request,
         'invite/index.html',
         {
             'invites': Invitation.objects.all(),
             'resent_user': resent_user,
             'users': User.objects.all(),
-        },
-        context_instance=RequestContext(request)
+        }
     )
 
 
@@ -203,8 +200,7 @@ def revoke(request, code):
     except Invitation.DoesNotExist:
         return render(
             request,
-            'invite/denied.html',
-            context_instance=RequestContext(request)
+            'invite/denied.html'
         )
     i.delete()
     return index(request)
@@ -257,12 +253,12 @@ def invite(request):
             return HttpResponseRedirect(reverse('invite:index'))
     else:
         invite_item_formset = InviteItemFormSet()
-    return render_to_response(
+    return render(
+        request,
         'invite/invite.html',
         {
             'invite_item_formset': invite_item_formset,
-        },
-        context_instance=RequestContext(request),
+        }
     )
 
 
@@ -271,8 +267,7 @@ def invite(request):
 def about(request):
     return render(
         request,
-        'invite/about.html',
-        context_instance=RequestContext(request)
+        'invite/about.html'
     )
 
 
@@ -285,8 +280,7 @@ def signup(request):
     except Invitation.DoesNotExist:
         return render(
             request,
-            'invite/denied.html',
-            context_instance=RequestContext(request)
+            'invite/denied.html'
         )
     # if the form is submitted
     if request.method == 'POST':
@@ -342,6 +336,5 @@ def signup(request):
             'form': form,
             'service_name': app_settings.get_service_name(),
             'activation_code': code,
-        },
-        context_instance=RequestContext(request)
+        }
     )
