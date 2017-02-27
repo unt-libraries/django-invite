@@ -75,16 +75,16 @@ class AbstractInvitation(models.Model):
 class Invitation(AbstractInvitation):
     """Defines a model for new user invitations."""
 
-    def send(self):
+    def send(self, request=None):
         """Sends an invitation email to ``self.email``."""
 
         subject = 'You have been invited to join the %s' % (
-            app_settings.get_service_name())
+            app_settings.get_service_name(request=request))
         message = render_to_string(
             'invite/invitation_email.txt',
             {
-                'domain': Site.objects.get_current().domain,
-                'service_name': app_settings.get_service_name(),
+                'domain': Site.objects.get_current(request=request).domain,
+                'service_name': app_settings.get_service_name(request=request),
                 'activation_code': self.activation_code,
                 'custom_msg': self.custom_msg,
                 'permissions': self.permissions.all()
@@ -97,10 +97,10 @@ class Invitation(AbstractInvitation):
 class PasswordResetInvitation(AbstractInvitation):
     """Defines a model for invitations created for password resets."""
 
-    def send(self):
+    def send(self, request=None):
         """Sends an invitation email to ``self.email``."""
 
-        subject = 'Password Reset: %s' % (app_settings.get_service_name())
+        subject = 'Password Reset: %s' % (app_settings.get_service_name(request=request))
         message = render_to_string(
             'invite/reset_email.txt',
             {
@@ -113,10 +113,10 @@ class PasswordResetInvitation(AbstractInvitation):
 
         send_mail(subject, message, app_settings.INVITE_DEFAULT_FROM_EMAIL, [self.email])
 
-    def send_confirm(self):
+    def send_confirm(self, request=None):
         """Sends an confirmation email to ``self.email``."""
 
-        subject = 'Password Changed: %s' % (app_settings.get_service_name())
+        subject = 'Password Changed: %s' % (app_settings.get_service_name(request=request))
         message = render_to_string(
             'invite/reset_confirm_email.txt',
             {

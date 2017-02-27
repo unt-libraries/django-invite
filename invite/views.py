@@ -27,7 +27,7 @@ def reset(request):
             user = User.objects.get(username=pri.username)
             user.set_password(form.cleaned_data['password'])
             user.save()
-            pri.send_confirm()
+            pri.send_confirm(request=request)
             pri.delete()
             user = authenticate(
                 username=pri.username,
@@ -103,7 +103,7 @@ def amnesia(request):
                 email=form.cleaned_data['email'],
             )
             # send the email reset link
-            i.send()
+            i.send(request=request)
             i.save()
             redirect = '{0}?email={1}'.format(
                 reverse('invite:reset'),
@@ -178,7 +178,7 @@ def resend(request, code):
             request,
             'invite/denied.html'
         )
-    i.send()
+    i.send(request=request)
     resent_user = '%s %s' % (i.first_name, i.last_name)
     return render(
         request,
@@ -248,7 +248,7 @@ def invite(request):
                 for group in groups:
                     i.groups.add(group)
                 # send the email invitation
-                i.send()
+                i.send(request=request)
                 i.save()
             return HttpResponseRedirect(reverse('invite:index'))
     else:

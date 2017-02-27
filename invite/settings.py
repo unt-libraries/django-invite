@@ -23,7 +23,7 @@ INVITE_DEFAULT_FROM_EMAIL = getattr(
 )
 
 
-def get_service_name():
+def get_service_name(request=None):
     """
     INVITE_SERVICE_NAME
 
@@ -36,4 +36,4 @@ def get_service_name():
     return getattr(
         settings,
         'INVITE_SERVICE_NAME',
-        Site.objects.get_current().name)
+        Site.objects.get_current(request=request).name)
