@@ -147,6 +147,7 @@ class InviteItemForm(forms.ModelForm):
 
     class Meta:
         model = InviteItem
+        fields = '__all__'
         widgets = {
             'greeting': forms.Textarea(
                 attrs={
