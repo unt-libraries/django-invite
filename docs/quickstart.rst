@@ -12,10 +12,10 @@ Requirements
 Installation
 ------------
 
-* ``pip install git+https://github.com/unt-libraries/django-invite.git@1.0.0``
+* ``pip install git+https://github.com/unt-libraries/django-invite.git@2.0.0``
 
 * Add ``invite`` to your ``INSTALLED_APPS``
-* Run ``./manage.py syncdb``
+* Run ``./manage.py migrate``
 * Add the following to your root ``urls.py``. ::
 
     urlpatterns = [
