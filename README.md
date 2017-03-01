@@ -28,6 +28,16 @@ Install the requirements.
 $ pip install -r requirements.txt
 ```
 
+Run the migrations.
+```sh
+$ ./manage.py migrate
+```
+
+Create a superuser.
+```sh
+$ ./manage.py createsuperuser
+```
+
 Run the development server.
 ```sh
 $ ./manage.py runserver
