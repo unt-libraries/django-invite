@@ -8,7 +8,7 @@ Requirements
 * The appropriate EmailBackend will need to be configured. See the `Django Docs <https://docs.djangoproject.com/en/dev/topics/email/>`_ for more information.
 
 .. note::
-    If the Sites framework was not previously install, make sure you configure the domain and name. Those values are used to create urls for invited users. Upon installation of the Sites framework, both values default to `example.com` 
+    If the Sites framework was not previously installed, make sure you configure the domain and name. Those values are used to create urls for invited users. Upon installation of the Sites framework, both values default to `example.com` 
 Installation
 ------------
 

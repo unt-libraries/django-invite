@@ -15,7 +15,7 @@ Settings
 
 **Default** : ``reverse('invite:index')``
 
-Where your users ld be redirected to upon logging out from within the Invite app.
+Where your users would be redirected to upon logging out from within the Invite app.
 
 
 ``INVITE_SIGNUP_SUCCESS_URL``
