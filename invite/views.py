@@ -334,7 +334,7 @@ def signup(request):
         {
             'request': request,
             'form': form,
-            'service_name': app_settings.get_service_name(),
+            'service_name': app_settings.get_service_name(request=request),
             'activation_code': code,
         }
     )
