@@ -184,7 +184,7 @@ def resend(request, code):
         request,
         'invite/index.html',
         {
-            'invites': Invitation.objects.all(),
+            'invites': Invitation.objects.all().order_by('-date_invited'),
             'resent_user': resent_user,
             'users': User.objects.all(),
         }
