@@ -11,7 +11,7 @@ INVITE_LOGOUT_REDIRECT_URL = getattr(
 
 INVITE_SIGNUP_SUCCESS_URL = getattr(
     settings,
-    'INVITE_SIGNUP_REDIRECT_PATH',
+    'INVITE_SIGNUP_SUCCESS_URL',
     reverse_lazy('invite:index')
 )
 
