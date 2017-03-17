@@ -106,7 +106,7 @@ class PasswordResetInvitation(AbstractInvitation):
             {
                 'first_name': self.first_name,
                 'username': self.username,
-                'domain': Site.objects.get_current().domain,
+                'domain': Site.objects.get_current(request=request).domain,
                 'reset_code': self.activation_code,
             }
         )
@@ -122,7 +122,7 @@ class PasswordResetInvitation(AbstractInvitation):
             {
                 'first_name': self.first_name,
                 'username': self.username,
-                'domain': Site.objects.get_current().domain,
+                'domain': Site.objects.get_current(request=request).domain,
                 'reset_code': self.activation_code,
             }
         )
