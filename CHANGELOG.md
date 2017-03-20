@@ -6,12 +6,12 @@ Change Log
 
 * Fixed bug that prevented password resets when no SITE_ID was set.
 * Corrected usage of deprecated setting.
-* Fixed sorting difference that occured after resending invitation email.
+* Fixed sorting difference that occurred after resending invitation email.
 
 2.0.1
 -----
 
-* Fixed bug that prevented signing up for an accoung when no SITE_ID was set.
+* Fixed bug that prevented signing up for an account when no SITE_ID was set.
 
 2.0.0
 -----
