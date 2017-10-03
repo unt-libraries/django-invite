@@ -186,7 +186,7 @@ def resend(request, code):
         {
             'invites': Invitation.objects.all().order_by('-date_invited'),
             'resent_user': resent_user,
-            'users': User.objects.all(),
+            'users': User.objects.all().order_by('date_joined'),
         }
     )
 
