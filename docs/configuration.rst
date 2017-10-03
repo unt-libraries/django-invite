@@ -46,3 +46,13 @@ This setting is used in the to create a customized email that is sent to the inv
 
 The 'From' field for emails sent via the Invite app.
 
+
+``INVITE_SHOW_EMAILS``
+.............................
+
+**Optional**
+
+**Default** : ``False``
+
+Whether or not to show superusers the emails associated with invitations/registrations on the accounts page.
+
