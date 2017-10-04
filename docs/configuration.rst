@@ -54,5 +54,5 @@ The 'From' field for emails sent via the Invite app.
 
 **Default** : ``False``
 
-Whether or not to show superusers the emails associated with invitations/registrations on the accounts page.
+Whether or not to show superusers and users with invitation permission the emails associated with invitations/registrations on the accounts page.
 
