@@ -1,5 +1,6 @@
 from .common import *  # noqa
 
+INVITE_SHOW_EMAILS = True
 
 DATABASES = {
     'default': {

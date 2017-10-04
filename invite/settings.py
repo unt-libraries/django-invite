@@ -23,6 +23,13 @@ INVITE_DEFAULT_FROM_EMAIL = getattr(
 )
 
 
+INVITE_SHOW_EMAILS = getattr(
+    settings,
+    'INVITE_SHOW_EMAILS',
+    False
+)
+
+
 def get_service_name(request=None):
     """
     INVITE_SERVICE_NAME

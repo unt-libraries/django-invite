@@ -163,6 +163,7 @@ def index(request):
         {
             'invites': Invitation.objects.all().order_by('-date_invited'),
             'users': User.objects.all().order_by('date_joined'),
+            'show_emails': app_settings.INVITE_SHOW_EMAILS,
         }
     )
 
@@ -187,6 +188,7 @@ def resend(request, code):
             'invites': Invitation.objects.all().order_by('-date_invited'),
             'resent_user': resent_user,
             'users': User.objects.all().order_by('date_joined'),
+            'show_emails': app_settings.INVITE_SHOW_EMAILS,
         }
     )
 
