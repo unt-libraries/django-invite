@@ -164,8 +164,10 @@ def index(request):
         request,
         'invite/index.html',
         {
-            'invites': Invitation.objects.filter(date_invited__gte=after_date).order_by('-date_invited'),
-            'users': User.objects.filter(date_joined__gte=after_date).order_by('date_joined'),
+            'invites': Invitation.objects.filter(date_invited__gte=after_date)
+                                         .order_by('-date_invited'),
+            'users': User.objects.filter(date_joined__gte=after_date)
+                                 .order_by('date_joined'),
             'show_emails': app_settings.INVITE_SHOW_EMAILS,
         }
     )
@@ -189,9 +191,11 @@ def resend(request, code):
         request,
         'invite/index.html',
         {
-            'invites': Invitation.objects.filter(date_invited__gte=after_date).order_by('-date_invited'),
+            'invites': Invitation.objects.filter(date_invited__gte=after_date)
+                                         .order_by('-date_invited'),
             'resent_user': resent_user,
-            'users': User.objects.filter(date_joined__gte=after_date).order_by('date_joined'),
+            'users': User.objects.filter(date_joined__gte=after_date)
+                                 .order_by('date_joined'),
             'show_emails': app_settings.INVITE_SHOW_EMAILS,
         }
     )
