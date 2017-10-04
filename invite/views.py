@@ -1,3 +1,5 @@
+from datetime import date, timedelta
+
 from django.shortcuts import render
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.forms.formsets import formset_factory, BaseFormSet
@@ -157,12 +159,13 @@ def log_in_user(request):
 @login_required(redirect_field_name=None,
                 login_url=reverse_lazy('invite:login'))
 def index(request):
+    after_date = date.today() - timedelta(weeks=12)
     return render(
         request,
         'invite/index.html',
         {
-            'invites': Invitation.objects.all().order_by('-date_invited'),
-            'users': User.objects.all().order_by('date_joined'),
+            'invites': Invitation.objects.filter(date_invited__gte=after_date).order_by('-date_invited'),
+            'users': User.objects.filter(date_joined__gte=after_date).order_by('date_joined'),
             'show_emails': app_settings.INVITE_SHOW_EMAILS,
         }
     )
@@ -179,15 +182,16 @@ def resend(request, code):
             request,
             'invite/denied.html'
         )
+    after_date = date.today() - timedelta(weeks=12)
     i.send(request=request)
     resent_user = '%s %s' % (i.first_name, i.last_name)
     return render(
         request,
         'invite/index.html',
         {
-            'invites': Invitation.objects.all().order_by('-date_invited'),
+            'invites': Invitation.objects.filter(date_invited__gte=after_date).order_by('-date_invited'),
             'resent_user': resent_user,
-            'users': User.objects.all().order_by('date_joined'),
+            'users': User.objects.filter(date_joined__gte=after_date).order_by('date_joined'),
             'show_emails': app_settings.INVITE_SHOW_EMAILS,
         }
     )
