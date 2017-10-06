@@ -9,7 +9,7 @@ Settings
 --------
 
 ``INVITE_LOGOUT_REDIRECT_URL``
-...............................
+..............................
 
 **Optional**
 
@@ -19,7 +19,7 @@ Where your users would be redirected to upon logging out from within the Invite 
 
 
 ``INVITE_SIGNUP_SUCCESS_URL``
-...............................
+.............................
 
 **Optional**
 
@@ -48,11 +48,33 @@ The 'From' field for emails sent via the Invite app.
 
 
 ``INVITE_SHOW_EMAILS``
-.............................
+......................
 
 **Optional**
 
 **Default** : ``False``
 
 Whether or not to show superusers and users with invitation permission the emails associated with invitations/registrations on the accounts page.
+
+
+``INVITE_OPEN_INVITE_CUTOFF``
+.............................
+
+**Optional**
+
+**Default** : ``None``
+
+Defines a time period (in days back from today) for displaying open invitations. Open invitations older than that will not be shown on the accounts page.
+A value of None will be interpreted to mean that all open invitations should be shown, while a value of 0 means none should be shown.
+
+
+``INVITE_REGISTRATION_CUTOFF``
+..............................
+
+**Optional**
+
+**Default** : ``None``
+
+Defines a time period (in days back from today) for displaying registrations. Registrations older than that will not be shown on the accounts page.
+A value of None will be interpreted to mean that all registrations should be shown, while a value of 0 means none should be shown.
 
