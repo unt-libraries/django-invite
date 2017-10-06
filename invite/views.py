@@ -1,5 +1,3 @@
-from datetime import date, timedelta
-
 from django.shortcuts import render
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.forms.formsets import formset_factory, BaseFormSet
@@ -13,6 +11,7 @@ from django.views.decorators.csrf import csrf_protect
 from . import forms
 from .models import Invitation, PasswordResetInvitation
 from . import settings as app_settings
+from .utils import get_cutoff_date
 
 
 def reset(request):
@@ -159,15 +158,24 @@ def log_in_user(request):
 @login_required(redirect_field_name=None,
                 login_url=reverse_lazy('invite:login'))
 def index(request):
-    after_date = date.today() - timedelta(weeks=12)
+    invites = Invitation.objects.all().order_by('-date_invited')
+    cutoff_date = get_cutoff_date(app_settings.INVITE_OPEN_INVITE_CUTOFF)
+    if cutoff_date is not None:
+        # Remove all invitations that took place before that date.
+        invites = invites.filter(date_invited__gte=cutoff_date)
+
+    users = User.objects.all().order_by('date_joined')
+    cutoff_date = get_cutoff_date(app_settings.INVITE_REGISTRATION_CUTOFF)
+    if cutoff_date is not None:
+        # Remove all registrations that took place before that date.
+        users = users.filter(date_joined__gte=cutoff_date)
+
     return render(
         request,
         'invite/index.html',
         {
-            'invites': Invitation.objects.filter(date_invited__gte=after_date)
-                                         .order_by('-date_invited'),
-            'users': User.objects.filter(date_joined__gte=after_date)
-                                 .order_by('date_joined'),
+            'invites': invites,
+            'users': users,
             'show_emails': app_settings.INVITE_SHOW_EMAILS,
         }
     )
@@ -184,18 +192,28 @@ def resend(request, code):
             request,
             'invite/denied.html'
         )
-    after_date = date.today() - timedelta(weeks=12)
     i.send(request=request)
     resent_user = '%s %s' % (i.first_name, i.last_name)
+
+    invites = Invitation.objects.all().order_by('-date_invited')
+    cutoff_date = get_cutoff_date(app_settings.INVITE_OPEN_INVITE_CUTOFF)
+    if cutoff_date is not None:
+        # Remove all invitations that took place before that date.
+        invites = invites.filter(date_invited__gte=cutoff_date)
+
+    users = User.objects.all().order_by('date_joined')
+    cutoff_date = get_cutoff_date(app_settings.INVITE_REGISTRATION_CUTOFF)
+    if cutoff_date is not None:
+        # Remove all registrations that took place before that date.
+        users = users.filter(date_joined__gte=cutoff_date)
+
     return render(
         request,
         'invite/index.html',
         {
-            'invites': Invitation.objects.filter(date_invited__gte=after_date)
-                                         .order_by('-date_invited'),
+            'invites': invites,
             'resent_user': resent_user,
-            'users': User.objects.filter(date_joined__gte=after_date)
-                                 .order_by('date_joined'),
+            'users': users,
             'show_emails': app_settings.INVITE_SHOW_EMAILS,
         }
     )

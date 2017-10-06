@@ -30,6 +30,20 @@ INVITE_SHOW_EMAILS = getattr(
 )
 
 
+INVITE_OPEN_INVITE_CUTOFF = getattr(
+    settings,
+    'INVITE_OPEN_INVITE_CUTOFF',
+    None
+)
+
+
+INVITE_REGISTRATION_CUTOFF = getattr(
+    settings,
+    'INVITE_REGISTRATION_CUTOFF',
+    None
+)
+
+
 def get_service_name(request=None):
     """
     INVITE_SERVICE_NAME

@@ -1,0 +1,12 @@
+from datetime import date, timedelta
+
+
+def get_cutoff_date(days):
+    """Calculate the cutoff date or return None if no time period was set."""
+    if days is None or type(days) != int:
+        return None
+    else:
+        if days >= 0:
+            return date.today() - timedelta(days=days)
+        else:
+            return None
