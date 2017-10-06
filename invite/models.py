@@ -53,7 +53,7 @@ class AbstractInvitation(models.Model):
     custom_msg = models.TextField(blank=True)
 
     date_invited = models.DateField(
-        auto_now=True,
+        auto_now_add=True,
         help_text="the day on which the superuser invited the potential member",
     )
 
