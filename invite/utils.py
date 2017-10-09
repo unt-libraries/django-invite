@@ -6,7 +6,9 @@ def get_cutoff_date(days):
     if days is None or type(days) != int:
         return None
     else:
-        if days >= 0:
+        if days > 0:
             return date.today() - timedelta(days=days)
+        elif days == 0:
+            return date.today() + timedelta(days=2)
         else:
             return None
