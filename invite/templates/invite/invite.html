@@ -34,6 +34,16 @@
                     });
                 }
 
+                // Make sure the first row always has the button to add new rows
+                if ($('#add').length == 0){
+                    $('.delete').first().after($('<button id="add" class="btn btn-info" href="#"><i class="icon-plus"></i></button>')); 
+                    // Register the click event handler
+                    $("#add").click(function() {
+                        return addForm(this, 'form');
+                    });
+                }
+
+
             } // End if
             else {
                     alert("You have to enter at least one invite");
@@ -53,6 +63,8 @@
                 // e.g. error messages
                 $(".errorlist", row).remove();
                 $(row).children().removeClass('error');
+                // Remove the button for adding rows
+                $(row).find('#add').remove();
 
                 // Relabel/rename all the relevant bits
                 $(row).children().children().each(function() {
@@ -122,18 +134,12 @@
                             {{ form.username }}
                             <label class='label label-inverse' style='width:105px;'>Superuser? {{ form.is_super_user }}</label>
                         </div>
-                        <div class="span1">
+                        <div class="span2">
                             <button class="delete btn btn-danger" href="#"><i class='icon-remove'></i></button>
+                            <button id='add' class="btn btn-info" href="#"><i class='icon-plus'></i></button>
                         </div>
                     </div>
                 {% endfor %}
-                <div class='row'>
-                    <div class="span9" style='text-align: right;'>
-                    </div>
-                    <div class="span1">
-                        <button id='add' class="btn btn-info" href="#"><i class='icon-plus'></i></button></span>
-                    </div>
-                </div>
             </div>
             <div class='well well-small'>
                 <div class="row-fluid">
