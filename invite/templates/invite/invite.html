@@ -169,21 +169,21 @@
                     </div>
                 </div>
                 <div class="row-fluid">
-                    <div class="span1">
+                    <div class="span1" style='margin-top: 5px'>
                         {{ invite_item_formset.forms.0.permissions.label }}
                     </div>
                     <div class="span6" style='text-align: left;'>
-                        <input type="text" id="perms-search" class="span6"/>
+                        <input type="text" id="perms-search" placeholder="Search permissions." class="span6" style="width: 511px"/>
                         {{ invite_item_formset.forms.0.permissions }}
                         Hold control to select multiple
                     </div>
                 </div>
                 <div class="row-fluid">
-                    <div class="span1">
+                    <div class="span1" style='margin-top: 5px'>
                         {{ invite_item_formset.forms.0.groups.label }}
                     </div>
                     <div class="span6" style='text-align: left;'>
-                        <input type="text" id="groups-search" class="span6"/>
+                        <input type="text" id="groups-search" placeholder="Search groups" class="span6" style="width: 511px"/>
                         {{ invite_item_formset.forms.0.groups }}
                     </div>
                 </div>
