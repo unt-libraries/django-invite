@@ -35,8 +35,9 @@
                 }
 
                 // Make sure the first row always has the button to add new rows
-                if ($('#add').length == 0){
-                    $('.delete').first().after($('<button id="add" class="btn btn-info" href="#"><i class="icon-plus"></i></button>')); 
+                var addBtn = '<button id="add" class="btn btn-info" href="#"><i class="icon-plus"></i></button>';
+                if (forms.first().find("button#add").length === 0){
+                    forms.first().find('.delete').after(addBtn); 
                     // Register the click event handler
                     $("#add").click(function() {
                         return addForm(this, 'form');
@@ -64,7 +65,7 @@
                 $(".errorlist", row).remove();
                 $(row).children().removeClass('error');
                 // Remove the button for adding rows
-                $(row).find('#add').remove();
+                $("#add", row).remove();
 
                 // Relabel/rename all the relevant bits
                 $(row).children().children().each(function() {
@@ -104,7 +105,24 @@
         $(".delete").click(function() {
             return deleteForm(this, 'form');
         });
-    });
+
+        // Search through available <options> and show only those that match
+        function searchOptions() {
+            var searchTerm = $(this).val().toLowerCase();
+            var options = $(this).siblings().find('option');
+
+            for (i=0; i< options.length; i++) {
+                if (options[i].text.toLowerCase().indexOf(searchTerm) > -1) {
+                    options[i].style.display = '';
+                } else {
+                    options[i].style.display = 'none';
+                }
+            }
+        }
+
+        // Register the keyup event handler so the search boxes work
+        $("#perms-search, #groups-search").keyup(searchOptions);
+    })
     </script>
 
 {% endblock %}
@@ -155,6 +173,7 @@
                         {{ invite_item_formset.forms.0.permissions.label }}
                     </div>
                     <div class="span6" style='text-align: left;'>
+                        <input type="text" id="perms-search" class="span6"/>
                         {{ invite_item_formset.forms.0.permissions }}
                         Hold control to select multiple
                     </div>
@@ -164,6 +183,7 @@
                         {{ invite_item_formset.forms.0.groups.label }}
                     </div>
                     <div class="span6" style='text-align: left;'>
+                        <input type="text" id="groups-search" class="span6"/>
                         {{ invite_item_formset.forms.0.groups }}
                     </div>
                 </div>
