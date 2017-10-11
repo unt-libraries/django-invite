@@ -58,7 +58,7 @@
                 // Clone a form (without event handlers) from the first form
                 var row = $(".control-group:first").clone(false).get(0);
                 // Insert it after the last form
-                $(row).removeAttr('id').hide().insertAfter(".control-group:last").slideDown(300);
+                $(row).removeAttr('id').hide().insertAfter("#invitees .control-group:last").slideDown(300);
 
                 // Remove the bits we don't want in the new row/form
                 // e.g. error messages
@@ -109,7 +109,7 @@
         // Search through available <options> and show only those that match
         function searchOptions() {
             var searchTerm = $(this).val().toLowerCase();
-            var options = $(this).siblings().find('option');
+            var options = $(this).parent().siblings().find('option');
 
             for (i=0; i< options.length; i++) {
                 if (options[i].text.toLowerCase().indexOf(searchTerm) > -1) {
@@ -130,9 +130,9 @@
 {% block content %}
     {% if perms.invite.add_invitation %}
         <h3>Whom would you like to invite, {{ request.user|title }}?</h3>
-        <form id='invite' class="navbar-form" method="POST">{% csrf_token %}
+        <form id='invite' class="navbar-form form-horizontal" method="POST">{% csrf_token %}
             {{ invite_item_formset.management_form }}
-            <div class='well well-small'>
+            <div class='well well-small' id="invitees">
                 {% for form in invite_item_formset %}
                      {% if form.errors %}
                         <div class="alert alert-error">
@@ -160,38 +160,40 @@
                 {% endfor %}
             </div>
             <div class='well well-small'>
-                <div class="row-fluid">
-                    <div class="span1">
+                <div class="control-group">
+                    <label class="control-label" style='text-align: left;'>
                         Optional Greeting
-                    </div>
-                    <div class="span6" style='text-align: left;'>
+                    </label>
+                    <div class="controls">
                         {{ invite_item_formset.forms.0.greeting }}
                     </div>
                 </div>
-                <div class="row-fluid">
-                    <div class="span1" style='margin-top: 5px'>
+                <div class="control-group">
+                    <label class="control-label" style='text-align: left;'>
                         {{ invite_item_formset.forms.0.permissions.label }}
+                    </label>
+                    <div class="controls">
+                        <input type="text" id="perms-search" placeholder="Search permissions." class="span6"/>
                     </div>
-                    <div class="span6" style='text-align: left;'>
-                        <input type="text" id="perms-search" placeholder="Search permissions." class="span6" style="width: 511px"/>
+                    <div class="controls">
                         {{ invite_item_formset.forms.0.permissions }}
-                        Hold control to select multiple
+                        <span class="help-block">Hold control to select multiple</span>
                     </div>
                 </div>
-                <div class="row-fluid">
-                    <div class="span1" style='margin-top: 5px'>
+                <div class="control-group">
+                    <label class="control-label" style='text-align: left;'>
                         {{ invite_item_formset.forms.0.groups.label }}
+                    </label>
+                    <div class="controls">
+                        <input type="text" id="groups-search" placeholder="Search groups." class="span6"/>
                     </div>
-                    <div class="span6" style='text-align: left;'>
-                        <input type="text" id="groups-search" placeholder="Search groups" class="span6" style="width: 511px"/>
+                    <div class="controls">
                         {{ invite_item_formset.forms.0.groups }}
                     </div>
                 </div>
-                <div class="row-fluid">
-                    <div class="span1">
-                    </div>
-                    <div class="span6" style='text-align: left;'>
-                        <input name="invite-button" id="invite-button" class="btn btn-primary btn-large" type="submit" value="Send email invitation(s)" style='width: 511px'/>
+                <div class="control-group">
+                    <div class="controls span6">
+                        <input name="invite-button" id="invite-button" class="btn btn-primary btn-large btn-block" type="submit" value="Send email invitation(s)"/>
                     </div>
                 </div>
             </div>
