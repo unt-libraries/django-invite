@@ -21,7 +21,7 @@
                 // Delete the item/form
                 $(btn).parents('.control-group').remove();
 
-                var forms = $('.control-group'); // Get all the forms
+                var forms = $('#invitees .control-group'); // Get all the forms
 
                 // Update the total number of forms (1 less than before)
                 $('#id_' + prefix + '-TOTAL_FORMS').val(forms.length);
@@ -56,7 +56,7 @@
             var formCount = parseInt($('#id_' + prefix + '-TOTAL_FORMS').val());
 
                 // Clone a form (without event handlers) from the first form
-                var row = $(".control-group:first").clone(false).get(0);
+                var row = $("#invitees .control-group:first").clone(false).get(0);
                 // Insert it after the last form
                 $(row).removeAttr('id').hide().insertAfter("#invitees .control-group:last").slideDown(300);
 
