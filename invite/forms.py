@@ -153,7 +153,7 @@ class InviteItemForm(forms.ModelForm):
                 attrs={
                     'placeholder': 'This optional greeting will be delivered to all recipients.',
                     'style': 'height: 150px; resize: none;',
-                    'class': 'span6',
+                    'class': 'span7',
                 }
             ),
             'first_name': forms.TextInput(
@@ -175,13 +175,13 @@ class InviteItemForm(forms.ModelForm):
             'permissions': forms.SelectMultiple(
                 attrs={
                     'style': 'height: 300px;',
-                    'class': 'span6',
+                    'class': 'span7',
                 },
             ),
             'groups': forms.SelectMultiple(
                 attrs={
                     'style': 'height: 300px;',
-                    'class': 'span6',
+                    'class': 'span7',
                 },
             ),
             'is_super_user': forms.CheckboxInput(

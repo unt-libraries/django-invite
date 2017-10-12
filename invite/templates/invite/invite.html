@@ -144,7 +144,7 @@
                             {% endfor %}
                         </div>
                     {% endif %}
-                    <div id='{{ form.prefix }}-row' class='form-horizontal row control-group'>
+                    <div id='{{ form.prefix }}-row' class='form-horizontal row control-group' style='margin-bottom: 10px;'>
                         <div class="span9" >
                             {{ form.first_name }}
                             {{ form.last_name }}
@@ -173,7 +173,7 @@
                         {{ invite_item_formset.forms.0.permissions.label }}
                     </label>
                     <div class="controls">
-                        <input type="text" id="perms-search" placeholder="Search permissions." class="span6"/>
+                        <input type="text" id="perms-search" placeholder="Search permissions." class="span7"/>
                     </div>
                     <div class="controls">
                         {{ invite_item_formset.forms.0.permissions }}
@@ -185,14 +185,14 @@
                         {{ invite_item_formset.forms.0.groups.label }}
                     </label>
                     <div class="controls">
-                        <input type="text" id="groups-search" placeholder="Search groups." class="span6"/>
+                        <input type="text" id="groups-search" placeholder="Search groups." class="span7"/>
                     </div>
                     <div class="controls">
                         {{ invite_item_formset.forms.0.groups }}
                     </div>
                 </div>
                 <div class="control-group">
-                    <div class="controls span6">
+                    <div class="controls span7">
                         <input name="invite-button" id="invite-button" class="btn btn-primary btn-large btn-block" type="submit" value="Send email invitation(s)"/>
                     </div>
                 </div>
