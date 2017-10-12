@@ -1,18 +1,21 @@
+import datetime
+import unittest
+import mock
+
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.template.loader import render_to_string
-from django.test.client import Client
+from django.test import TestCase
 from django.contrib.auth.models import User, Group
 
-import unittest
-import mock
 from invite.models import Invitation, PasswordResetInvitation
 from invite import settings as app_settings
+from invite.utils import get_cutoff_date
 
 settings.SITE_ID = 1
 
 
-class TestOperations(unittest.TestCase):
+class TestOperations(TestCase):
 
     def test_invite_creation(self):
         """Creates an invite and check to see if we can send the email"""
@@ -54,14 +57,6 @@ class TestOperations(unittest.TestCase):
             [i.email],
         )
 
-    def test_password_reset_invite_creation(self):
-        """Creates an invite and check to see if we can send the email"""
-        i = PasswordResetInvitation.objects.create(
-            email='joeyliechty@supergreatmail.com',
-        )
-        i.save()
-        self.assertTrue(Invitation.objects.count() > 0)
-
     @mock.patch('invite.models.send_mail')
     def test_password_reset_email_send(self, mock_django_mailer):
         """
@@ -94,39 +89,59 @@ class TestOperations(unittest.TestCase):
         )
 
 
-class TestViews(unittest.TestCase):
-    def setUp(self):
-        self.c = Client()
-        self.user = User.objects.get_or_create(
-            username='kingkong',
-            email='test@test.test',
-            password='test',
-        )
-        self.i = Invitation.objects.create(
-            username='asdf',
-            first_name='test',
-            last_name='test',
-            email='test@test.test'
-        )
-        self.psi = PasswordResetInvitation.objects.create(
-            email='1234testemail@noone.ghost',
-            username='anotherape',
-            first_name='test',
-            last_name='test',
-        )
+class TestUtils(TestCase):
+    def test_get_cutoff_date_not_positive_ints(self):
+        self.assertTrue(get_cutoff_date(None) is None)
+        self.assertTrue(get_cutoff_date('not a number') is None)
+        self.assertTrue(get_cutoff_date(-5) is None)
+        self.assertTrue(get_cutoff_date(-3.2) is None)
+        self.assertTrue(get_cutoff_date(5.4) is None)
 
-    def tearDown(self):
-        User.objects.all().delete()
-        PasswordResetInvitation.objects.all().delete()
-        Invitation.objects.all().delete()
+    def test_get_cutoff_date_positive_ints(self):
+        self.assertTrue(type(get_cutoff_date(7)) == datetime.date)
+        self.assertTrue(get_cutoff_date(7) < datetime.date.today())
+        self.assertTrue(type(get_cutoff_date(0)) == datetime.date)
+        self.assertTrue(get_cutoff_date(0) > datetime.date.today())
+
+
+class TestViews(TestCase):
+    def setUp(self):
+        self.old_date = datetime.date.today() - datetime.timedelta(weeks=2)
+        self.normal_user = User.objects.create(
+            username='normal',
+            email='normal@normal.normal',
+            password='normal',
+        )
+        self.superuser = User.objects.create_superuser(
+            username='superuser',
+            email='superuser@superuser.superuser',
+            password='superuser'
+        )
+        self.supertwo = User.objects.create_superuser(
+            username='supertwo',
+            email='supertwo@supertwo.supertwo',
+            password='supertwo'
+        )
+        self.alpha_invite = Invitation.objects.create(
+            username='alpha',
+            first_name='alpha',
+            last_name='alpha',
+            email='alpha@alpha.alpha'
+        )
+        self.bravo_invite = Invitation.objects.create(
+            username='bravo',
+            first_name='bravo',
+            last_name='bravo',
+            email='bravo@bravo.bravo'
+        )
 
     def test_multiple_email(self):
         """
         Make sure that the multiple email invitation sends to all emails.
         """
         User.objects.create_superuser('test', 'myemail@test.com', 'test')
-        self.c.login(username='test', password='test')
-        self.c.post(
+        self.client.login(username='test', password='test')
+        self.client.post(
             reverse('invite:invite'),
             {
                 u'form-INITIAL_FORMS': [u'0'],
@@ -175,9 +190,8 @@ class TestViews(unittest.TestCase):
         for g in prod_groups:
             Group.objects.create(name=g)
 
-        User.objects.create_superuser('test', 'myemail@test.com', 'test')
-        self.c.login(username='test', password='test')
-        self.c.post(
+        self.client.login(username='superuser', password='superuser')
+        self.client.post(
             reverse('invite:invite'),
             {
                 u'form-MAX_NUM_FORMS': [u''],
@@ -194,54 +208,57 @@ class TestViews(unittest.TestCase):
         )
         invite0 = Invitation.objects.get(email='joeyliechty@gmail.com')
         # assert the invitation has the correct groups
+        self.assertEqual(invite0.groups.count(), 3)
         self.assertEqual(invite0.groups.all()[0].name, 'UNT Archives')
         self.assertEqual(invite0.groups.all()[1].name, 'Boyce')
         self.assertEqual(invite0.groups.all()[2].name, 'texgen')
 
-    def test_amnesia_email_submit(self):
-        response = self.c.post(
+    def test_amnesia_unknown_email(self):
+        response = self.client.post(
             reverse('invite:amnesia'),
             {'email': 'avowin@test.test'}
         )
 
         self.assertIn('The email provided', response.content)
 
-    def test_amnesia_email_submit_case_sensitive(self):
-        response = self.c.post(
+    def test_amnesia_email_submit_case_insensitive(self):
+        response = self.client.post(
             reverse('invite:amnesia'),
-            {'email': 'TEST@TEST.TEST'},
+            {'email': self.normal_user.email.upper()},
             follow=True
         )
 
-        self.assertIn('An email was sent to TEST@TEST.TEST', response.content)
+        self.assertIn(
+            'An email was sent to {}'.format(self.normal_user.email.upper()),
+            response.content
+        )
 
     def test_signup_submit_same_email(self):
         url = '{0}?code={1}'.format(
             reverse('invite:account_signup'),
-            self.i.activation_code
+            self.alpha_invite.activation_code
         )
 
-        response = self.c.post(
+        response = self.client.post(
             url,
             {
-                'username': 'don',
-                'first_name': 'wrigley',
-                'last_name': 'piggly',
-                'email': 'test@test.test',
-                'password': 'test',
-                'password2': 'test',
+                'username': 'alpha',
+                'first_name': 'alpha',
+                'last_name': 'alpha',
+                'email': self.normal_user.email,
+                'password': 'alpha',
+                'password2': 'alpha',
             }
         )
         self.assertIn('Email exists on other user', response.content)
 
     def test_invite_submit_same_email(self):
-        User.objects.create_superuser('test', 'myemail@test.com', 'test')
-        self.c.login(username='test', password='test')
-        response = self.c.post(
+        self.client.login(username='superuser', password='superuser')
+        response = self.client.post(
             reverse('invite:invite'),
             {
                 u'form-MAX_NUM_FORMS': [u''],
-                u'form-0-email': [u'test@test.test'],
+                u'form-0-email': [self.normal_user.email],
                 u'form-TOTAL_FORMS': [u'1'],
                 u'form-0-username': [u'bobby'],
                 u'form-INITIAL_FORMS': [u'0'],
@@ -253,20 +270,13 @@ class TestViews(unittest.TestCase):
         self.assertIn('already belongs to a user', response.content)
 
     def test_reset_submit(self):
-        User.objects.create(
-            username='django',
-            email='1234testemail@noone.ghost',
-            password='test',
-            first_name='test',
-            last_name='test',
-        )
         psi = PasswordResetInvitation.objects.create(
-            email='1234testemail@noone.ghost',
-            username='django',
-            first_name='test',
-            last_name='test',
+            email='normal@normal.normal',
+            username='normal',
+            first_name='normal',
+            last_name='normal',
         )
-        response = self.c.post(
+        response = self.client.post(
             reverse('invite:reset'),
             {'password': 'test', 'password2': 'pest'}
         )
@@ -277,34 +287,117 @@ class TestViews(unittest.TestCase):
             reverse('invite:reset'),
             psi.activation_code
         )
-        response = self.c.post(
+        response = self.client.post(
             url,
             {'password': 'test', 'password2': 'test'},
             follow=True
         )
         self.assertEqual(200, response.status_code)
+        self.assertIn('Log out', response.content)
 
     def test_forgotten_password(self):
         """User forgets his password test"""
-        response = self.c.post(
+        response = self.client.post(
             reverse('invite:amnesia'),
-            {'email': 'test@test.test'},
+            {'email': 'normal@normal.normal'},
             follow=True
         )
 
-        pri = PasswordResetInvitation.objects.get(email='test@test.test')
+        pri = PasswordResetInvitation.objects.get(email='normal@normal.normal')
         reset_link = '{0}?reset_code={1}'.format(
             reverse('invite:reset'), pri.activation_code)
 
-        response = self.c.get(reset_link)
+        response = self.client.get(reset_link)
         self.assertIn('Enter your new password', response.content)
 
-        response = self.c.post(
+        response = self.client.post(
             reset_link,
             {'password': 'kookaburra', 'password2': 'kookaburra'},
             follow=True
         )
         self.assertIn('Log out', response.content)
+
+    def test_index_shows_limited_invites(self):
+        self.bravo_invite.date_invited = self.old_date
+        self.bravo_invite.save()
+        self.client.login(username='superuser', password='superuser')
+        response = self.client.get(reverse('invite:index'))
+        self.assertIn('alpha', response.content)
+        self.assertNotIn('bravo', response.content)
+
+    @mock.patch('invite.views.app_settings')
+    def test_index_shows_all_invites(self, mock_settings):
+        mock_settings.INVITE_OPEN_INVITE_CUTOFF = None
+        self.bravo_invite.date_invited = self.old_date
+        self.bravo_invite.save()
+        self.client.login(username='superuser', password='superuser')
+        response = self.client.get(reverse('invite:index'))
+        self.assertIn('alpha', response.content)
+        self.assertIn('bravo', response.content)
+
+    @mock.patch('invite.views.app_settings')
+    def test_index_shows_no_invites(self, mock_settings):
+        mock_settings.INVITE_OPEN_INVITE_CUTOFF = 0
+        self.bravo_invite.date_invited = self.old_date
+        self.bravo_invite.save()
+        self.client.login(username='superuser', password='superuser')
+        response = self.client.get(reverse('invite:index'))
+        self.assertNotIn('alpha', response.content)
+        self.assertNotIn('bravo', response.content)
+
+    def test_index_shows_limited_registrations(self):
+        self.normal_user.date_joined = self.old_date
+        self.normal_user.save()
+        self.client.login(username='superuser', password='superuser')
+        response = self.client.get(reverse('invite:index'))
+        self.assertIn('supertwo', response.content)
+        self.assertNotIn('normal', response.content)
+
+    @mock.patch('invite.views.app_settings')
+    def test_index_shows_all_registrations(self, mock_settings):
+        mock_settings.INVITE_REGISTRATION_CUTOFF = None
+        self.normal_user.date_joined = self.old_date
+        self.normal_user.save()
+        self.client.login(username='superuser', password='superuser')
+        response = self.client.get(reverse('invite:index'))
+        self.assertIn('supertwo', response.content)
+        self.assertIn('normal', response.content)
+
+    @mock.patch('invite.views.app_settings')
+    def test_index_shows_no_registrations(self, mock_settings):
+        mock_settings.INVITE_REGISTRATION_CUTOFF = 0
+        self.normal_user.date_joined = self.old_date
+        self.normal_user.save()
+        self.client.login(username='superuser', password='superuser')
+        response = self.client.get(reverse('invite:index'))
+        self.assertNotIn('supertwo', response.content)
+        self.assertNotIn('normal', response.content)
+
+    def test_index_shows_emails_to_superuser(self):
+        self.client.login(username='superuser', password='superuser')
+        response = self.client.get(reverse('invite:index'))
+        self.assertIn('normal@normal.normal', response.content)
+        self.assertIn('superuser@superuser.superuser', response.content)
+        self.assertIn('alpha@alpha.alpha', response.content)
+        self.assertIn('bravo@bravo.bravo', response.content)
+
+    def test_index_hides_emails_from_normal_user(self):
+        self.client.login(username='normal', password='normal')
+        response = self.client.get(reverse('invite:index'))
+        self.assertNotIn('normal@normal.normal', response.content)
+        self.assertNotIn('superuser@superuser.superuser', response.content)
+        self.assertNotIn('alpha@alpha.alpha', response.content)
+        self.assertNotIn('bravo@bravo.bravo', response.content)
+
+    @mock.patch('invite.views.app_settings')
+    def test_index_can_hide_all_emails(self, mock_settings):
+        mock_settings.INVITE_SHOW_EMAILS = False
+        self.client.login(username='superuser', password='superuser')
+        response = self.client.get(reverse('invite:index'))
+        self.assertNotIn('normal@normal.normal', response.content)
+        self.assertNotIn('superuser@superuser.superuser', response.content)
+        self.assertNotIn('alpha@alpha.alpha', response.content)
+        self.assertNotIn('bravo@bravo.bravo', response.content)
 
 
 if __name__ == '__main__':

@@ -1,6 +1,14 @@
 Change Log
 ==========
 
+2.1.0
+-----
+
+* Added setting to show emails on the accounts page to superusers and users who can create invitations.
+* Added setting to limit the timeframe for showing open invitations and registrations on the accounts page.
+* Made some small UI tweaks on the invitations and accounts pages.
+* Fixed remaining sorting difference that occurred after resending invitation email.
+
 2.0.2
 -----
 
