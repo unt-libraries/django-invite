@@ -19,7 +19,12 @@
 
             if (formCount > 1) {
                 // Delete the item/form
-                $(btn).parents('.control-group').remove();
+                var rowToRemove = $(btn).parents('.control-group')
+                // Delete any errors that might be associated with the row
+                while (rowToRemove.prev().hasClass('alert-error')) {
+                    rowToRemove.prev().remove();
+                }
+                rowToRemove.remove();
 
                 var forms = $('#invitees .control-group'); // Get all the forms
 
@@ -122,6 +127,10 @@
 
         // Register the keyup event handler so the search boxes work
         $("#perms-search, #groups-search").keyup(searchOptions);
+
+        // With a new form, make sure only the first form row has the "add" button
+        $("#invitees button#add:gt(0)").remove();
+
     })
     </script>
 
