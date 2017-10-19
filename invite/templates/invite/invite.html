@@ -157,14 +157,13 @@
                             $row.prev().append(error);
                         }
                     } else {
-                        // Remove the previous error, if it exists
-                        if($row.prev("div.alert-error").filter(function() {return $(this).text().toLowerCase().indexOf(type) > -1;}).length > 0) {
-                            $row.prev().filter(function() {return $(this).text().toLowerCase().indexOf(type) > -1;}).remove();
-                        }
+                        // Remove the previous error/s, if it exists
+                        $row.prev()
+                            .children()
+                            .filter(function() {return $(this).text().toLowerCase().indexOf(type) > -1;})
+                            .remove();
                         // Remove error div, if it contains no more errors
-                        if($row.prev("div.alert-error").children("li").length === 0) {
-                            $row.prev("div.alert-error").remove();
-                        }
+                        $row.prev("div.alert-error:not(:has(li))").remove();
                     }
                 }
             };
