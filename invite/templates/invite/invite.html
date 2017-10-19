@@ -168,7 +168,7 @@
                     }
                 }
             };
-            xhttp.open("GET", "/check/?" + type + "=" + $(this).val(), true);
+            xhttp.open("GET", "{% url 'invite:check' %}?" + type + "=" + $(this).val(), true);
             xhttp.send();
         }
 
