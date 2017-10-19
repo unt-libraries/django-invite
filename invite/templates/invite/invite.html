@@ -83,6 +83,8 @@
                 $(row).find('.delete').click(function() {
                     return deleteForm(this, prefix);
                 });
+                // Add the event handlers for the username and email validation
+                $(row).find("input[id$='username'], input[id$='email']").change(validateField);
 
                 // Update the total form count
                 $('#id_' + prefix + '-TOTAL_FORMS').val(formCount + 1);
@@ -131,6 +133,47 @@
         // With a new form, make sure only the first form row has the "add" button
         $("#invitees button#add:gt(0)").remove();
 
+        // Check to see if the username or email address is already in use, and display error if so
+        function validateField() {
+            var xhttp = new XMLHttpRequest(),
+                $input = $(this),
+                $row = $input.closest(".control-group"),
+                type = $input.attr("placeholder").toLowerCase(),
+                usernameError = $("<li></li>").text("Username: Username taken, choose another"),
+                emailError = $("<li></li>").text("Email: The email provided already belongs to a user"),
+                typeToError = {"email":emailError, "username":usernameError},
+                error = typeToError[type];
+            xhttp.onreadystatechange = function() {
+                if (this.readyState === 4 && this.status === 200) {
+                    var taken = JSON.parse(this.responseText).taken;
+                    if (taken === true) {
+                        var errorDiv = $("<div class='alert alert-error'><button type='button' class='close' data-dismiss='alert'>×</button></div>");
+                        // Create the error div, if it isn't there already
+                        if (!$row.prev().hasClass("alert-error")) {
+                            $row.before(errorDiv);
+                        }
+                        // Add the error to the error list, if it isn't there already
+                        if ($row.prev().find(":contains('" + error.text() + "')").length === 0) {
+                            $row.prev().append(error);
+                        }
+                    } else {
+                        // Remove the previous error, if it exists
+                        if($row.prev("div.alert-error").filter(function() {return $(this).text().toLowerCase().indexOf(type) > -1;}).length > 0) {
+                            $row.prev().filter(function() {return $(this).text().toLowerCase().indexOf(type) > -1;}).remove();
+                        }
+                        // Remove error div, if it contains no more errors
+                        if($row.prev("div.alert-error").children("li").length === 0) {
+                            $row.prev("div.alert-error").remove();
+                        }
+                    }
+                }
+            };
+            xhttp.open("GET", "/check/?" + type + "=" + $(this).val(), true);
+            xhttp.send();
+        }
+
+        $("input[id$='username'], input[id$='email']").change(validateField);
+
     })
     </script>
 
@@ -138,7 +181,7 @@
 
 {% block content %}
     {% if perms.invite.add_invitation %}
-        <h3>Whom would you like to invite, {{ request.user|title }}?</h3>
+        <h3>Whom would you like to invite, {{ user|title }}?</h3>
         <form id='invite' class="navbar-form form-horizontal" method="POST">{% csrf_token %}
             {{ invite_item_formset.management_form }}
             <div class='well well-small' id="invitees">

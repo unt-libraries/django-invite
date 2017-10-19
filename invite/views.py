@@ -1,9 +1,9 @@
 from django.shortcuts import render
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.forms.formsets import formset_factory, BaseFormSet
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.contrib.auth import authenticate, login
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth import logout
 from django.contrib.auth.models import User
 from django.views.decorators.csrf import csrf_protect
@@ -366,3 +366,23 @@ def signup(request):
             'activation_code': code,
         }
     )
+
+
+@permission_required('invite.add_invitation', raise_exception=True)
+def check(request):
+    """Check to see if username or email address is taken by a user."""
+    if request.GET.get('username', None):
+        try:
+            User.objects.get(username__iexact=request.GET['username'].strip())
+            result = True
+        except:
+            result = False
+    elif request.GET.get('email', None):
+        try:
+            User.objects.get(email__iexact=request.GET['email'].strip())
+            result = True
+        except:
+            result = False
+    else:
+        result = False
+    return JsonResponse({'taken': result})
