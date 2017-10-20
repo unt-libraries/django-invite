@@ -317,7 +317,9 @@ class TestViews(TestCase):
         )
         self.assertIn('Log out', response.content)
 
-    def test_index_shows_limited_invites(self):
+    @mock.patch('invite.views.app_settings')
+    def test_index_shows_limited_invites(self, mock_settings):
+        mock_settings.INVITE_OPEN_INVITE_CUTOFF = 1
         self.bravo_invite.date_invited = self.old_date
         self.bravo_invite.save()
         self.client.login(username='superuser', password='superuser')
@@ -345,7 +347,9 @@ class TestViews(TestCase):
         self.assertNotIn('alpha', response.content)
         self.assertNotIn('bravo', response.content)
 
-    def test_index_shows_limited_registrations(self):
+    @mock.patch('invite.views.app_settings')
+    def test_index_shows_limited_registrations(self, mock_settings):
+        mock_settings.INVITE_REGISTRATION_CUTOFF = 1
         self.normal_user.date_joined = self.old_date
         self.normal_user.save()
         self.client.login(username='superuser', password='superuser')
