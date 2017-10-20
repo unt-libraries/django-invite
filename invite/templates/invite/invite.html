@@ -20,10 +20,8 @@
             if (formCount > 1) {
                 // Delete the item/form
                 var rowToRemove = $(btn).parents('.control-group')
-                // Delete any errors that might be associated with the row
-                while (rowToRemove.prev().hasClass('alert-error')) {
-                    rowToRemove.prev().remove();
-                }
+                // Delete error list that might be associated with the row
+                rowToRemove.prev('.alert-error').remove()
                 rowToRemove.remove();
 
                 var forms = $('#invitees .control-group'); // Get all the forms
@@ -135,14 +133,14 @@
 
         // Check to see if the username or email address is already in use, and display error if so
         function validateField() {
-            var xhttp = new XMLHttpRequest(),
-                $input = $(this),
-                $row = $input.closest(".control-group"),
-                type = $input.attr("placeholder").toLowerCase(),
-                usernameError = $("<li></li>").text("Username: Username taken, choose another"),
-                emailError = $("<li></li>").text("Email: The email provided already belongs to a user"),
-                typeToError = {"email":emailError, "username":usernameError},
-                error = typeToError[type];
+            var xhttp = new XMLHttpRequest();
+            var $input = $(this);
+            var $row = $input.closest(".control-group");
+            var type = $input.attr("placeholder").toLowerCase();
+            var usernameError = $("<li></li>").text("Username: Username taken, choose another");
+            var emailError = $("<li></li>").text("Email: The email provided already belongs to a user");
+            var typeToError = {"email":emailError, "username":usernameError};
+            var error = typeToError[type];
             xhttp.onreadystatechange = function() {
                 if (this.readyState === 4 && this.status === 200) {
                     var taken = JSON.parse(this.responseText).taken;
