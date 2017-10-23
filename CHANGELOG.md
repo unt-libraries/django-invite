@@ -9,8 +9,14 @@ Change Log
 * Added setting to show emails on the accounts page to superusers and users who can create invitations.
 * Added setting to limit the timeframe for showing open invitations and registrations on the accounts page.
 * Tweaked the UI on the invitations and accounts pages.
+  * Resized and moved some of the inputs.
+  * Improved responsiveness.
+  * Improved behavior and location of the "add" button on the invitation form.
+  * Made sure username is displayed correctly.
+  * Stopped duplicate error messages from being shown.
+  * Made sure errors get removed when their form row is removed.
+  * Updated wording and information organization on the accounts page.
 * Fixed remaining sorting difference that occurred after resending invitation email.
-* Fixed some other small UI errors, particularly on the invitations and accounts pages.
 * Changed the dev environment to output emails directly stdout.
 
 2.0.2
