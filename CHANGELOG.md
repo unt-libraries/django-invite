@@ -17,7 +17,7 @@ Change Log
   * Made sure errors get removed when their form row is removed.
   * Updated wording and information organization on the accounts page.
 * Fixed remaining sorting difference that occurred after resending invitation email.
-* Changed the dev environment to output emails directly stdout.
+* Changed the dev environment to output emails directly to stdout.
 
 2.0.2
 -----
