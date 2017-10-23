@@ -11,7 +11,7 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
     name="django-invite",
-    version="2.0.2",
+    version="2.1.0",
     packages=find_packages(),
     include_package_data=True,
 

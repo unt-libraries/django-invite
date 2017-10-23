@@ -4,10 +4,14 @@ Change Log
 2.1.0
 -----
 
+* Added filtering to the groups and permissions selection boxes on the invitation page.
+* Added check for the usernames and emails on the invitation page to show whether they're in use before submitting the form.
 * Added setting to show emails on the accounts page to superusers and users who can create invitations.
 * Added setting to limit the timeframe for showing open invitations and registrations on the accounts page.
-* Made some small UI tweaks on the invitations and accounts pages.
+* Tweaked the UI on the invitations and accounts pages.
 * Fixed remaining sorting difference that occurred after resending invitation email.
+* Fixed some other small UI errors, particularly on the invitations and accounts pages.
+* Changed the dev environment to output emails directly stdout.
 
 2.0.2
 -----
