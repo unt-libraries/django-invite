@@ -90,14 +90,27 @@
             return false;
         }
 
+        function disableSubmit() {
+            $("#invite-button").removeClass("btn-primary").addClass("btn-inverse disabled");
+        }
+
+        function enableSubmit() {
+            $("#invite-button").removeClass("btn-inverse disabled").addClass("btn-primary");
+        }
+
+        // Disable the submit button if there are initial errors.
+        if ($("div.alert-error").length > 0) {
+            disableSubmit();
+        }
+
         $("#invite").on('submit',function(e){
             var $form = $(this);
-            if ($form.data('submitted') === true) {
+            if ($form.data('submitted') === true || $("div.alert-error").length > 0) {
                 // Previously submitted - don't submit again
                 e.preventDefault();
             } else {
                 // Mark it so that the next submit can be ignored
-                $("#invite-button").removeClass("btn-primary").addClass("btn-inverse").addClass("disabled");
+                disableSubmit();
                 $form.data('submitted', true);
             }
         });
@@ -145,10 +158,11 @@
                 if (this.readyState === 4 && this.status === 200) {
                     var taken = JSON.parse(this.responseText).taken;
                     if (taken === true) {
-                        var errorDiv = $("<div class='alert alert-error'><button type='button' class='close' data-dismiss='alert'>×</button></div>");
+                        var errorDiv = $("<div class='alert alert-error'></div>");
                         // Create the error div, if it isn't there already
                         if (!$row.prev().hasClass("alert-error")) {
                             $row.before(errorDiv);
+                            disableSubmit();
                         }
                         // Add the error to the error list, if it isn't there already
                         if ($row.prev().find(":contains('" + error.text() + "')").length === 0) {
@@ -162,6 +176,10 @@
                             .remove();
                         // Remove error div, if it contains no more errors
                         $row.prev("div.alert-error:not(:has(li))").remove();
+                        // Enable submit button if all errors are gone from all rows
+                        if ($("div.alert-error").length === 0) {
+                            enableSubmit();
+                        }
                     }
                 }
             };
@@ -185,7 +203,6 @@
                 {% for form in invite_item_formset %}
                      {% if form.errors %}
                         <div class="alert alert-error">
-                            <button type="button" class="close" data-dismiss="alert">×</button>
                             {% for field in form %}
                                 {% if field.errors %}
                                 <li>{{ field.label }}: {{ field.errors.0|striptags }}</li>

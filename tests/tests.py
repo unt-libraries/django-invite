@@ -419,7 +419,7 @@ class TestViews(TestCase):
         )
         for each in taken:
             response = self.client.get(reverse('invite:check'), each)
-            self.assertTrue(json.loads(response.content)['taken'] is True)
+            self.assertTrue(json.loads(response.content)['taken'])
 
     def test_check_returns_false_when_not_taken(self):
         self.client.login(username='superuser', password='superuser')
@@ -431,17 +431,12 @@ class TestViews(TestCase):
         )
         for each in not_taken:
             response = self.client.get(reverse('invite:check'), each)
-            self.assertTrue(json.loads(response.content)['taken'] is False)
+            self.assertFalse(json.loads(response.content)['taken'])
 
     def test_check_returns_false_with_no_args(self):
         self.client.login(username='superuser', password='superuser')
         response = self.client.get(reverse('invite:check'))
-        self.assertTrue(json.loads(response.content)['taken'] is False)
-
-    def test_check_returns_false_with_unrecognized_args(self):
-        self.client.login(username='superuser', password='superuser')
-        response = self.client.get(reverse('invite:check'), {'rand': 'rand'})
-        self.assertTrue(json.loads(response.content)['taken'] is False)
+        self.assertFalse(json.loads(response.content)['taken'])
 
 
 if __name__ == '__main__':
