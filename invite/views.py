@@ -375,13 +375,13 @@ def check(request):
         try:
             User.objects.get(username__iexact=request.GET['username'].strip())
             result = True
-        except:
+        except User.DoesNotExist:
             result = False
     elif request.GET.get('email', None):
         try:
             User.objects.get(email__iexact=request.GET['email'].strip())
             result = True
-        except:
+        except User.DoesNotExist:
             result = False
     else:
         result = False
