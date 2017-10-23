@@ -1,6 +1,7 @@
 import datetime
 import unittest
 import mock
+import json
 
 from django.conf import settings
 from django.core.urlresolvers import reverse
@@ -402,6 +403,44 @@ class TestViews(TestCase):
         self.assertNotIn('superuser@superuser.superuser', response.content)
         self.assertNotIn('alpha@alpha.alpha', response.content)
         self.assertNotIn('bravo@bravo.bravo', response.content)
+
+    def test_check_requires_permission(self):
+        self.client.login(username='superuser', password='superuser')
+        response = self.client.get(reverse('invite:check'))
+        self.assertTrue(response.status_code == 200)
+        self.client.logout()
+        self.client.login(username='normal', password='normal')
+        response = self.client.get(reverse('invite:check'))
+        self.assertTrue(response.status_code == 403)
+
+    def test_check_returns_true_when_taken(self):
+        self.client.login(username='superuser', password='superuser')
+        taken = (
+            {'username': self.normal_user.username},
+            {'username': self.supertwo.username},
+            {'email': self.normal_user.email},
+            {'email': self.supertwo.email},
+        )
+        for each in taken:
+            response = self.client.get(reverse('invite:check'), each)
+            self.assertTrue(json.loads(response.content)['taken'])
+
+    def test_check_returns_false_when_not_taken(self):
+        self.client.login(username='superuser', password='superuser')
+        not_taken = (
+            {'username': 'doesnotexist'},
+            {'username': ''},
+            {'email': 'nothing@nothing.nothing'},
+            {'email': 'test@test.test'},
+        )
+        for each in not_taken:
+            response = self.client.get(reverse('invite:check'), each)
+            self.assertFalse(json.loads(response.content)['taken'])
+
+    def test_check_returns_false_with_no_args(self):
+        self.client.login(username='superuser', password='superuser')
+        response = self.client.get(reverse('invite:check'))
+        self.assertFalse(json.loads(response.content)['taken'])
 
 
 if __name__ == '__main__':

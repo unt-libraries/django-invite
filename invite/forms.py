@@ -22,8 +22,7 @@ def validate_user_email(value):
 
 def validate_user_email_exists(value):
     if value in User.objects.all().values_list('email', flat=True):
-        raise ValidationError(
-            'The email provided: \'%s\' already belongs to a user' % value)
+        raise ValidationError('The email provided already belongs to a user')
 
 
 class SignupForm(forms.Form):

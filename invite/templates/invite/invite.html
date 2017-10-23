@@ -19,7 +19,10 @@
 
             if (formCount > 1) {
                 // Delete the item/form
-                $(btn).parents('.control-group').remove();
+                var rowToRemove = $(btn).parents('.control-group')
+                // Delete error list that might be associated with the row
+                rowToRemove.prev('.alert-error').remove()
+                rowToRemove.remove();
 
                 var forms = $('#invitees .control-group'); // Get all the forms
 
@@ -78,6 +81,8 @@
                 $(row).find('.delete').click(function() {
                     return deleteForm(this, prefix);
                 });
+                // Add the event handlers for the username and email validation
+                $(row).find("input[id$='username'], input[id$='email']").change(validateField);
 
                 // Update the total form count
                 $('#id_' + prefix + '-TOTAL_FORMS').val(formCount + 1);
@@ -85,14 +90,27 @@
             return false;
         }
 
+        function disableSubmit() {
+            $("#invite-button").removeClass("btn-primary").addClass("btn-inverse disabled");
+        }
+
+        function enableSubmit() {
+            $("#invite-button").removeClass("btn-inverse disabled").addClass("btn-primary");
+        }
+
+        // Disable the submit button if there are initial errors.
+        if ($("div.alert-error").length > 0) {
+            disableSubmit();
+        }
+
         $("#invite").on('submit',function(e){
             var $form = $(this);
-            if ($form.data('submitted') === true) {
+            if ($form.data('submitted') === true || $("div.alert-error").length > 0) {
                 // Previously submitted - don't submit again
                 e.preventDefault();
             } else {
                 // Mark it so that the next submit can be ignored
-                $("#invite-button").removeClass("btn-primary").addClass("btn-inverse").addClass("disabled");
+                disableSubmit();
                 $form.data('submitted', true);
             }
         });
@@ -122,6 +140,55 @@
 
         // Register the keyup event handler so the search boxes work
         $("#perms-search, #groups-search").keyup(searchOptions);
+
+        // With a new form, make sure only the first form row has the "add" button
+        $("#invitees button#add:gt(0)").remove();
+
+        // Check to see if the username or email address is already in use, and display error if so
+        function validateField() {
+            var xhttp = new XMLHttpRequest();
+            var $input = $(this);
+            var $row = $input.closest(".control-group");
+            var type = $input.attr("placeholder").toLowerCase();
+            var usernameError = $("<li></li>").text("Username: Username taken, choose another");
+            var emailError = $("<li></li>").text("Email: The email provided already belongs to a user");
+            var typeToError = {"email":emailError, "username":usernameError};
+            var error = typeToError[type];
+            xhttp.onreadystatechange = function() {
+                if (this.readyState === 4 && this.status === 200) {
+                    var taken = JSON.parse(this.responseText).taken;
+                    if (taken === true) {
+                        var errorDiv = $("<div class='alert alert-error'></div>");
+                        // Create the error div, if it isn't there already
+                        if (!$row.prev().hasClass("alert-error")) {
+                            $row.before(errorDiv);
+                            disableSubmit();
+                        }
+                        // Add the error to the error list, if it isn't there already
+                        if ($row.prev().find(":contains('" + error.text() + "')").length === 0) {
+                            $row.prev().append(error);
+                        }
+                    } else {
+                        // Remove the previous error/s, if it exists
+                        $row.prev()
+                            .children()
+                            .filter(function() {return $(this).text().toLowerCase().indexOf(type) > -1;})
+                            .remove();
+                        // Remove error div, if it contains no more errors
+                        $row.prev("div.alert-error:not(:has(li))").remove();
+                        // Enable submit button if all errors are gone from all rows
+                        if ($("div.alert-error").length === 0) {
+                            enableSubmit();
+                        }
+                    }
+                }
+            };
+            xhttp.open("GET", "{% url 'invite:check' %}?" + type + "=" + $(this).val(), true);
+            xhttp.send();
+        }
+
+        $("input[id$='username'], input[id$='email']").change(validateField);
+
     })
     </script>
 
@@ -129,17 +196,16 @@
 
 {% block content %}
     {% if perms.invite.add_invitation %}
-        <h3>Whom would you like to invite, {{ request.user|title }}?</h3>
+        <h3>Whom would you like to invite, {{ user|title }}?</h3>
         <form id='invite' class="navbar-form form-horizontal" method="POST">{% csrf_token %}
             {{ invite_item_formset.management_form }}
             <div class='well well-small' id="invitees">
                 {% for form in invite_item_formset %}
                      {% if form.errors %}
                         <div class="alert alert-error">
-                            <button type="button" class="close" data-dismiss="alert">×</button>
                             {% for field in form %}
                                 {% if field.errors %}
-                                <li>{{ field.label }}: {{ field.errors|striptags }}</li>
+                                <li>{{ field.label }}: {{ field.errors.0|striptags }}</li>
                                 {% endif %}
                             {% endfor %}
                         </div>
