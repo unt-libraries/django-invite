@@ -2,6 +2,7 @@ from django.conf.urls import url
 
 from invite import views
 
+app_name = 'invite'
 urlpatterns = [
     url(r'^$', views.index, name='index'),
     url(r'^invite/$', views.invite, name='invite'),
