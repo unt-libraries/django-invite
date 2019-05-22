@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.core.urlresolvers import reverse, reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django.forms.formsets import formset_factory, BaseFormSet
 from django.http import HttpResponseRedirect, JsonResponse
 from django.contrib.auth import authenticate, login
