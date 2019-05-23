@@ -7,7 +7,23 @@ SECRET_KEY = 'test-key'
 
 DEBUG = True
 
-TEMPLATE_DEBUG = True
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'debug': True,
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.template.context_processors.static',
+                'django.template.context_processors.media',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
 
 SITE_ID = 1
 
