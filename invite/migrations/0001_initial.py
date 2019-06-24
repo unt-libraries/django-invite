@@ -50,7 +50,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='PasswordResetInvitation',
             fields=[
-                ('invitation_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='invite.Invitation')),
+                ('invitation_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='invite.Invitation', on_delete=models.CASCADE)),
             ],
             options={
             },

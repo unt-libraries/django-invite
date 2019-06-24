@@ -1,6 +1,11 @@
 Change Log
 ==========
 
+x.x.x
+-----
+
+* Added application 'invite' application namespace.
+
 2.1.0
 -----
 
