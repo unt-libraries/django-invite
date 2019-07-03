@@ -1,6 +1,5 @@
 import datetime
 import unittest
-import mock
 import json
 
 from django.conf import settings
@@ -26,7 +25,7 @@ class TestOperations(TestCase):
         i.save()
         self.assertTrue(Invitation.objects.count() > 0)
 
-    @mock.patch('invite.models.send_mail')
+    @unittest.mock.patch('invite.models.send_mail')
     def test_email_send(self, mock_django_mailer):
         """
         Since we trust the django mailer, and we don't want to do time wasting
@@ -58,7 +57,7 @@ class TestOperations(TestCase):
             [i.email],
         )
 
-    @mock.patch('invite.models.send_mail')
+    @unittest.mock.patch('invite.models.send_mail')
     def test_password_reset_email_send(self, mock_django_mailer):
         """
         Since we trust the django mailer, and we don't want to do time wasting
@@ -318,7 +317,7 @@ class TestViews(TestCase):
         )
         self.assertIn('Log out', response.content)
 
-    @mock.patch('invite.views.app_settings')
+    @unittest.mock.patch('invite.views.app_settings')
     def test_index_shows_limited_invites(self, mock_settings):
         mock_settings.INVITE_OPEN_INVITE_CUTOFF = 1
         self.bravo_invite.date_invited = self.old_date
@@ -328,7 +327,7 @@ class TestViews(TestCase):
         self.assertIn('alpha', response.content)
         self.assertNotIn('bravo', response.content)
 
-    @mock.patch('invite.views.app_settings')
+    @unittest.mock.patch('invite.views.app_settings')
     def test_index_shows_all_invites(self, mock_settings):
         mock_settings.INVITE_OPEN_INVITE_CUTOFF = None
         self.bravo_invite.date_invited = self.old_date
@@ -338,7 +337,7 @@ class TestViews(TestCase):
         self.assertIn('alpha', response.content)
         self.assertIn('bravo', response.content)
 
-    @mock.patch('invite.views.app_settings')
+    @unittest.mock.patch('invite.views.app_settings')
     def test_index_shows_no_invites(self, mock_settings):
         mock_settings.INVITE_OPEN_INVITE_CUTOFF = 0
         self.bravo_invite.date_invited = self.old_date
@@ -348,7 +347,7 @@ class TestViews(TestCase):
         self.assertNotIn('alpha', response.content)
         self.assertNotIn('bravo', response.content)
 
-    @mock.patch('invite.views.app_settings')
+    @unittest.mock.patch('invite.views.app_settings')
     def test_index_shows_limited_registrations(self, mock_settings):
         mock_settings.INVITE_REGISTRATION_CUTOFF = 1
         self.normal_user.date_joined = self.old_date
@@ -358,7 +357,7 @@ class TestViews(TestCase):
         self.assertIn('supertwo', response.content)
         self.assertNotIn('normal', response.content)
 
-    @mock.patch('invite.views.app_settings')
+    @unittest.mock.patch('invite.views.app_settings')
     def test_index_shows_all_registrations(self, mock_settings):
         mock_settings.INVITE_REGISTRATION_CUTOFF = None
         self.normal_user.date_joined = self.old_date
@@ -368,7 +367,7 @@ class TestViews(TestCase):
         self.assertIn('supertwo', response.content)
         self.assertIn('normal', response.content)
 
-    @mock.patch('invite.views.app_settings')
+    @unittest.mock.patch('invite.views.app_settings')
     def test_index_shows_no_registrations(self, mock_settings):
         mock_settings.INVITE_REGISTRATION_CUTOFF = 0
         self.normal_user.date_joined = self.old_date
@@ -394,7 +393,7 @@ class TestViews(TestCase):
         self.assertNotIn('alpha@alpha.alpha', response.content)
         self.assertNotIn('bravo@bravo.bravo', response.content)
 
-    @mock.patch('invite.views.app_settings')
+    @unittest.mock.patch('invite.views.app_settings')
     def test_index_can_hide_all_emails(self, mock_settings):
         mock_settings.INVITE_SHOW_EMAILS = False
         self.client.login(username='superuser', password='superuser')
