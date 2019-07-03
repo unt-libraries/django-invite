@@ -1,9 +1,11 @@
 Change Log
 ==========
 
-x.x.x
+3.0.0
 -----
 
+* Added Python 3.7 support.
+* Removed Python 2.7 support.
 * Added application 'invite' application namespace.
 
 2.1.0

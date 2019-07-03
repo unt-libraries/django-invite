@@ -11,7 +11,7 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
     name="django-invite",
-    version="2.1.0",
+    version="3.0.0",
     packages=find_packages(),
     include_package_data=True,
 
@@ -30,7 +30,7 @@ setup(
         "Natural Language :: English",
         "Operating System :: OS Independent",
         "Programming Language :: Python",
-        "Programming Language :: Python :: 2.7",
+        "Programming Language :: Python :: 3.7",
         "Topic :: Internet :: WWW/HTTP :: WSGI :: Application :: User Management"
     ]
 )
