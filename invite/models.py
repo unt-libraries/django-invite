@@ -20,7 +20,7 @@ class InviteItem(models.Model):
     groups = models.ManyToManyField(Group, blank=True)
     is_super_user = models.BooleanField(default=False)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.first_name + ' ' + self.last_name
 
 
@@ -61,7 +61,7 @@ class AbstractInvitation(models.Model):
     groups = models.ManyToManyField(Group)
     is_super_user = models.BooleanField(default=False)
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s, %s: %s" % (
             self.last_name,
             self.first_name,
