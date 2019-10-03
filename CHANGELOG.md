@@ -7,6 +7,7 @@ Change Log
 * Added Python 3.7 support.
 * Removed Python 2.7 support.
 * Added application 'invite' application namespace.
+* Fixed bug that caused invite form's submit button to be disabled when a maintenance message was active.
 
 2.1.0
 -----
