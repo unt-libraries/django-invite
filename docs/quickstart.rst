@@ -12,7 +12,7 @@ Requirements
 Installation
 ------------
 
-* ``pip install git+https://github.com/unt-libraries/django-invite.git@2.1.0``
+* ``pip install git+https://github.com/unt-libraries/django-invite.git@3.0.0``
 
 * Add ``invite`` to your ``INSTALLED_APPS``
 * Run ``./manage.py migrate``

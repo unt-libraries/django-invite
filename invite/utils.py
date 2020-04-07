@@ -3,7 +3,7 @@ from datetime import date, timedelta
 
 def get_cutoff_date(days):
     """Calculate the cutoff date or return None if no time period was set."""
-    if days is None or type(days) != int:
+    if days is None or not isinstance(days, int):
         return None
     else:
         if days > 0:
