@@ -134,6 +134,16 @@ class TestViews(TestCase):
             last_name='bravo',
             email='bravo@bravo.bravo'
         )
+        self.user1 = User.objects.create(
+            username='user1',
+            email='user1@user1.user1',
+            password='user1',
+        )
+        self.dup_user1 = User.objects.create(
+            username='dup_user1',
+            email='user1@user1.user1',
+            password='dup_user1',
+        )
 
     def test_multiple_email(self):
         """
@@ -224,12 +234,12 @@ class TestViews(TestCase):
     def test_amnesia_email_submit_case_insensitive(self):
         response = self.client.post(
             reverse('invite:amnesia'),
-            {'email': self.normal_user.email.upper()},
+            {'email': self.user1.email.upper()},
             follow=True
         )
 
         self.assertIn(
-            'An email was sent to {}'.format(self.normal_user.email.upper()),
+            'An email was sent to {}'.format(self.user1.email.upper()),
             response.content.decode()
         )
 
