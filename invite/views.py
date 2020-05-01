@@ -40,6 +40,25 @@ def reset(request):
                     # Redirect to main edit dashboard
                     return HttpResponseRedirect(
                         app_settings.INVITE_SIGNUP_SUCCESS_URL)
+                else:
+                    return render(
+                        request,
+                        'invite/contact.html',
+                        {
+                            'supervisor':  app_settings.CONTACT_SUPERVISOR,
+                        }
+                    )
+            else:
+                error_message = 'Password reset failed. Please try again!'
+                return render(
+                    request,
+                    'invite/reset.html',
+                    {
+                        'resetform': form,
+                        'reset_code': reset_code,
+                        'error_message': error_message,
+                    }
+                )
         else:
             return render(
                 request,
