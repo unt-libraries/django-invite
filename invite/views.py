@@ -44,7 +44,7 @@ def reset(request):
                     request,
                     'invite/contact.html',
                     {
-                        'supervisor':  app_settings.CONTACT_SUPERVISOR,
+                        'supervisor':  app_settings.INVITE_CONTACT_EMAIL,
                     }
                 )
         else:
