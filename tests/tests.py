@@ -237,6 +237,14 @@ class TestViews(TestCase):
 
         self.assertIn('The email provided', response.content.decode())
 
+    def test_amnesia_inactive_user(self):
+        response = self.client.post(
+            reverse('invite:amnesia'),
+            {'email': 'inactiveuser@test.test'}
+        )
+
+        self.assertIn('Your account is inactive.', response.content.decode())
+
     def test_amnesia_email_submit_case_insensitive(self):
         response = self.client.post(
             reverse('invite:amnesia'),
