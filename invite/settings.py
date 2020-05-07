@@ -6,7 +6,7 @@ from django.contrib.sites.models import Site
 INVITE_CONTACT_EMAIL = getattr(
     settings,
     'INVITE_CONTACT_EMAIL',
-    'Hannah Tarver'
+    settings.DEFAULT_FROM_EMAIL
 )
 
 INVITE_LOGOUT_REDIRECT_URL = getattr(
