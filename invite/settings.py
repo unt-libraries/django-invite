@@ -3,6 +3,12 @@ from django.urls import reverse_lazy
 from django.contrib.sites.models import Site
 
 
+INVITE_CONTACT_EMAIL = getattr(
+    settings,
+    'INVITE_CONTACT_EMAIL',
+    settings.DEFAULT_FROM_EMAIL
+)
+
 INVITE_LOGOUT_REDIRECT_URL = getattr(
     settings,
     'INVITE_LOGOUT_REDIRECT_URL',

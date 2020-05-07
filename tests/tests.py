@@ -144,6 +144,12 @@ class TestViews(TestCase):
             email='user1@user1.user1',
             password='dup_user1',
         )
+        self.inactive_user = User.objects.create(
+            username='inactive_user',
+            email='inactiveuser@test.test',
+            password='inactiveuser',
+            is_active=False,
+        )
 
     def test_multiple_email(self):
         """
@@ -231,6 +237,14 @@ class TestViews(TestCase):
 
         self.assertIn('The email provided', response.content.decode())
 
+    def test_amnesia_inactive_user(self):
+        response = self.client.post(
+            reverse('invite:amnesia'),
+            {'email': 'inactiveuser@test.test'}
+        )
+
+        self.assertIn('Your account is inactive.', response.content.decode())
+
     def test_amnesia_email_submit_case_insensitive(self):
         response = self.client.post(
             reverse('invite:amnesia'),
@@ -304,6 +318,27 @@ class TestViews(TestCase):
         )
         self.assertEqual(200, response.status_code)
         self.assertIn('Log out', response.content.decode())
+
+    def test_reset_inactive_user(self):
+        pri = PasswordResetInvitation.objects.create(
+            email='inactiveuser@test.test',
+            username='inactive_user',
+            first_name='normal',
+            last_name='user',
+        )
+        url = '{0}?reset_code={1}'.format(
+            reverse('invite:reset'),
+            pri.activation_code
+        )
+        response = self.client.post(
+            url,
+            {'password': 'test', 'password2': 'test'},
+            follow=True
+        )
+        assert response.status_code == 200
+        self.assertIn(
+            'Your account is inactive.', response.content.decode()
+        )
 
     def test_forgotten_password(self):
         """User forgets his password test"""

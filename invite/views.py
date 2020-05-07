@@ -35,11 +35,18 @@ def reset(request):
                 password=form.cleaned_data['password'],
             )
             if user is not None:
-                if user.is_active:
-                    login(request, user)
-                    # Redirect to main edit dashboard
-                    return HttpResponseRedirect(
-                        app_settings.INVITE_SIGNUP_SUCCESS_URL)
+                login(request, user)
+                # Redirect to main edit dashboard
+                return HttpResponseRedirect(
+                    app_settings.INVITE_SIGNUP_SUCCESS_URL)
+            else:
+                return render(
+                    request,
+                    'invite/contact.html',
+                    {
+                        'reset_contact':  app_settings.INVITE_CONTACT_EMAIL,
+                    }
+                )
         else:
             return render(
                 request,
@@ -96,20 +103,29 @@ def amnesia(request):
         if form.is_valid():
             # determine user from email address.
             user = User.objects.filter(email__iexact=form.cleaned_data['email']).first()
-            # make password reset invitation from form
-            i = PasswordResetInvitation.objects.create(
-                first_name=user.first_name,
-                last_name=user.last_name,
-                username=user.username,
-                email=form.cleaned_data['email'],
-            )
-            # send the email reset link
-            i.send(request=request)
-            i.save()
-            redirect = '{0}?email={1}'.format(
-                reverse('invite:reset'),
-                form.cleaned_data['email'])
-            return HttpResponseRedirect(redirect)
+            if user.is_active:
+                # make password reset invitation from form
+                i = PasswordResetInvitation.objects.create(
+                    first_name=user.first_name,
+                    last_name=user.last_name,
+                    username=user.username,
+                    email=form.cleaned_data['email'],
+                )
+                # send the email reset link
+                i.send(request=request)
+                i.save()
+                redirect = '{0}?email={1}'.format(
+                    reverse('invite:reset'),
+                    form.cleaned_data['email'])
+                return HttpResponseRedirect(redirect)
+            else:
+                return render(
+                    request,
+                    'invite/contact.html',
+                    {
+                        'reset_contact':  app_settings.INVITE_CONTACT_EMAIL,
+                    }
+                )
         else:
             return render(
                 request,
