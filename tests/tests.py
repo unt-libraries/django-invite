@@ -317,7 +317,7 @@ class TestViews(TestCase):
             follow=True
         )
         self.assertEqual(200, response.status_code)
-        self.assertIn('Log out', response.content.decode())
+        self.assertIn('Log in', response.content.decode())
 
     def test_reset_inactive_user(self):
         pri = PasswordResetInvitation.objects.create(
@@ -360,7 +360,7 @@ class TestViews(TestCase):
             {'password': 'kookaburra', 'password2': 'kookaburra'},
             follow=True
         )
-        self.assertIn('Log out', response.content.decode())
+        self.assertIn('Log in', response.content.decode())
 
     @unittest.mock.patch('invite.views.app_settings')
     def test_index_shows_limited_invites(self, mock_settings):

@@ -35,10 +35,14 @@ def reset(request):
                 password=form.cleaned_data['password'],
             )
             if user is not None:
-                login(request, user)
-                # Redirect to main edit dashboard
-                return HttpResponseRedirect(
-                    app_settings.INVITE_SIGNUP_SUCCESS_URL)
+                form = forms.LoginForm()
+                return render(
+                    request,
+                    'invite/login.html',
+                    {
+                        'login_form': form,
+                    }
+                )
             else:
                 return render(
                     request,
