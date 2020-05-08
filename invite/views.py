@@ -35,14 +35,7 @@ def reset(request):
                 password=form.cleaned_data['password'],
             )
             if user is not None:
-                form = forms.LoginForm()
-                return render(
-                    request,
-                    'invite/login.html',
-                    {
-                        'login_form': form,
-                    }
-                )
+                return HttpResponseRedirect(reverse('invite:login'))
             else:
                 return render(
                     request,
