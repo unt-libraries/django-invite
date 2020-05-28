@@ -97,8 +97,6 @@ class Invitation(AbstractInvitation):
 class PasswordResetInvitation(AbstractInvitation):
     """Defines a model for invitations created for password resets."""
 
-    created = models.DateTimeField(auto_now_add=True, null=True)
-
     def send(self, request=None):
         """Sends an invitation email to ``self.email``."""
 

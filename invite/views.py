@@ -7,13 +7,12 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth import logout
 from django.contrib.auth.models import User
 from django.views.decorators.csrf import csrf_protect
-from django.utils import timezone
 
 from . import forms
 from .models import Invitation, PasswordResetInvitation
 from . import settings as app_settings
 from .utils import get_cutoff_date
-
+from datetime import date
 
 def reset(request):
     '''users land here to reset their django user passwords'''
@@ -65,8 +64,8 @@ def reset(request):
                     request,
                     'invite/denied.html'
                 )
-            # activation_code expires after 24 hours
-            if (timezone.now() - pri.created).total_seconds()//3600 > 24:
+            # set expiration for activation_code at the end of next day
+            if (date.today() - pri.date_invited).days > 1:
                 pri.delete()
                 return render(
                     request,
