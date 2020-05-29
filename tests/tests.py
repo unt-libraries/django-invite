@@ -257,6 +257,30 @@ class TestViews(TestCase):
             response.content.decode()
         )
 
+    def test_amnesia_multiple_requests(self):
+        self.client.post(
+            reverse('invite:amnesia'),
+            {'email': 'user1@user1.user1'}
+        )
+        pri1 = PasswordResetInvitation.objects.get(email='user1@user1.user1')
+        self.client.post(
+            reverse('invite:amnesia'),
+            {'email': 'user1@user1.user1'}
+        )
+        pri2 = PasswordResetInvitation.objects.get(email='user1@user1.user1')
+        url1 = '{0}?reset_code={1}'.format(
+                reverse('invite:reset'),
+                pri1.activation_code
+        )
+        url2 = '{0}?reset_code={1}'.format(
+                reverse('invite:reset'),
+                pri2.activation_code
+        )
+        response1 = self.client.get(url1)
+        response2 = self.client.get(url2)
+        self.assertIn('That is an invalid or expired activation code.', response1.content.decode())
+        self.assertIn('Log in', response2.content.decode())
+
     def test_signup_submit_same_email(self):
         url = '{0}?code={1}'.format(
             reverse('invite:account_signup'),

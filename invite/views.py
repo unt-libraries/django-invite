@@ -110,6 +110,11 @@ def amnesia(request):
             # determine user from email address.
             user = User.objects.filter(email__iexact=form.cleaned_data['email']).first()
             if user.is_active:
+                # delete previous activation codes if any, before sending a new one
+                prev_reset_links = PasswordResetInvitation.objects.filter(
+                                   email=form.cleaned_data['email'])
+                for link in prev_reset_links:
+                    link .delete()
                 # make password reset invitation from form
                 i = PasswordResetInvitation.objects.create(
                     first_name=user.first_name,
