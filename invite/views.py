@@ -12,6 +12,7 @@ from . import forms
 from .models import Invitation, PasswordResetInvitation
 from . import settings as app_settings
 from .utils import get_cutoff_date
+from datetime import date
 
 
 def reset(request):
@@ -64,14 +65,22 @@ def reset(request):
                     request,
                     'invite/denied.html'
                 )
-            return render(
-                request,
-                'invite/reset.html',
-                {
-                    'reset_code': pri.activation_code,
-                    'resetform': forms.ResetForm(),
-                }
-            )
+            # set expiration for activation_code at the end of next day
+            if (date.today() - pri.date_invited).days > 1:
+                pri.delete()
+                return render(
+                    request,
+                    'invite/denied.html'
+                )
+            else:
+                return render(
+                    request,
+                    'invite/reset.html',
+                    {
+                        'reset_code': pri.activation_code,
+                        'resetform': forms.ResetForm(),
+                    }
+                )
         # or an email address
         elif 'email' in request.GET.keys():
             return render(
