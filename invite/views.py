@@ -14,6 +14,7 @@ from . import settings as app_settings
 from .utils import get_cutoff_date
 from datetime import date
 
+
 def reset(request):
     '''users land here to reset their django user passwords'''
     if request.method == 'POST':

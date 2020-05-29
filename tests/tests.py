@@ -1,7 +1,6 @@
 import datetime
 import unittest
 import json
-from unittest import mock
 
 from django.conf import settings
 from django.urls import reverse
@@ -321,21 +320,21 @@ class TestViews(TestCase):
         self.assertIn('Log in', response.content.decode())
 
     def test_reset_with_expired_code(self):
-        now = datetime.datetime.now()
-        create_date = now - datetime.timedelta(seconds=26*60*60)
-        with mock.patch('django.utils.timezone.now', mock.Mock(return_value=create_date)):
-            pri = PasswordResetInvitation.objects.create(
-                email='inactiveuser@test.test',
-                username='inactive_user',
-                first_name='normal',
-                last_name='user',
-            )
+        mock_today = datetime.date.today() - datetime.timedelta(days=2)
+        pri = PasswordResetInvitation.objects.create(
+            email='inactiveuser@test.test',
+            username='inactive_user',
+            first_name='normal',
+            last_name='user',
+        )
+        pri.date_invited = mock_today
+        pri.save()
         url = '{0}?reset_code={1}'.format(
-            reverse('invite:reset'),
-            pri.activation_code
+                reverse('invite:reset'),
+                pri.activation_code
         )
         response = self.client.get(url)
-        self.assertIn('That is an invalid activation code.', response.content.decode())
+        self.assertIn('That is an invalid or expired activation code.', response.content.decode())
 
     def test_reset_inactive_user(self):
         pri = PasswordResetInvitation.objects.create(
