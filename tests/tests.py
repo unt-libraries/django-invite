@@ -258,17 +258,16 @@ class TestViews(TestCase):
         )
 
     def test_amnesia_multiple_requests(self):
-        user_email = 'user1@user1.user1'
         self.client.post(
             reverse('invite:amnesia'),
-            {'email': user_email}
+            {'email': self.user1.email}
         )
-        pri1 = PasswordResetInvitation.objects.get(email=user_email)
+        pri1 = PasswordResetInvitation.objects.get(email=self.user1.email)
         self.client.post(
             reverse('invite:amnesia'),
-            {'email': 'user1@user1.user1'}
+            {'email': self.user1.email}
         )
-        pri2 = PasswordResetInvitation.objects.get(email=user_email)
+        pri2 = PasswordResetInvitation.objects.get(email=self.user1.email)
         url1 = '{0}?reset_code={1}'.format(
                 reverse('invite:reset'),
                 pri1.activation_code
