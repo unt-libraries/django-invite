@@ -55,7 +55,7 @@
 
         {% for u in users reversed %}
             <table class='table'>
-                <code><i class="icon-user"></i> {{ u }}{% if show_emails %}{% if user.is_superuser or perms.invite.add_invitation %} ({{ u.email }}){% endif %}{% endif %}</code> registered on <i class="icon-calendar"></i> {{ u.date_joined.year }}-{{ u.date_joined.month }}-{{ u.date_joined.day }}
+                <code><i class="icon-user"></i> {{ u }}{% if show_emails %}{% if user.is_superuser or perms.invite.add_invitation %} ({{ u.email }}){% endif %}{% endif %}</code> registered on <i class="icon-calendar"></i> {{ u.date_joined.date.isoformat }}
             </table>
         {% endfor %}
 
