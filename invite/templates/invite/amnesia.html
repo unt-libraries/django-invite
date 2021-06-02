@@ -3,12 +3,12 @@
 
 {% block content %}
     <div class="container theme-showcase" role="main">
-        <div class='hero-unit'>
+        <div class='jumbotron'>
             <h3>Forgotten your username or password?</h3>
             <p>Enter your e-mail address. You'll get an email with your username and password reset link.</p>
             <hr>
             {% if iforgotform.errors %}
-                <div class="alert alert-error">
+                <div class="alert alert-danger">
                     <button type="button" class="close" data-dismiss="alert">×</button>
                     {% for field in iforgotform %}
                         {% if field.errors %}

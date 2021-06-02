@@ -3,13 +3,13 @@
 
 {% block content %}
     <div class="container theme-showcase" role="main">
-        <div class='hero-unit'>
+        <div class='jumbotron'>
             Enter your new password <em>twice</em> and click submit to reset your password.
             <br>
             <br>
             You should receive a confirmation email afterwards.
             {% if resetform.errors %}
-                <div class="alert alert-error">
+                <div class="alert alert-danger">
                     <button type="button" class="close" data-dismiss="alert">×</button>
                     {% for field in resetform %}
                         {% if field.errors %}

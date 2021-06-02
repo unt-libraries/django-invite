@@ -19,12 +19,12 @@
 
             if (formCount > 1) {
                 // Delete the item/form
-                var rowToRemove = $(btn).parents('.control-group')
+                var rowToRemove = $(btn).parents('.form-group')
                 // Delete error list that might be associated with the row
-                rowToRemove.prev('.alert-error').remove()
+                rowToRemove.prev('.alert-danger').remove()
                 rowToRemove.remove();
 
-                var forms = $('#invitees .control-group'); // Get all the forms
+                var forms = $('#invitees .form-group'); // Get all the forms
 
                 // Update the total number of forms (1 less than before)
                 $('#id_' + prefix + '-TOTAL_FORMS').val(forms.length);
@@ -59,9 +59,9 @@
             var formCount = parseInt($('#id_' + prefix + '-TOTAL_FORMS').val());
 
                 // Clone a form (without event handlers) from the first form
-                var row = $("#invitees .control-group:first").clone(false).get(0);
+                var row = $("#invitees .form-group:first").clone(false).get(0);
                 // Insert it after the last form
-                $(row).removeAttr('id').hide().insertAfter("#invitees .control-group:last").slideDown(300);
+                $(row).removeAttr('id').hide().insertAfter("#invitees .form-group:last").slideDown(300);
 
                 // Remove the bits we don't want in the new row/form
                 // e.g. error messages
@@ -91,21 +91,21 @@
         }
 
         function disableSubmit() {
-            $("#invite-button").removeClass("btn-primary").addClass("btn-inverse disabled");
+            $("#invite-button").removeClass("btn-primary").addClass("btn-default disabled");
         }
 
         function enableSubmit() {
-            $("#invite-button").removeClass("btn-inverse disabled").addClass("btn-primary");
+            $("#invite-button").removeClass("btn-default disabled").addClass("btn-primary");
         }
 
         // Disable the submit button if there are initial errors.
-        if ($("div.alert-error").length > 0) {
+        if ($("div.alert-danger").length > 0) {
             disableSubmit();
         }
 
         $("#invite").on('submit',function(e){
             var $form = $(this);
-            if ($form.data('submitted') === true || $("div.alert-error").length > 0) {
+            if ($form.data('submitted') === true || $("div.alert-danger").length > 0) {
                 // Previously submitted - don't submit again
                 e.preventDefault();
             } else {
@@ -148,7 +148,7 @@
         function validateField() {
             var xhttp = new XMLHttpRequest();
             var $input = $(this);
-            var $row = $input.closest(".control-group");
+            var $row = $input.closest(".form-group");
             var type = $input.attr("placeholder").toLowerCase();
             var usernameError = $("<li></li>").text("Username: Username taken, choose another");
             var emailError = $("<li></li>").text("Email: The email provided already belongs to a user");
@@ -158,9 +158,9 @@
                 if (this.readyState === 4 && this.status === 200) {
                     var taken = JSON.parse(this.responseText).taken;
                     if (taken === true) {
-                        var errorDiv = $("<div class='alert alert-error'></div>");
+                        var errorDiv = $("<div class='alert alert-danger'></div>");
                         // Create the error div, if it isn't there already
-                        if (!$row.prev().hasClass("alert-error")) {
+                        if (!$row.prev().hasClass("alert-danger")) {
                             $row.before(errorDiv);
                             disableSubmit();
                         }
@@ -175,9 +175,9 @@
                             .filter(function() {return $(this).text().toLowerCase().indexOf(type) > -1;})
                             .remove();
                         // Remove error div, if it contains no more errors
-                        $row.prev("div.alert-error:not(:has(li))").remove();
+                        $row.prev("div.alert-danger:not(:has(li))").remove();
                         // Enable submit button if all errors are gone from all rows
-                        if ($("div.alert-error").length === 0) {
+                        if ($("div.alert-danger").length === 0) {
                             enableSubmit();
                         }
                     }
@@ -202,7 +202,7 @@
             <div class='well well-small' id="invitees">
                 {% for form in invite_item_formset %}
                      {% if form.errors %}
-                        <div class="alert alert-error">
+                        <div class="alert alert-danger">
                             {% for field in form %}
                                 {% if field.errors %}
                                 <li>{{ field.label }}: {{ field.errors.0|striptags }}</li>
@@ -210,7 +210,7 @@
                             {% endfor %}
                         </div>
                     {% endif %}
-                    <div id='{{ form.prefix }}-row' class='form-horizontal row control-group' style='margin-bottom: 10px;'>
+                    <div id='{{ form.prefix }}-row' class='form-horizontal row form-group' style='margin-bottom: 10px; margin-left: 10px;'>
                         <div class="span9" >
                             {{ form.first_name }}
                             {{ form.last_name }}
@@ -226,7 +226,7 @@
                 {% endfor %}
             </div>
             <div class='well well-small'>
-                <div class="control-group">
+                <div class="form-group">
                     <label class="control-label" style='text-align: left;'>
                         Optional Greeting
                     </label>
@@ -234,7 +234,7 @@
                         {{ invite_item_formset.forms.0.greeting }}
                     </div>
                 </div>
-                <div class="control-group">
+                <div class="form-group">
                     <label class="control-label" style='text-align: left;'>
                         {{ invite_item_formset.forms.0.permissions.label }}
                     </label>
@@ -246,7 +246,7 @@
                         <span class="help-block">Hold control to select multiple</span>
                     </div>
                 </div>
-                <div class="control-group">
+                <div class="form-group">
                     <label class="control-label" style='text-align: left;'>
                         {{ invite_item_formset.forms.0.groups.label }}
                     </label>
@@ -257,9 +257,9 @@
                         {{ invite_item_formset.forms.0.groups }}
                     </div>
                 </div>
-                <div class="control-group">
+                <div class="form-group">
                     <div class="controls span7">
-                        <input name="invite-button" id="invite-button" class="btn btn-primary btn-large btn-block" type="submit" value="Send email invitation(s)"/>
+                        <input name="invite-button" id="invite-button" class="btn btn-primary btn-lg btn-block" type="submit" value="Send email invitation(s)"/>
                     </div>
                 </div>
             </div>

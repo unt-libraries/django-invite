@@ -2,10 +2,10 @@
 {% block title %}Login{% endblock %}
 
 {% block content %}
-    <div class='row-fluid'>
+    <div class='row'>
 
         {% if user.is_authenticated %}
-            <div class="span4 offset4 well">
+            <div class="span4 offset-4 well">
                 <h3>{{ user.first_name }}, you're already signed in. If your username is not {{ user }}, please log out of the system.</h3>
             <div>
         {% else %}
@@ -13,13 +13,13 @@
                 <form action="{% url 'invite:login' %}" method="post">{% csrf_token %}
                     {{ login_form.non_field_errors }}
                     {{ login_form.username.errors }}
-                    <div class="input-prepend">
-                        <span class="add-on"><i class="icon-user"></i></span>
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="icon-user"></i></span>
                         {{ login_form.username }}
                     </div>
                     {{ login_form.password.errors }}
-                    <div class="input-prepend">
-                        <span class="add-on"><i class="icon-key"></i></span>
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="icon-key"></i></span>
                         {{ login_form.password }}
                     </div>
                     <input type='submit' value='Login' class="btn btn-block btn-primary" type="button">
