@@ -4,16 +4,17 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         <title>{% block title %}{% endblock %}</title>
-        <style type="text/css"> body { padding-top: 60px; }</style>
+        <style type="text/css"> body { padding-top: 00px; }</style>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
-
-<link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.0.0/css/font-awesome.min.css"> -->
-
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/2.3.2/css/bootstrap.min.css"> 
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"> 
         <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.0.0/css/font-awesome.min.css">
         <script type="text/javascript" src="https://code.jquery.com/jquery-latest.js"></script>
         <script type="text/javascript" src="https://netdna.bootstrapcdn.com/twitter-bootstrap/latest/js/bootstrap.min.js"></script>
+        <link
+        rel="stylesheet"
+        href="https://use.fontawesome.com/releases/v5.7.0/css/all.css"
+        integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ"
+        crossorigin="anonymous">
 
         <link
         rel="stylesheet"
@@ -25,34 +26,34 @@
         {% block head-extra %}{% endblock %}
     </head>
     <body>
-        <div class="navbar navbar-inverse navbar-fixed navbar-fixed-top">
+        <div class="navbar navbar-expand-lg navbar-dark bg-dark">
             <div class="navbar-inner">
                 <div class="container-fluid" style="padding-left: 40px;">
                     <ul class="nav">
-                        <li><a class="brand" href="{% url 'invite:index' %}">Invite</a></li>
-                        <li class="dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                                Menu
-                                <i class="icon-white icon-chevron-down"></i>
+                        <li><a class="navbar-brand" href="{% url 'invite:index' %}"><small>Invite</small></a></li>
+                        <li class="nav-item dropdown">
+                             <a class="navbar-brand dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
+                                <small>Menu</small>
+                                <i class="icon-white bi bi-chevron-down"></i>
                             </a>
                             <ul class="dropdown-menu">
-                                <li class="nav-header">Invite</li>
-                                <li><a href="{% url 'invite:index' %}">Accounts</a></li>
-                                <li><a href="{% url 'invite:invite' %}">Invite</a></li>
+                                 <li class="dropdown-menu dropdown-menu-right">Invite</li>
+                                <li><a href="{% url 'invite:index' %}"><small>Accounts</small></a></li>
+                                <li><a href="{% url 'invite:invite' %}"><small>Invite</small></a></li>
                             </ul>
                         </li>
-                        <li><a href="{% url 'invite:about' %}">About</a></li>
+                        <li><a class="navbar-brand" href="{% url 'invite:about' %}"><small>About</small></a></li>
 
                         {% if user.is_authenticated %}
-                            <li><a href="{% url 'invite:edit_logout' %}"><i class="icon-white icon-road"></i> Log out</a></li>
+                            <li><a class="navbar-brand" href="{% url 'invite:edit_logout' %}"><i class="fas fa-road"></i><small> Log out</small></a></li>
                         {% else %}
-                            <li><a href="{% url 'invite:login' %}"><i class="icon-white icon-key"></i> Log in</a></li>
+                            <li><a class="navbar-brand" href="{% url 'invite:login' %}"><small><i class="fas fa-key"></i> Log in</small></a></li>
                         {% endif %}
 
                         <li class="divider-vertical"></li>
 
                         {% if user.is_authenticated %}
-                            <li class='pull-right'><a><small>Signed in as: <i class="icon-white icon-user"></i> {{ user }}</small></a></li>
+                            <li class='text-white float-right'><a><small>Signed in as: <i class="fas fa-user-alt"></i> {{ user }}</small></a></li>
                         {% endif %}
                     </ul>
 

@@ -38,7 +38,7 @@
                 }
 
                 // Make sure the first row always has the button to add new rows
-                var addBtn = '<button id="add" class="btn btn-info" href="#"><i class="icon-plus"></i></button>';
+                var addBtn = '<button id="add" class="btn btn-info" href="#"><i class="glyphicon .glyphicon-plus"></i></button>';
                 if (forms.first().find("button#add").length === 0){
                     forms.first().find('.delete').after(addBtn); 
                     // Register the click event handler
@@ -210,22 +210,22 @@
                             {% endfor %}
                         </div>
                     {% endif %}
-                    <div id='{{ form.prefix }}-row' class='form-horizontal row form-group' style='margin-bottom: 10px; margin-left: 10px;'>
-                        <div class="span9" >
+                    <div id='{{ form.prefix }}-row' class='form-horizontal row form-group' style='margin-bottom: 10px;'>
+                        <div class="col-md-9" >
                             {{ form.first_name }}
                             {{ form.last_name }}
                             {{ form.email }}
                             {{ form.username }}
                             <label class='label label-inverse' style='width:105px;'>Superuser? {{ form.is_super_user }}</label>
                         </div>
-                        <div class="span2">
-                            <button class="delete btn btn-danger" href="#"><i class='icon-remove'></i></button>
-                            <button id='add' class="btn btn-info" href="#"><i class='icon-plus'></i></button>
+                        <div class="col-md-2">
+                            <button class="delete btn btn-danger" href="#"><i class='glyphicon .glyphicon-remove'></i></button>
+                            <button id='add' class="btn btn-info" href="#"><i class='glyphicon .glyphicon-plus'></i></button>
                         </div>
                     </div>
                 {% endfor %}
             </div>
-            <div class='well well-small'>
+            <div class='well well-lg'>
                 <div class="form-group">
                     <label class="control-label" style='text-align: left;'>
                         Optional Greeting
@@ -239,7 +239,7 @@
                         {{ invite_item_formset.forms.0.permissions.label }}
                     </label>
                     <div class="controls">
-                        <input type="text" id="perms-search" placeholder="Search permissions." class="span7"/>
+                        <input type="text" id="perms-search" placeholder="Search permissions." class="col-md-7"/>
                     </div>
                     <div class="controls">
                         {{ invite_item_formset.forms.0.permissions }}
@@ -251,14 +251,14 @@
                         {{ invite_item_formset.forms.0.groups.label }}
                     </label>
                     <div class="controls">
-                        <input type="text" id="groups-search" placeholder="Search groups." class="span7"/>
+                        <input type="text" id="groups-search" placeholder="Search groups." class="col-md-7"/>
                     </div>
                     <div class="controls">
                         {{ invite_item_formset.forms.0.groups }}
                     </div>
                 </div>
                 <div class="form-group">
-                    <div class="controls span7">
+                    <div class="controls col-md-7">
                         <input name="invite-button" id="invite-button" class="btn btn-primary btn-lg btn-block" type="submit" value="Send email invitation(s)"/>
                     </div>
                 </div>
@@ -267,7 +267,7 @@
 
     {% else %}
     <h3>
-        <i class="icon-remove"></i> Sorry {{ user.first_name|title }}, you don't have invite permission. <a href="{% url 'invite:index' %}">Back to accounts page</a>
+        <i class="glyphicon .glyphicon-remove"></i> Sorry {{ user.first_name|title }}, you don't have invite permission. <a href="{% url 'invite:index' %}">Back to accounts page</a>
     </h3>
     {% endif %}
 

@@ -2,7 +2,7 @@
 {% block title %}Accounts{% endblock %}
 
 {% block content %}
-    <div class='span7 text-left well' style="float: none; margin-left: auto; margin-right: auto;">
+    <div class='col-md-7 text-left well' style="float: none; margin-left: auto; margin-right: auto;">
         {% if perms.invite.add_invitation %}
             <a href="{% url 'invite:invite' %}" class="btn btn-lg btn-block btn-primary" type="button">Send an Invitation</a>
         {% endif %}
@@ -15,7 +15,7 @@
                 <table class='table table-striped'>
                     {% for i in invites %}
                         <tr>
-                            <td colspan='2'><i class="icon-user"></i> {{ i.first_name|title }} {{ i.last_name|title }}{% if show_emails %}{% if user.is_superuser or perms.invite.add_invitation %} ({{ i.email }}){% endif %}{% endif %} was <i class="icon-envelope"></i> emailed an invitation on <i class="icon-calendar"></i> {{ i.date_invited }}</td>
+                            <td colspan='2'><i class="glyphicon .glyphicon-user"></i> {{ i.first_name|title }} {{ i.last_name|title }}{% if show_emails %}{% if user.is_superuser or perms.invite.add_invitation %} ({{ i.email }}){% endif %}{% endif %} was <i class="glyphicon .glyphicon-envelope"></i> emailed an invitation on <i class="glyphicon .glyphicon-calendar"></i> {{ i.date_invited }}</td>
                             <td></td>
                         </tr>
                         {% if user.is_superuser or perms.invite.add_invitation %}
@@ -55,7 +55,7 @@
 
         {% for u in users reversed %}
             <table class='table'>
-                <code><i class="icon-user"></i> {{ u }}{% if show_emails %}{% if user.is_superuser or perms.invite.add_invitation %} ({{ u.email }}){% endif %}{% endif %}</code> registered on <i class="icon-calendar"></i> {{ u.date_joined.year }}-{{ u.date_joined.month }}-{{ u.date_joined.day }}
+                <code><i class="glyphicon .glyphicon-user"></i> {{ u }}{% if show_emails %}{% if user.is_superuser or perms.invite.add_invitation %} ({{ u.email }}){% endif %}{% endif %}</code> registered on <i class="glyphicon .glyphicon-calendar"></i> {{ u.date_joined.year }}-{{ u.date_joined.month }}-{{ u.date_joined.day }}
             </table>
         {% endfor %}
 
