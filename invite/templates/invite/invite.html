@@ -38,7 +38,7 @@
                 }
 
                 // Make sure the first row always has the button to add new rows
-                var addBtn = '<button id="add" class="btn btn-info" href="#"><i class="glyphicon .glyphicon-plus"></i></button>';
+                var addBtn = '<button id="add" class="btn btn-info" href="#"><i class="far fa-plus-square"></i></button>';
                 if (forms.first().find("button#add").length === 0){
                     forms.first().find('.delete').after(addBtn); 
                     // Register the click event handler
@@ -219,8 +219,8 @@
                             <label class='label label-inverse' style='width:105px;'>Superuser? {{ form.is_super_user }}</label>
                         </div>
                         <div class="col-md-2">
-                            <button class="delete btn btn-danger" href="#"><i class='glyphicon .glyphicon-remove'></i></button>
-                            <button id='add' class="btn btn-info" href="#"><i class='glyphicon .glyphicon-plus'></i></button>
+                            <button class="delete btn btn-danger" href="#"><i class='far fa-minus-square'></i></button>
+                            <button id='add' class="btn btn-info" href="#"><i class='far fa-plus-square'></i></button>
                         </div>
                     </div>
                 {% endfor %}
