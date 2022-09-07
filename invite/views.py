@@ -271,14 +271,19 @@ def invite(request):
         invite_item_formset = InviteItemFormSet(request.POST, request.FILES)
         if invite_item_formset.is_valid():
             for form in invite_item_formset.forms:
-                # make invite for each form
-                i = Invitation.objects.create(
-                    first_name=form.cleaned_data['first_name'],
-                    last_name=form.cleaned_data['last_name'],
-                    username=form.cleaned_data['username'],
-                    email=form.cleaned_data['email'],
-                    is_super_user=form.cleaned_data['is_super_user'],
-                )
+                try:
+                    # make invite for each form
+                    i = Invitation.objects.create(
+                        first_name=form.cleaned_data['first_name'],
+                        last_name=form.cleaned_data['last_name'],
+                        username=form.cleaned_data['username'],
+                        email=form.cleaned_data['email'],
+                        is_super_user=form.cleaned_data['is_super_user'],
+                    )
+                except KeyError:
+                    # except KeyError due to possible incorrect form count
+                    # due to user refreshing and re-submitting forms
+                    continue
                 i.custom_msg = (
                     invite_item_formset
                     .forms[0]
