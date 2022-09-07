@@ -280,34 +280,34 @@ def invite(request):
                         email=form.cleaned_data['email'],
                         is_super_user=form.cleaned_data['is_super_user'],
                     )
-                    i.custom_msg = (
-                        invite_item_formset
-                        .forms[0]
-                        .cleaned_data['greeting']
-                    )
-                    # set m2m relationships from initial object creation
-                    permissions = (
-                        invite_item_formset
-                        .forms[0]
-                        .cleaned_data['permissions']
-                    )
-                    groups = (
-                        invite_item_formset
-                        .forms[0]
-                        .cleaned_data['groups']
-                    )
-
-                    for permission in permissions:
-                        i.permissions.add(permission)
-                    for group in groups:
-                        i.groups.add(group)
-                    # send the email invitation
-                    i.send(request=request)
-                    i.save()
                 except KeyError:
                     # except KeyError due to possible incorrect form count
                     # due to user refreshing and re-submitting forms
                     continue
+                i.custom_msg = (
+                    invite_item_formset
+                    .forms[0]
+                    .cleaned_data['greeting']
+                )
+                # set m2m relationships from initial object creation
+                permissions = (
+                    invite_item_formset
+                    .forms[0]
+                    .cleaned_data['permissions']
+                )
+                groups = (
+                    invite_item_formset
+                    .forms[0]
+                    .cleaned_data['groups']
+                )
+
+                for permission in permissions:
+                    i.permissions.add(permission)
+                for group in groups:
+                    i.groups.add(group)
+                # send the email invitation
+                i.send(request=request)
+                i.save()
             return HttpResponseRedirect(reverse('invite:index'))
     else:
         invite_item_formset = InviteItemFormSet()
