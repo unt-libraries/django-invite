@@ -1,12 +1,12 @@
 # Django Invite  
 
-[![Build Status](https://travis-ci.org/unt-libraries/django-invite.svg?branch=master)](https://travis-ci.org/unt-libraries/django-invite)
+[![Build Status](https://github.com/unt-libraries/django-invite/actions/workflows/test.yml/badge.svg?branch=master)](https://github.com/unt-libraries/django-invite/actions)
 
 Invite is a Django app for inviting new users to your new or existing Django project.
 
 ## Dependencies
 
-* Python 3.7.x
+* Python 3.7 - 3.9
 * Django 2.2.x
 
 ## Documentation
@@ -23,7 +23,7 @@ $ git clone https://github.com/unt-libraries/django-invite
 $ cd django-invite
 ```
 
-Install the requirements.
+Install the app and test requirements.
 ```sh
 $ pip install -r requirements.txt
 ```
@@ -45,10 +45,10 @@ $ ./manage.py runserver
 
 Run the tests.
 ```sh
-$ ./manage.py test
+$ pytest
 ```
 
-Run the tests against all supported versions of Django.
+Run the tests against all supported versions of Django, and run a flake8 check.
 ```sh
 $ pip install tox
 

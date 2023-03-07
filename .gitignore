@@ -13,3 +13,4 @@ tests/db.sqlite3
 build
 dist
 *.egg-info
+.python-version
