@@ -3,7 +3,7 @@ Change Log
 
 4.1.0
 -----
-* Added support for Python 3.8 and 3.9
+* Added support for Python 3.8 - 3.11
 * Dropped Travis CI integration
 * Moved CI to Github Actions
 * Switched to using pytest to run test suite
