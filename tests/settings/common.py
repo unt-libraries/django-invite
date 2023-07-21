@@ -61,3 +61,5 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 USE_DEPRECATED_PYTZ = True
+
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
