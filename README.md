@@ -6,8 +6,8 @@ Invite is a Django app for inviting new users to your new or existing Django pro
 
 ## Dependencies
 
-* Python 3.7 - 3.11
-* Django 2.2.x
+* Python 3.8 - 3.11
+* Django 4.2.x
 
 ## Documentation
 
