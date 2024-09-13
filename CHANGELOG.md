@@ -3,8 +3,9 @@ Change Log
 
 5.0.0
 -----
-* Upgraded Django support from 2.2 to 4.2
-* Dropped support for Python 3.7
+* Upgraded Django support from 2.2 to 4.2.
+* Dropped support for Python 3.7.
+* Set same redirect URL for password resets as for setting an initial password.
 
 4.1.0
 -----
