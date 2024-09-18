@@ -36,7 +36,7 @@ def reset(request):
                 password=form.cleaned_data['password'],
             )
             if user is not None:
-                return HttpResponseRedirect(reverse('invite:login'))
+                return HttpResponseRedirect(app_settings.INVITE_SIGNUP_SUCCESS_URL)
             else:
                 return render(
                     request,
