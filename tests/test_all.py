@@ -2,12 +2,14 @@ import datetime
 from unittest import mock
 import unittest
 import json
+import smtplib
 
 from django.conf import settings
 from django.urls import reverse
 from django.template.loader import render_to_string
 from django.test import TestCase
 from django.contrib.auth.models import User, Group
+from django.core import mail
 
 from invite.models import Invitation, PasswordResetInvitation
 from invite import settings as app_settings
@@ -189,6 +191,7 @@ class TestViews(TestCase):
         self.assertEqual(invite1.username, 'two')
         self.assertEqual(invite2.email, 'thr@thr.com')
         self.assertEqual(invite2.username, 'three')
+        self.assertEqual(len(mail.outbox), 3)
 
     def test_invite_correct_group_selected(self):
         """
@@ -229,6 +232,29 @@ class TestViews(TestCase):
         self.assertEqual(invite0.groups.all()[0].name, 'UNT Archives')
         self.assertEqual(invite0.groups.all()[1].name, 'Boyce')
         self.assertEqual(invite0.groups.all()[2].name, 'texgen')
+        self.assertEqual(len(mail.outbox), 1)
+
+    @mock.patch('invite.models.send_mail', side_effect=smtplib.SMTPException)
+    def test_invite_email_not_sent(self, mock_send_mail):
+        User.objects.create_superuser('test', 'myemail@test.com', 'test')
+        self.client.login(username='test', password='test')
+        response = self.client.post(
+            reverse('invite:invite'),
+            {
+                'form-INITIAL_FORMS': ['0'],
+                'form-MAX_NUM_FORMS': [''],
+                'form-TOTAL_FORMS': ['3'],
+                'form-0-email': ['student@university.edu'],
+                'form-0-username': ['bgrey'],
+                'form-0-last_name': ['Grey'],
+                'form-0-first_name': ['Bob'],
+                'form-0-greeting': ['Hi Bob, click the link to create an account!'],
+            },
+        )
+
+        self.assertEqual(response.status_code, 500)
+        self.assertIn("We're having trouble sending invitation emails", response.content.decode())
+        self.assertEqual(len(mail.outbox), 0)
 
     def test_amnesia_unknown_email(self):
         response = self.client.post(
@@ -237,6 +263,7 @@ class TestViews(TestCase):
         )
 
         self.assertIn('The email provided', response.content.decode())
+        self.assertEqual(len(mail.outbox), 0)
 
     def test_amnesia_inactive_user(self):
         response = self.client.post(
@@ -245,6 +272,7 @@ class TestViews(TestCase):
         )
 
         self.assertIn('Your account is inactive.', response.content.decode())
+        self.assertEqual(len(mail.outbox), 0)
 
     def test_amnesia_email_submit_case_insensitive(self):
         response = self.client.post(
@@ -257,6 +285,7 @@ class TestViews(TestCase):
             'An email was sent to {}'.format(self.user1.email.upper()),
             response.content.decode()
         )
+        self.assertEqual(len(mail.outbox), 1)
 
     def test_amnesia_multiple_requests(self):
         self.client.post(
@@ -279,8 +308,22 @@ class TestViews(TestCase):
         )
         response1 = self.client.get(url1)
         response2 = self.client.get(url2)
+
         self.assertIn('That is an invalid or expired activation code.', response1.content.decode())
         self.assertIn('Log in', response2.content.decode())
+        self.assertEqual(len(mail.outbox), 2)
+
+    @mock.patch('invite.models.send_mail', side_effect=smtplib.SMTPException)
+    def test_amnesia_email_not_sent(self, mock_send_mail):
+        response = self.client.post(
+            reverse('invite:amnesia'),
+            {'email': self.user1.email},
+            follow=True
+        )
+
+        self.assertEqual(response.status_code, 500)
+        self.assertIn("We're having trouble sending the email with ", response.content.decode())
+        self.assertEqual(len(mail.outbox), 0)
 
     def test_signup_submit_same_email(self):
         url = '{0}?code={1}'.format(
@@ -317,6 +360,7 @@ class TestViews(TestCase):
             },
         )
         self.assertIn('already belongs to a user', response.content.decode())
+        self.assertEqual(len(mail.outbox), 0)
 
     def test_reset_submit(self):
         psi = PasswordResetInvitation.objects.create(
@@ -343,6 +387,7 @@ class TestViews(TestCase):
         )
         self.assertEqual(200, response.status_code)
         self.assertIn('Log in', response.content.decode())
+        self.assertEqual(len(mail.outbox), 1)
 
     def test_reset_with_expired_code(self):
         mock_today = datetime.date.today() - datetime.timedelta(days=2)
@@ -360,6 +405,7 @@ class TestViews(TestCase):
         )
         response = self.client.get(url)
         self.assertIn('That is an invalid or expired activation code.', response.content.decode())
+        self.assertEqual(len(mail.outbox), 0)
 
     def test_reset_inactive_user(self):
         pri = PasswordResetInvitation.objects.create(
@@ -381,6 +427,32 @@ class TestViews(TestCase):
         self.assertIn(
             'Your account is inactive.', response.content.decode()
         )
+        self.assertEqual(len(mail.outbox), 1)
+
+    @mock.patch('invite.models.send_mail', side_effect=smtplib.SMTPException)
+    def test_reset_email_not_sent(self, mock_send_mail):
+        psi = PasswordResetInvitation.objects.create(
+            email='normal@normal.normal',
+            username='normal',
+            first_name='normal',
+            last_name='normal',
+        )
+        url = '{0}?reset_code={1}'.format(
+            reverse('invite:reset'),
+            psi.activation_code
+        )
+        response = self.client.post(
+            url,
+            {'password': 'test', 'password2': 'test'},
+            follow=True
+        )
+
+        self.assertEqual(response.status_code, 500)
+        self.assertIn(
+            "Your password has been reset, but we are unable to send a confirmation email",
+            response.content.decode()
+        )
+        self.assertEqual(len(mail.outbox), 0)
 
     def test_forgotten_password(self):
         """User forgets his password test"""
@@ -403,6 +475,51 @@ class TestViews(TestCase):
             follow=True
         )
         self.assertIn('Log in', response.content.decode())
+        # One email for the initial request and containing the reset code, then confirmation.
+        self.assertEqual(len(mail.outbox), 2)
+
+    def test_resend(self):
+        """Resend the invitation email to alpha invitee."""
+        self.client.login(username='superuser', password='superuser')
+        code = str(self.alpha_invite.activation_code)
+        response = self.client.post(
+            reverse('invite:resend', args=[code]),
+            follow=True
+        )
+        self.assertEqual(200, response.status_code)
+        self.assertIn(
+            'Resent invitation email for {}'.format(self.alpha_invite.username),
+            response.content.decode()
+        )
+        self.assertEqual(len(mail.outbox), 1)
+
+    def test_resend_wrong_code(self):
+        self.client.login(username='superuser', password='superuser')
+        response = self.client.post(
+            reverse('invite:resend', args=['definitely-wrong-code']),
+            follow=True
+        )
+        self.assertEqual(200, response.status_code)
+        self.assertIn(
+            'That is an invalid or expired activation code',
+            response.content.decode()
+        )
+        self.assertEqual(len(mail.outbox), 0)
+
+    @mock.patch('invite.models.send_mail', side_effect=smtplib.SMTPException)
+    def test_resend_email_not_sent(self, mock_send_mail):
+        self.client.login(username='superuser', password='superuser')
+        code = str(self.alpha_invite.activation_code)
+        response = self.client.post(
+            reverse('invite:resend', args=[code]),
+            follow=True
+        )
+        self.assertEqual(500, response.status_code)
+        self.assertIn(
+            "We're having trouble resending the invitation email",
+            response.content.decode()
+        )
+        self.assertEqual(len(mail.outbox), 0)
 
     @mock.patch('invite.views.app_settings')
     def test_index_shows_limited_invites(self, mock_settings):
