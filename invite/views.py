@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
 from django.forms.formsets import formset_factory, BaseFormSet
-from django.http import HttpResponseRedirect, JsonResponse
+from django.http import HttpResponseRedirect, JsonResponse, HttpResponseServerError
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth import logout
@@ -16,12 +16,12 @@ from datetime import date
 
 
 def reset(request):
-    '''users land here to reset their django user passwords'''
+    '''Reset django user password.'''
     if request.method == 'POST':
         reset_code = request.GET.get('reset_code')
         form = forms.ResetForm(request.POST)
         if form.is_valid():
-            # get invitation object so we can deleted it afterwards
+            # get invitation object so we can delete it afterwards
             pri = (PasswordResetInvitation
                    .objects
                    .get(activation_code=reset_code))
@@ -29,7 +29,13 @@ def reset(request):
             user = User.objects.get(username=pri.username)
             user.set_password(form.cleaned_data['password'])
             user.save()
-            pri.send_confirm(request=request)
+            try:
+                pri.send_confirm(request=request)
+            except Exception:
+                return HttpResponseServerError(
+                    'Your password has been reset, but we are unable to send a confirmation '
+                    'email at this time. Regardless, you may now sign in with your new password.'
+                )
             pri.delete()
             user = authenticate(
                 username=pri.username,
@@ -121,7 +127,13 @@ def amnesia(request):
                     email=form.cleaned_data['email'],
                 )
                 # send the email reset link
-                i.send(request=request)
+                try:
+                    i.send(request=request)
+                except Exception:
+                    return HttpResponseServerError(
+                        'We\'re having trouble sending the email with your password reset '
+                        'instructions, please try again later.'
+                    )
                 i.save()
                 redirect = '{0}?email={1}'.format(
                     reverse('invite:reset'),
@@ -217,7 +229,12 @@ def resend(request, code):
             request,
             'invite/denied.html'
         )
-    i.send(request=request)
+    try:
+        i.send(request=request)
+    except Exception:
+        return HttpResponseServerError(
+            'We\'re having trouble resending the invitation email, please try again later.'
+        )
     resent_user = '%s %s' % (i.first_name, i.last_name)
 
     invites = Invitation.objects.all().order_by('-date_invited')
@@ -306,7 +323,12 @@ def invite(request):
                 for group in groups:
                     i.groups.add(group)
                 # send the email invitation
-                i.send(request=request)
+                try:
+                    i.send(request=request)
+                except Exception:
+                    return HttpResponseServerError(
+                        'We\'re having trouble sending invitation emails, please try again later.'
+                    )
                 i.save()
             return HttpResponseRedirect(reverse('invite:index'))
     else:
