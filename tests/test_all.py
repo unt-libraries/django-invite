@@ -480,17 +480,24 @@ class TestViews(TestCase):
 
     def test_resend(self):
         """Resend the invitation email to alpha invitee."""
+        # Date should get reset to today, so make sure original date is in the past.
+        self.alpha_invite.date_invited = self.old_date
+        self.alpha_invite.save()
         self.client.login(username='superuser', password='superuser')
         code = str(self.alpha_invite.activation_code)
         response = self.client.post(
             reverse('invite:resend', args=[code]),
             follow=True
         )
+        self.alpha_invite.refresh_from_db()
         self.assertEqual(200, response.status_code)
         self.assertIn(
             'Resent invitation email for {}'.format(self.alpha_invite.username),
             response.content.decode()
         )
+        self.alpha_invite.refresh_from_db()
+        self.assertNotEqual(self.alpha_invite.date_invited, self.old_date)
+        self.assertEqual(self.alpha_invite.date_invited, datetime.date.today())
         self.assertEqual(len(mail.outbox), 1)
 
     def test_resend_wrong_code(self):
@@ -508,6 +515,8 @@ class TestViews(TestCase):
 
     @mock.patch('invite.models.send_mail', side_effect=smtplib.SMTPException)
     def test_resend_email_not_sent(self, mock_send_mail):
+        # Date shouldn't get changed if email fails to send.
+        original_invite_date = self.alpha_invite.date_invited
         self.client.login(username='superuser', password='superuser')
         code = str(self.alpha_invite.activation_code)
         response = self.client.post(
@@ -519,6 +528,8 @@ class TestViews(TestCase):
             "We're having trouble resending the invitation email",
             response.content.decode()
         )
+        self.alpha_invite.refresh_from_db()
+        self.assertEqual(self.alpha_invite.date_invited, original_invite_date)
         self.assertEqual(len(mail.outbox), 0)
 
     @mock.patch('invite.views.app_settings')

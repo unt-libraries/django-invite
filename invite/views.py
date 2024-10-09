@@ -235,6 +235,8 @@ def resend(request, code):
         return HttpResponseServerError(
             'We\'re having trouble resending the invitation email, please try again later.'
         )
+    i.date_invited = date.today()
+    i.save()
     resent_user = '%s %s' % (i.first_name, i.last_name)
 
     invites = Invitation.objects.all().order_by('-date_invited')
