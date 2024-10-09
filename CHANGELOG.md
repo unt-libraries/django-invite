@@ -7,6 +7,7 @@ Change Log
 * Dropped support for Python 3.7.
 * Set same redirect URL for password resets as for setting an initial password.
 * Added some exception handling and error messages for cases where emails fail to send.
+* Update the date_invited field when resending invitations.
 
 4.1.0
 -----
