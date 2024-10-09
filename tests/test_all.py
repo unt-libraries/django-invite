@@ -489,7 +489,6 @@ class TestViews(TestCase):
             reverse('invite:resend', args=[code]),
             follow=True
         )
-        self.alpha_invite.refresh_from_db()
         self.assertEqual(200, response.status_code)
         self.assertIn(
             'Resent invitation email for {}'.format(self.alpha_invite.username),
