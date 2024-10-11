@@ -7,6 +7,7 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth import logout
 from django.contrib.auth.models import User
 from django.views.decorators.csrf import csrf_protect
+from django.views.decorators.http import require_http_methods
 
 from . import forms
 from .models import Invitation, PasswordResetInvitation
@@ -15,6 +16,7 @@ from .utils import get_cutoff_date
 from datetime import date
 
 
+@require_http_methods(['GET', 'POST'])
 def reset(request):
     '''Reset django user password.'''
     if request.method == 'POST':
@@ -60,7 +62,7 @@ def reset(request):
                     'reset_code': reset_code,
                 }
             )
-    elif request.method == 'GET':
+    else:
         # they come bearing a reset_code
         if 'reset_code' in request.GET.keys():
             try:
@@ -108,6 +110,7 @@ def reset(request):
             )
 
 
+@require_http_methods(['GET', 'POST'])
 def amnesia(request):
     # iforgot form.
     if request.method == 'POST':
@@ -218,6 +221,7 @@ def index(request):
     )
 
 
+@require_http_methods(['GET'])
 @login_required(redirect_field_name=None,
                 login_url=reverse_lazy('invite:login'))
 def resend(request, code):
@@ -263,6 +267,7 @@ def resend(request, code):
     )
 
 
+@require_http_methods(['GET'])
 @login_required(redirect_field_name=None,
                 login_url=reverse_lazy('invite:login'))
 def revoke(request, code):

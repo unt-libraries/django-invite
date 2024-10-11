@@ -485,7 +485,7 @@ class TestViews(TestCase):
         self.alpha_invite.save()
         self.client.login(username='superuser', password='superuser')
         code = str(self.alpha_invite.activation_code)
-        response = self.client.post(
+        response = self.client.get(
             reverse('invite:resend', args=[code]),
             follow=True
         )
@@ -501,7 +501,7 @@ class TestViews(TestCase):
 
     def test_resend_wrong_code(self):
         self.client.login(username='superuser', password='superuser')
-        response = self.client.post(
+        response = self.client.get(
             reverse('invite:resend', args=['definitely-wrong-code']),
             follow=True
         )
@@ -518,7 +518,7 @@ class TestViews(TestCase):
         original_invite_date = self.alpha_invite.date_invited
         self.client.login(username='superuser', password='superuser')
         code = str(self.alpha_invite.activation_code)
-        response = self.client.post(
+        response = self.client.get(
             reverse('invite:resend', args=[code]),
             follow=True
         )
@@ -530,6 +530,28 @@ class TestViews(TestCase):
         self.alpha_invite.refresh_from_db()
         self.assertEqual(self.alpha_invite.date_invited, original_invite_date)
         self.assertEqual(len(mail.outbox), 0)
+
+    def test_revoke(self):
+        self.client.login(username='superuser', password='superuser')
+        code = str(self.alpha_invite.activation_code)
+        response = self.client.get(
+            reverse('invite:revoke', args=[code]),
+            follow=True
+        )
+        self.assertEqual(200, response.status_code)
+        self.assertQuerysetEqual(Invitation.objects.filter(activation_code=code), [])
+
+    def test_revoke_wrong_code(self):
+        self.client.login(username='superuser', password='superuser')
+        response = self.client.get(
+            reverse('invite:revoke', args=['definitely-wrong-code']),
+            follow=True
+        )
+        self.assertEqual(200, response.status_code)
+        self.assertIn(
+            'That is an invalid or expired activation code',
+            response.content.decode()
+        )
 
     @mock.patch('invite.views.app_settings')
     def test_index_shows_limited_invites(self, mock_settings):
