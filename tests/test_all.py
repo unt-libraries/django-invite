@@ -362,6 +362,59 @@ class TestViews(TestCase):
         self.assertIn('already belongs to a user', response.content.decode())
         self.assertEqual(len(mail.outbox), 0)
 
+    def test_invitation_duplicate_email(self):
+        self.client.login(username='superuser', password='superuser')
+        self.client.post(
+            reverse('invite:invite'),
+            {
+                'form-MAX_NUM_FORMS': [''],
+                'form-INITIAL_FORMS': ['0'],
+                'form-TOTAL_FORMS': ['1'],
+                'form-0-username': ['bobby'],
+                'form-0-email': ['test1@test.com'],
+                'form-0-last_name': ['test1'],
+                'form-0-first_name': ['test1'],
+                'form-0-greeting': [''],
+            }
+        )
+        response = self.client.post(
+            reverse('invite:invite'),
+            {
+                'form-MAX_NUM_FORMS': [''],
+                'form-INITIAL_FORMS': ['0'],
+                'form-TOTAL_FORMS': ['1'],
+                'form-0-username': ['bobby'],
+                'form-0-email': ['test1@test.com'],
+                'form-0-last_name': ['test1'],
+                'form-0-first_name': ['test1'],
+                'form-0-greeting': ['']
+            },
+        )
+        self.assertIn('test1@test.com already belongs to a user or pending invitation', response.content.decode())
+
+    def test_invitation_duplicate_email_clean(self):
+        self.client.login(username='superuser', password='superuser')
+        response = self.client.post(
+            reverse('invite:invite'),
+            {
+                'form-MAX_NUM_FORMS': [''],
+                'form-INITIAL_FORMS': ['0'],
+                'form-TOTAL_FORMS': ['2'], 
+                'form-0-username': ['test1'],
+                'form-0-email': ['email@email.com'],
+                'form-0-last_name': ['test1'],
+                'form-0-first_name': ['test1'],
+                'form-0-greeting': [''],
+                'form-1-username': ['test2'],
+                'form-1-email': ['email@email.com'],  
+                'form-1-last_name': ['test2'],
+                'form-1-first_name': ['test2'],
+                'form-1-greeting': [''],
+            }
+        )
+        self.assertIn('email@email.com already belongs to another invitation in the current form', response.content.decode())
+        
+
     def test_reset_submit(self):
         psi = PasswordResetInvitation.objects.create(
             email='normal@normal.normal',
@@ -686,6 +739,35 @@ class TestViews(TestCase):
         response = self.client.get(reverse('invite:check'))
         self.assertFalse(json.loads(response.content)['taken'])
 
+    def test_check_invite_duplicate_exists(self):
+        self.client.login(username='superuser', password='superuser')
+        self.client.post(
+            reverse('invite:invite'),
+            {
+                'form-MAX_NUM_FORMS': [''],
+                'form-INITIAL_FORMS': ['0'],
+                'form-TOTAL_FORMS': ['1'],
+                'form-0-username': ['bobby'],
+                'form-0-email': ['test1@test.com'],
+                'form-0-last_name': ['test1'],
+                'form-0-first_name': ['test1'],
+                'form-0-greeting': [''],
+            }
+        )
+        response = self.client.get(
+            reverse('invite:check'),
+            {
+                'form-MAX_NUM_FORMS': [''],
+                'form-INITIAL_FORMS': ['0'],
+                'form-TOTAL_FORMS': ['1'],
+                'form-0-username': ['bobby'],
+                'form-0-email': ['test1@test.com'],
+                'form-0-last_name': ['test1'],
+                'form-0-first_name': ['test1'],
+                'form-0-greeting': [''],
+            }
+        )
+        self.assertFalse(json.loads(response.content)['taken'])
 
 if __name__ == '__main__':
     unittest.main()

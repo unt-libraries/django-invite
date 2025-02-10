@@ -151,7 +151,8 @@
             var $row = $input.closest(".control-group");
             var type = $input.attr("placeholder").toLowerCase();
             var usernameError = $("<li></li>").text("Username: Username taken, choose another");
-            var emailError = $("<li></li>").text("Email: The email provided already belongs to a user");
+            var emailError = $("<li></li>").text(`Email: ${$input.val()} already belongs to a User or pending invite `);
+            console.log($input)
             var typeToError = {"email":emailError, "username":usernameError};
             var error = typeToError[type];
             xhttp.onreadystatechange = function() {
@@ -165,18 +166,22 @@
                             disableSubmit();
                         }
                         // Add the error to the error list, if it isn't there already
-                        if ($row.prev().find(":contains('" + error.text() + "')").length === 0) {
+                        if ($row.prev().find(":contains('Email:'), :contains('Username:')").length === 0) {
                             $row.prev().append(error);
                         }
                     } else {
-                        // Remove the previous error/s, if it exists
+                        // Remove previous errors, if they exist
                         $row.prev()
                             .children()
-                            .filter(function() {return $(this).text().toLowerCase().indexOf(type) > -1;})
+                            .filter(function () {
+                                const text = $(this).text().toLowerCase();
+                                console.log("Checking text for removal:", text); // Debugging log
+                                return text.indexOf("email") > -1 || text.indexOf("username:") > -1;
+                            })
                             .remove();
-                        // Remove error div, if it contains no more errors
+                        // Remove error div if it contains no more errors
                         $row.prev("div.alert-error:not(:has(li))").remove();
-                        // Enable submit button if all errors are gone from all rows
+                        // Enable submit button if no errors are present in all rows
                         if ($("div.alert-error").length === 0) {
                             enableSubmit();
                         }
@@ -197,6 +202,15 @@
 {% block content %}
     {% if perms.invite.add_invitation %}
         <h3>Whom would you like to invite, {{ user|title }}?</h3>
+        {% if errors %}
+        <div class="alert">
+            <ul>
+                {% for error in errors %}
+                        <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
         <form id='invite' class="navbar-form form-horizontal" method="POST">{% csrf_token %}
             {{ invite_item_formset.management_form }}
             <div class='well well-small' id="invitees">
