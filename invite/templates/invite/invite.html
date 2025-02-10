@@ -152,7 +152,6 @@
             var type = $input.attr("placeholder").toLowerCase();
             var usernameError = $("<li></li>").text("Username: Username taken, choose another");
             var emailError = $("<li></li>").text(`Email: ${$input.val()} already belongs to a User or pending invite `);
-            console.log($input)
             var typeToError = {"email":emailError, "username":usernameError};
             var error = typeToError[type];
             xhttp.onreadystatechange = function() {
@@ -175,7 +174,6 @@
                             .children()
                             .filter(function () {
                                 const text = $(this).text().toLowerCase();
-                                console.log("Checking text for removal:", text); // Debugging log
                                 return text.indexOf("email") > -1 || text.indexOf("username:") > -1;
                             })
                             .remove();
