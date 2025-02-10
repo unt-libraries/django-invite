@@ -1,4 +1,4 @@
-from invite.models import InviteItem
+from invite.models import Invitation, InviteItem
 from django import forms
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
@@ -10,19 +10,20 @@ def validate_username(value):
     if value in User.objects.all().values_list('username', flat=True):
         raise ValidationError('Username taken, choose another')
 
-
 def validate_user_email(value):
     insensitive_emails = (
         [e.lower() for e in User.objects.all().values_list('email', flat=True)]
     )
-    assert False, insensitive_emails
     if value.lower() not in insensitive_emails:
         raise ValidationError('The email provided doesn\'t belong to any user')
 
-
 def validate_user_email_exists(value):
-    if value in User.objects.all().values_list('email', flat=True):
+    if value.lower() in User.objects.all().values_list('email', flat=True):
         raise ValidationError('The email provided already belongs to a user')
+
+def validate_invitation_email_exists(value):
+    if value.lower() in Invitation.objects.all().values_list('email', flat=True):
+        raise ValidationError(f'{value} already belongs to a user or pending invitation')
 
 
 class SignupForm(forms.Form):
@@ -51,6 +52,7 @@ class SignupForm(forms.Form):
         ),
     )
     email = forms.EmailField(
+        validators=[validators.validate_email],
         widget=forms.TextInput(
             attrs={
                 'placeholder': 'Email',
@@ -115,6 +117,19 @@ class SignupForm(forms.Form):
         self.clean_email()
         return self.cleaned_data
 
+class BaseInviteItemFormSet(forms.BaseFormSet):
+    def clean(self):
+        """
+        Validates that there are no duplicate email addresses across forms.
+        """
+        super().clean()
+        emails = []
+        for form in self.forms:
+            email = form.cleaned_data.get('email')
+            if email:
+                if email in emails:
+                    raise ValidationError(f"{email} already belongs to another invitation in the current form")
+                emails.append(email)
 
 class InviteItemForm(forms.ModelForm):
     # Construct group choices list because many to many fields do not have
@@ -133,7 +148,7 @@ class InviteItemForm(forms.ModelForm):
         ),
     )
     email = forms.EmailField(
-        validators=[validators.validate_email, validate_user_email_exists],
+        validators=[validators.validate_email, validate_user_email_exists, validate_invitation_email_exists],
         widget=forms.TextInput(
             attrs={
                 'onkeydown': 'if (event.keyCode == 13) { this.form.submit(); return false; }',
@@ -143,6 +158,12 @@ class InviteItemForm(forms.ModelForm):
             }
         ),
     )
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if email:
+            email = email.strip().lower()
+        return email
 
     class Meta:
         model = InviteItem
