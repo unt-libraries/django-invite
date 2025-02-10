@@ -288,11 +288,12 @@ def revoke(request, code):
 def invite(request):
     InviteItemFormSet = formset_factory(
         forms.InviteItemForm,
-        formset=BaseFormSet,
+        formset=forms.BaseInviteItemFormSet,
     )
     if request.method == 'POST':
         # Create a formset from the submitted data
         invite_item_formset = InviteItemFormSet(request.POST, request.FILES)
+        
         if invite_item_formset.is_valid():
             for form in invite_item_formset.forms:
                 try:
@@ -338,6 +339,16 @@ def invite(request):
                     )
                 i.save()
             return HttpResponseRedirect(reverse('invite:index'))
+        else:
+            print(invite_item_formset.errors)
+            return render(
+                request,
+                'invite/invite.html',
+                {
+                    'invite_item_formset': invite_item_formset,
+                    'errors': invite_item_formset.non_form_errors(),
+                }
+            )
     else:
         invite_item_formset = InviteItemFormSet()
     return render(
@@ -439,9 +450,14 @@ def check(request):
     elif request.GET.get('email', None):
         try:
             User.objects.get(email__iexact=request.GET['email'].strip())
-            result = True
+            user_result = True
         except User.DoesNotExist:
-            result = False
+            user_result = False
+        if Invitation.objects.filter(email__iexact=request.GET['email'].strip()).exists():
+            invitation_result = True
+        else:
+            invitation_result = False
+        result = user_result or invitation_result
     else:
         result = False
     return JsonResponse({'taken': result})
