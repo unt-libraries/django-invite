@@ -2,7 +2,6 @@ from invite.models import Invitation, InviteItem
 from django import forms
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
-from django.core import validators
 from django.core.exceptions import ValidationError
 
 
@@ -10,15 +9,18 @@ def validate_username(value):
     if value in User.objects.all().values_list('username', flat=True):
         raise ValidationError('Username taken, choose another')
 
+
 def validate_user_email(value):
     if User.objects.filter(email__iexact=value).exists():
         raise ValidationError(f'{value} provided doesn\'t belong to any user')
+
 
 def validate_email_exists(value):
     if User.objects.filter(email__iexact=value).exists():
         raise ValidationError(f'{value} provided already belongs to a user')
     if Invitation.objects.filter(email__iexact=value).exists():
-        raise ValidationError(f'{value} already belongs to a pending invitation')   
+        raise ValidationError(f'{value} already belongs to a pending invitation')
+
 
 class SignupForm(forms.Form):
     first_name = forms.CharField(
@@ -110,6 +112,7 @@ class SignupForm(forms.Form):
         self.clean_email()
         return self.cleaned_data
 
+
 class BaseInviteItemFormSet(forms.BaseFormSet):
     def clean(self):
         """
@@ -119,24 +122,27 @@ class BaseInviteItemFormSet(forms.BaseFormSet):
         emails = []
         users = []
         errors = []
+
         for form in self.forms:
             email = form.cleaned_data.get('email')
             user = form.cleaned_data.get('username')
             if email:
                 if email in emails:
-                    errors.append(ValidationError(f'Email: {email} already belongs to another invitation in the current form', 
-                                                  code='duplicate'))
+                    errors.append(ValidationError(
+                            f'Email: {email} is already in this form',
+                            code='duplicate'))
                 else:
                     emails.append(email)
             if user:
                 if user in users:
-                    errors.append(ValidationError(f'Username: {user} already belongs to another invitation in the current form', 
-                                                  code='duplicate'))
+                    errors.append(ValidationError(
+                            f'Username: {user} is already in this form',
+                            code='duplicate'))
                 else:
                     users.append(user)
         if errors:
             raise ValidationError(errors)
-        
+
 
 class InviteItemForm(forms.ModelForm):
     # Construct group choices list because many to many fields do not have
