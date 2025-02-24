@@ -11,20 +11,14 @@ def validate_username(value):
         raise ValidationError('Username taken, choose another')
 
 def validate_user_email(value):
-    insensitive_emails = (
-        [e.lower() for e in User.objects.all().values_list('email', flat=True)]
-    )
-    if value.lower() not in insensitive_emails:
-        raise ValidationError('The email provided doesn\'t belong to any user')
+    if User.objects.filter(email__iexact=value).exists():
+        raise ValidationError(f'{value} provided doesn\'t belong to any user')
 
-def validate_user_email_exists(value):
-    if value.lower() in User.objects.all().values_list('email', flat=True):
-        raise ValidationError('The email provided already belongs to a user')
-
-def validate_invitation_email_exists(value):
-    if value.lower() in Invitation.objects.all().values_list('email', flat=True):
-        raise ValidationError(f'{value} already belongs to a user or pending invitation')
-
+def validate_email_exists(value):
+    if User.objects.filter(email__iexact=value).exists():
+        raise ValidationError(f'{value} provided already belongs to a user')
+    if Invitation.objects.filter(email__iexact=value).exists():
+        raise ValidationError(f'{value} already belongs to a pending invitation')   
 
 class SignupForm(forms.Form):
     first_name = forms.CharField(
@@ -52,7 +46,6 @@ class SignupForm(forms.Form):
         ),
     )
     email = forms.EmailField(
-        validators=[validators.validate_email],
         widget=forms.TextInput(
             attrs={
                 'placeholder': 'Email',
@@ -120,16 +113,30 @@ class SignupForm(forms.Form):
 class BaseInviteItemFormSet(forms.BaseFormSet):
     def clean(self):
         """
-        Validates that there are no duplicate email addresses across forms.
+        Validate that there are no duplicate email addresses across forms.
         """
         super().clean()
         emails = []
+        users = []
+        errors = []
         for form in self.forms:
             email = form.cleaned_data.get('email')
+            user = form.cleaned_data.get('username')
             if email:
                 if email in emails:
-                    raise ValidationError(f"{email} already belongs to another invitation in the current form")
-                emails.append(email)
+                    errors.append(ValidationError(f'Email: {email} already belongs to another invitation in the current form', 
+                                                  code='duplicate'))
+                else:
+                    emails.append(email)
+            if user:
+                if user in users:
+                    errors.append(ValidationError(f'Username: {user} already belongs to another invitation in the current form', 
+                                                  code='duplicate'))
+                else:
+                    users.append(user)
+        if errors:
+            raise ValidationError(errors)
+        
 
 class InviteItemForm(forms.ModelForm):
     # Construct group choices list because many to many fields do not have
@@ -148,7 +155,7 @@ class InviteItemForm(forms.ModelForm):
         ),
     )
     email = forms.EmailField(
-        validators=[validators.validate_email, validate_user_email_exists, validate_invitation_email_exists],
+        validators=[validate_email_exists],
         widget=forms.TextInput(
             attrs={
                 'onkeydown': 'if (event.keyCode == 13) { this.form.submit(); return false; }',
@@ -246,7 +253,6 @@ class LoginForm(forms.Form):
 
 class IForgotForm(forms.Form):
     email = forms.EmailField(
-        validators=[validators.validate_email],
         widget=forms.TextInput(
             attrs={
                 'class': 'form-control',
