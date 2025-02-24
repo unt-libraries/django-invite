@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
-from django.forms.formsets import formset_factory, BaseFormSet
+from django.forms.formsets import formset_factory
 from django.http import HttpResponseRedirect, JsonResponse, HttpResponseServerError
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required, permission_required
@@ -293,7 +293,7 @@ def invite(request):
     if request.method == 'POST':
         # Create a formset from the submitted data
         invite_item_formset = InviteItemFormSet(request.POST, request.FILES)
-        
+
         if invite_item_formset.is_valid():
             for form in invite_item_formset.forms:
                 try:

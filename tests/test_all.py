@@ -415,8 +415,8 @@ class TestViews(TestCase):
                 'form-1-greeting': [''],
             }
         )
-        self.assertIn('Email: email@email.com already belongs to another invitation in the current form', response.content.decode())
-        self.assertIn('Username: test1 already belongs to another invitation in the current form', response.content.decode())
+        self.assertIn('Email: email@email.com is already in this form', response.content.decode())
+        self.assertIn('Username: test1 is already in this form', response.content.decode())
 
     def test_reset_submit(self):
         psi = PasswordResetInvitation.objects.create(
