@@ -340,7 +340,6 @@ def invite(request):
                 i.save()
             return HttpResponseRedirect(reverse('invite:index'))
         else:
-            print(invite_item_formset.errors)
             return render(
                 request,
                 'invite/invite.html',

@@ -201,7 +201,7 @@
     {% if perms.invite.add_invitation %}
         <h3>Whom would you like to invite, {{ user|title }}?</h3>
         {% if errors %}
-        <div class="alert">
+        <div class="alert" style="background-color: #f2dede; color: #b94a48; border-color: #eed3d7;">
             <ul>
                 {% for error in errors %}
                         <li>{{ error }}</li>
