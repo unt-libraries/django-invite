@@ -11,8 +11,8 @@ def validate_username(value):
 
 
 def validate_user_email(value):
-    if User.objects.filter(email__iexact=value).exists():
-        raise ValidationError(f'{value} provided doesn\'t belong to any user')
+    if not User.objects.filter(email__iexact=value).exists():
+        raise ValidationError('The email provided doesn\'t belong to any user')
 
 
 def validate_email_exists(value):
@@ -115,9 +115,7 @@ class SignupForm(forms.Form):
 
 class BaseInviteItemFormSet(forms.BaseFormSet):
     def clean(self):
-        """
-        Validate that there are no duplicate email addresses across forms.
-        """
+        """Validate that there are no duplicate email addresses across forms."""
         super().clean()
         emails = []
         users = []
@@ -259,6 +257,7 @@ class LoginForm(forms.Form):
 
 class IForgotForm(forms.Form):
     email = forms.EmailField(
+        validators=[validate_user_email],
         widget=forms.TextInput(
             attrs={
                 'class': 'form-control',
@@ -269,10 +268,6 @@ class IForgotForm(forms.Form):
     )
 
     def clean_email(self):
-        insensitive_emails = [e.lower() for e in User.objects.all().values_list('email', flat=True)]  # noqa
-        if self.data['email'].lower() not in insensitive_emails:
-            raise ValidationError(
-                'The email provided doesn\'t belong to any user')
         return self.data['email']
 
     def clean(self, *args, **kwargs):
