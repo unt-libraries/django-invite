@@ -6,8 +6,10 @@ from django.core.exceptions import ValidationError
 
 
 def validate_username(value):
-    if value in User.objects.all().values_list('username', flat=True):
-        raise ValidationError('Username taken, choose another')
+    if User.objects.filter(username__iexact=value).exists():
+        raise ValidationError(f'Username {value} taken, choose another')
+    if Invitation.objects.filter(username__iexact=value).exists():
+        raise ValidationError(f'Username {value} taken, choose another')
 
 
 def validate_user_email(value):
@@ -15,9 +17,9 @@ def validate_user_email(value):
         raise ValidationError('The email provided doesn\'t belong to any user')
 
 
-def validate_email_exists(value):
+def validate_new_email(value):
     if User.objects.filter(email__iexact=value).exists():
-        raise ValidationError(f'{value} provided already belongs to a user')
+        raise ValidationError(f'{value} already belongs to a user')
     if Invitation.objects.filter(email__iexact=value).exists():
         raise ValidationError(f'{value} already belongs to a pending invitation')
 
@@ -127,14 +129,14 @@ class BaseInviteItemFormSet(forms.BaseFormSet):
             if email:
                 if email in emails:
                     errors.append(ValidationError(
-                            f'Email: {email} is already in this form',
+                            f'Email: {email} is duplicated within this form',
                             code='duplicate'))
                 else:
                     emails.append(email)
             if user:
                 if user in users:
                     errors.append(ValidationError(
-                            f'Username: {user} is already in this form',
+                            f'Username: {user} is duplicated within this form',
                             code='duplicate'))
                 else:
                     users.append(user)
@@ -159,7 +161,7 @@ class InviteItemForm(forms.ModelForm):
         ),
     )
     email = forms.EmailField(
-        validators=[validate_email_exists],
+        validators=[validate_new_email],
         widget=forms.TextInput(
             attrs={
                 'onkeydown': 'if (event.keyCode == 13) { this.form.submit(); return false; }',
@@ -266,13 +268,6 @@ class IForgotForm(forms.Form):
             }
         ),
     )
-
-    def clean_email(self):
-        return self.data['email']
-
-    def clean(self, *args, **kwargs):
-        self.clean_email()
-        return self.cleaned_data
 
 
 class ResetForm(forms.Form):

@@ -363,8 +363,8 @@ class TestViews(TestCase):
         self.assertIn('already belongs to a user', response.content.decode())
         self.assertEqual(len(mail.outbox), 0)
 
-    def test_invite_invitation_duplicate_email(self):
-        """"Test for duplicate emails in pending Invitations."""
+    def test_invite_invitation_duplicate_email_and_username(self):
+        """"Test for duplicate emails and usernames in pending Invitations."""
         self.client.login(username='superuser', password='superuser')
         self.client.post(
             reverse('invite:invite'),
@@ -372,7 +372,7 @@ class TestViews(TestCase):
                 'form-MAX_NUM_FORMS': [''],
                 'form-INITIAL_FORMS': ['0'],
                 'form-TOTAL_FORMS': ['1'],
-                'form-0-username': ['bobby'],
+                'form-0-username': ['bobby1'],
                 'form-0-email': ['test1@test.com'],
                 'form-0-last_name': ['test1'],
                 'form-0-first_name': ['test1'],
@@ -385,7 +385,7 @@ class TestViews(TestCase):
                 'form-MAX_NUM_FORMS': [''],
                 'form-INITIAL_FORMS': ['0'],
                 'form-TOTAL_FORMS': ['1'],
-                'form-0-username': ['bobby'],
+                'form-0-username': ['bobby1'],
                 'form-0-email': ['test1@test.com'],
                 'form-0-last_name': ['test1'],
                 'form-0-first_name': ['test1'],
@@ -393,6 +393,7 @@ class TestViews(TestCase):
             },
         )
         self.assertIn('test1@test.com already belongs', response.content.decode())
+        self.assertIn('Username bobby1 taken, choose another', response.content.decode())
 
     def test_invitation_duplicates_and_clean(self):
         """"Test for duplicate email/username in InviteForm and clean_email method."""
@@ -415,8 +416,8 @@ class TestViews(TestCase):
                 'form-1-greeting': [''],
             }
         )
-        self.assertIn('Email: email@email.com is already in this form', response.content.decode())
-        self.assertIn('Username: test1 is already in this form', response.content.decode())
+        self.assertIn('Email: email@email.com is duplicated', response.content.decode())
+        self.assertIn('Username: test1 is duplicated', response.content.decode())
 
     def test_reset_submit(self):
         psi = PasswordResetInvitation.objects.create(
