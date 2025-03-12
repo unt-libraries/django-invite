@@ -8,6 +8,9 @@ from django.core.exceptions import ValidationError
 def validate_username(value):
     if User.objects.filter(username__iexact=value).exists():
         raise ValidationError(f'Username {value} taken, choose another')
+
+
+def validate_username_invitation(value):
     if Invitation.objects.filter(username__iexact=value).exists():
         raise ValidationError(f'Username {value} taken, choose another')
 
@@ -149,7 +152,7 @@ class InviteItemForm(forms.ModelForm):
     # an order
 
     username = forms.CharField(
-        validators=[validate_username],
+        validators=[validate_username, validate_username_invitation],
         max_length=30,
         widget=forms.TextInput(
             attrs={
