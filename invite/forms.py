@@ -1,28 +1,30 @@
-from invite.models import InviteItem
+from invite.models import Invitation, InviteItem
 from django import forms
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
-from django.core import validators
 from django.core.exceptions import ValidationError
 
 
 def validate_username(value):
-    if value in User.objects.all().values_list('username', flat=True):
-        raise ValidationError('Username taken, choose another')
+    if User.objects.filter(username__iexact=value).exists():
+        raise ValidationError(f'Username {value} taken, choose another')
+
+
+def validate_username_invitation(value):
+    if Invitation.objects.filter(username__iexact=value).exists():
+        raise ValidationError(f'Username {value} taken, choose another')
 
 
 def validate_user_email(value):
-    insensitive_emails = (
-        [e.lower() for e in User.objects.all().values_list('email', flat=True)]
-    )
-    assert False, insensitive_emails
-    if value.lower() not in insensitive_emails:
+    if not User.objects.filter(email__iexact=value).exists():
         raise ValidationError('The email provided doesn\'t belong to any user')
 
 
-def validate_user_email_exists(value):
-    if value in User.objects.all().values_list('email', flat=True):
-        raise ValidationError('The email provided already belongs to a user')
+def validate_new_email(value):
+    if User.objects.filter(email__iexact=value).exists():
+        raise ValidationError(f'{value} already belongs to a user')
+    if Invitation.objects.filter(email__iexact=value).exists():
+        raise ValidationError(f'{value} already belongs to a pending invitation')
 
 
 class SignupForm(forms.Form):
@@ -116,12 +118,41 @@ class SignupForm(forms.Form):
         return self.cleaned_data
 
 
+class BaseInviteItemFormSet(forms.BaseFormSet):
+    def clean(self):
+        """Validate that there are no duplicate email addresses across forms."""
+        super().clean()
+        emails = []
+        users = []
+        errors = []
+
+        for form in self.forms:
+            email = form.cleaned_data.get('email')
+            user = form.cleaned_data.get('username')
+            if email:
+                if email in emails:
+                    errors.append(ValidationError(
+                            f'Email: {email} is duplicated within this form',
+                            code='duplicate'))
+                else:
+                    emails.append(email)
+            if user:
+                if user in users:
+                    errors.append(ValidationError(
+                            f'Username: {user} is duplicated within this form',
+                            code='duplicate'))
+                else:
+                    users.append(user)
+        if errors:
+            raise ValidationError(errors)
+
+
 class InviteItemForm(forms.ModelForm):
     # Construct group choices list because many to many fields do not have
     # an order
 
     username = forms.CharField(
-        validators=[validate_username],
+        validators=[validate_username, validate_username_invitation],
         max_length=30,
         widget=forms.TextInput(
             attrs={
@@ -133,7 +164,7 @@ class InviteItemForm(forms.ModelForm):
         ),
     )
     email = forms.EmailField(
-        validators=[validators.validate_email, validate_user_email_exists],
+        validators=[validate_new_email],
         widget=forms.TextInput(
             attrs={
                 'onkeydown': 'if (event.keyCode == 13) { this.form.submit(); return false; }',
@@ -143,6 +174,12 @@ class InviteItemForm(forms.ModelForm):
             }
         ),
     )
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if email:
+            email = email.strip().lower()
+        return email
 
     class Meta:
         model = InviteItem
@@ -225,7 +262,7 @@ class LoginForm(forms.Form):
 
 class IForgotForm(forms.Form):
     email = forms.EmailField(
-        validators=[validators.validate_email],
+        validators=[validate_user_email],
         widget=forms.TextInput(
             attrs={
                 'class': 'form-control',
@@ -234,17 +271,6 @@ class IForgotForm(forms.Form):
             }
         ),
     )
-
-    def clean_email(self):
-        insensitive_emails = [e.lower() for e in User.objects.all().values_list('email', flat=True)]  # noqa
-        if self.data['email'].lower() not in insensitive_emails:
-            raise ValidationError(
-                'The email provided doesn\'t belong to any user')
-        return self.data['email']
-
-    def clean(self, *args, **kwargs):
-        self.clean_email()
-        return self.cleaned_data
 
 
 class ResetForm(forms.Form):

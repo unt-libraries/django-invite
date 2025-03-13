@@ -71,3 +71,4 @@ Contributors:
 - [Lauren Ko](http://github.com/ldko)
 - [Gio Gottardi](http://github.com/somexpert)
 - [Madhulika Bayyavarapu](http://github.com/madhulika95b)
+- [Trey Clark](http://github.com/clarktr1)
