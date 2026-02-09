@@ -1,0 +1,70 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "django-invite"
+version = "5.0.0"
+authors = [
+    {name = "University of North Texas Libraries"}
+]
+description = "A Django application for inviting users to a site."
+readme = "README.md"
+license = {file = "LICENSE"}
+requires-python = ">=3.8,<3.12"
+keywords = ["django", "invite", "invitation"]
+classifiers = [
+    "Environment :: Web Environment",
+    "Framework :: Django",
+    "Intended Audience :: System Administrators",
+    "Intended Audience :: End Users/Desktop",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Internet :: WWW/HTTP :: WSGI :: Application :: User Management"
+]
+dependencies = [
+    "Django~=4.2.1",
+    "pytz~=2022.7.1"
+]
+
+[project.urls]
+repository = "https://github.com/unt-libraries/django-invite"
+
+[project.optional-dependencies]
+test = [
+    "pytest~=7.2.0",
+    "pytest-django~=4.5.2",
+    "tox >= 4.0",
+    "ruff>=0.15.0",
+]
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "tests.settings.test"
+
+[tool.ruff]
+line-length = 99
+
+[tool.ruff.format]
+quote-style = 'single'
+
+[tool.tox]
+legacy_tox_ini = """
+    [tox]
+    envlist =
+        py3{8,9,10,11}
+        py39-ruff
+    skip_missing_interpreters = true
+
+    [testenv]
+    extras = test
+    commands = pytest
+
+    [testenv:py39-ruff]
+    deps = ruff
+    commands = ruff check invite tests
+"""
