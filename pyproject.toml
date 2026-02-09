@@ -1,85 +1,70 @@
 [build-system]
-requires = ["setuptools>=68", "wheel"]
+requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "django-invite"
+version = "5.0.0"
+authors = [
+    {name = "University of North Texas Libraries"}
+]
 description = "A Django application for inviting users to a site."
 readme = "README.md"
-version = "6.0.0"
-keywords=["django", "invite", "invitation"]
-requires-python = ">=3.12"
-license = { text = "LICENSE" }
-authors = [
-  {name = "University of North Texas Libraries", email = "mark.phillips@unt.edu"}
-]
+license = {file = "LICENSE"}
+requires-python = ">=3.8,<3.12"
+keywords = ["django", "invite", "invitation"]
 classifiers = [
-    "Natural Language :: English",
     "Environment :: Web Environment",
-    "Topic :: Internet :: WWW/HTTP :: WSGI :: Application :: User Management",
-    "Operating System :: OS Independent",
-    "License :: OSI Approved :: BSD License",
+    "Framework :: Django",
     "Intended Audience :: System Administrators",
     "Intended Audience :: End Users/Desktop",
-    "Framework :: Django :: 6.1",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
     "Programming Language :: Python",
-    "Programming Language :: Python :: 3.12",
-    "Programming Language :: Python :: 3.13",
-    "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Internet :: WWW/HTTP :: WSGI :: Application :: User Management"
 ]
 dependencies = [
-    "Django @ git+https://github.com/django/django.git@stable/6.1.x", 
-    "pytz~=2022.3",
+    "Django~=4.2.1",
+    "pytz~=2022.7.1"
 ]
 
 [project.urls]
-Homepage = "https://github.com/unt-libraries/django-invite"
-Repository = "https://github.com/unt-libraries/django-invite.git"
+repository = "https://github.com/unt-libraries/django-invite"
 
 [project.optional-dependencies]
 test = [
-    "pytest~=8.4.0",
+    "pytest~=7.2.0",
     "pytest-django~=4.5.2",
-    "ruff~=0.15.9",
-    "tox==4.28.1",
+    "tox >= 4.0",
+    "ruff>=0.15.0",
 ]
-
-[tool.ruff]
-line-length = 99
-target-version = "py312"
-extend-exclude = ['migrations']
-
-[tool.ruff.format]
-quote-style = "single"
-
-[tool.ruff.lint]
-select = ["E", "F", "W"]
 
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "tests.settings.test"
-addopts = ["--nomigrations", "--create-db"]
+
+[tool.ruff]
+line-length = 99
+
+[tool.ruff.format]
+quote-style = 'single'
 
 [tool.tox]
 legacy_tox_ini = """
     [tox]
     envlist =
-        py{312,313,314}
-        ruff
-
-    [pytest]
-    DJANGO_SETTINGS_MODULE = tests.settings.test
+        py3{8,9,10,11}
+        py39-ruff
+    skip_missing_interpreters = true
 
     [testenv]
-    extras =
-        test
-    commands = 
-        pytest -s
-    allowlist_externals = pytest
+    extras = test
+    commands = pytest
 
-    [testenv:ruff]
-    basepython = python3.14
-    deps =
-        ruff
-    commands =
-        ruff check   
+    [testenv:py39-ruff]
+    deps = ruff
+    commands = ruff check invite tests
 """

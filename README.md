@@ -48,7 +48,7 @@ Run the tests.
 $ pytest
 ```
 
-Run the tests against all supported versions of Django, and run a ruff check.
+Run the tests against all supported versions of Django, and run a [ruff](https://docs.astral.sh/ruff/) check.
 ```sh
 $ pip install tox
 $ tox
