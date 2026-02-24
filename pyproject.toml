@@ -39,7 +39,7 @@ repository = "https://github.com/unt-libraries/django-invite"
 test = [
     "pytest~=7.2.0",
     "pytest-django~=4.5.2",
-    "tox >= 4.0",
+    "tox>=4.0",
     "ruff>=0.15.0",
 ]
 
@@ -50,7 +50,7 @@ DJANGO_SETTINGS_MODULE = "tests.settings.test"
 line-length = 99
 
 [tool.ruff.format]
-quote-style = 'single'
+quote-style = "single"
 
 [tool.tox]
 legacy_tox_ini = """
@@ -65,6 +65,5 @@ legacy_tox_ini = """
     commands = pytest
 
     [testenv:py39-ruff]
-    deps = ruff
     commands = ruff check invite tests
 """
