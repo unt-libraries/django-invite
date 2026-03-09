@@ -25,7 +25,7 @@ $ cd django-invite
 
 Install the app and test requirements.
 ```sh
-$ pip install -r requirements.txt
+$ pip install '.[test]'
 ```
 
 Run the migrations.
@@ -48,10 +48,8 @@ Run the tests.
 $ pytest
 ```
 
-Run the tests against all supported versions of Django, and run a flake8 check.
+Run the tests against all supported versions of Django, and run a [ruff](https://docs.astral.sh/ruff/) check.
 ```sh
-$ pip install tox
-
 $ tox
 ```
 
