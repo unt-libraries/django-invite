@@ -83,6 +83,7 @@ class Invitation(AbstractInvitation):
         message = render_to_string(
             'invite/invitation_email.txt',
             {
+                'scheme': request.scheme,
                 'domain': Site.objects.get_current(request=request).domain,
                 'service_name': app_settings.get_service_name(request=request),
                 'activation_code': self.activation_code,
@@ -106,6 +107,7 @@ class PasswordResetInvitation(AbstractInvitation):
             {
                 'first_name': self.first_name,
                 'username': self.username,
+                'scheme': request.scheme,
                 'domain': Site.objects.get_current(request=request).domain,
                 'reset_code': self.activation_code,
             }
