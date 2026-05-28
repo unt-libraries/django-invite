@@ -10,6 +10,7 @@ Change Log
 * Update the date_invited field when resending invitations.
 * Restrict the allowed request types for certain URLs.
 * Add tests for some previously untested views.
+* Update links to use HTTPS
 
 4.1.0
 -----
