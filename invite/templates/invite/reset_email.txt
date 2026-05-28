@@ -6,7 +6,7 @@ Having trouble remembering your password? Don't fret, we can reset it for you.
 Your username is: {{ username }}
 
 Your password can be reset at this unique page. Do not share this URL with anyone.
-https://{{ domain }}{% url 'invite:reset' %}?reset_code={{ reset_code }}
+{{ scheme }}://{{ domain }}{% url 'invite:reset' %}?reset_code={{ reset_code }}
 
 Please note, your activation link expires after tomorrow.
 

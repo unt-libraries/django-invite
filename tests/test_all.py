@@ -45,13 +45,14 @@ class TestOperations(TestCase):
         message = render_to_string(
             'invite/invitation_email.txt',
             {
+                'scheme': 'http',
                 'domain': 'example.com',
                 'service_name': app_settings.get_service_name(),
                 'activation_code': i.activation_code,
                 'custom_msg': i.custom_msg,
             }
         )
-        i.send()
+        i.send(request=mock.Mock(scheme='http'))
         mock_django_mailer.assert_called_with(
             'You have been invited to join the {0}'.format(
                 app_settings.get_service_name()),
@@ -79,11 +80,12 @@ class TestOperations(TestCase):
             {
                 'first_name': i.first_name,
                 'username': i.username,
+                'scheme': 'http',
                 'domain': 'example.com',
                 'reset_code': i.activation_code,
             }
         )
-        i.send()
+        i.send(request=mock.Mock(scheme='http'))
         mock_django_mailer.assert_called_with(
             subject,
             message,
