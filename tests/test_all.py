@@ -139,12 +139,12 @@ class TestViews(TestCase):
         )
         self.user1 = User.objects.create(
             username='user1',
-            email='user1@user1.user1',
+            email='user1@user.com',
             password='user1',
         )
         self.dup_user1 = User.objects.create(
             username='dup_user1',
-            email='user1@user1.user1',
+            email='user1@user.com',
             password='dup_user1',
         )
         self.inactive_user = User.objects.create(
@@ -539,7 +539,7 @@ class TestViews(TestCase):
             follow=True
         )
         self.assertEqual(200, response.status_code)
-        self.assertQuerysetEqual(Invitation.objects.filter(activation_code=code), [])
+        self.assertQuerySetEqual(Invitation.objects.filter(activation_code=code), [])
 
     def test_revoke_wrong_code(self):
         self.client.login(username='superuser', password='superuser')

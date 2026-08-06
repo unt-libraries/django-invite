@@ -1,6 +1,13 @@
 Change Log
 ==========
 
+6.0.0
+-----
+* Removed support for Python 3.9 - 3.11.
+* Added support for Python 3.12 - 3.14.
+* Upgrade Django support from 4.2 to 6.1.
+* Adjusted test emails to handle the new Django DomainValidator
+
 5.0.0
 -----
 * Upgraded Django support from 2.2 to 4.2.
