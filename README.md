@@ -6,8 +6,8 @@ Invite is a Django app for inviting new users to your new or existing Django pro
 
 ## Dependencies
 
-* Python 3.8 - 3.11
-* Django 4.2.x
+* Python 3.12 - 3.14
+* Django 6.1.x
 
 ## Documentation
 
@@ -25,7 +25,7 @@ $ cd django-invite
 
 Install the app and test requirements.
 ```sh
-$ pip install '.[test]'
+$ pip install .'[test]'
 ```
 
 Run the migrations.

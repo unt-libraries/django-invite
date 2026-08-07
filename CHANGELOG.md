@@ -1,5 +1,11 @@
 Change Log
 ==========
+6.0.0
+* Added support for Python 3.12 - 3.14
+* Dropped support for Python 3.11 and below
+* Upgraded Django from 4.2 to 6.1
+* Update tests to reflect new validation standards in Django
+
 
 5.0.0
 -----
