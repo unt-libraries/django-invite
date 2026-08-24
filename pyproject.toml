@@ -27,7 +27,7 @@ classifiers = [
     "Topic :: Internet :: WWW/HTTP :: WSGI :: Application :: User Management"
 ]
 dependencies = [
-    "Django@git+https://github.com/django/django.git@stable/6.1.x", 
+    "Django~=6.1", 
     "pytz~=2022.7.1"
 ]
 
@@ -38,7 +38,6 @@ repository = "https://github.com/unt-libraries/django-invite"
 test = [
     "pytest~=9.0.3",
     "pytest-django~=4.5.2",
-    "tox==4.28.1",
     "ruff>=0.15.0",
 ]
 
@@ -70,6 +69,6 @@ legacy_tox_ini = """
     [testenv:ruff]
     skip_install = true
     deps = 
-        ruff>=0.15.0
+        ruff
     commands = ruff check .
 """

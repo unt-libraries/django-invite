@@ -19,7 +19,6 @@ Documentation, including installation instructions, can be viewed online at:
 
 ```sh
 $ git clone https://github.com/unt-libraries/django-invite
-
 $ cd django-invite
 ```
 
@@ -43,13 +42,11 @@ Run the development server.
 $ ./manage.py runserver
 ```
 
-Run the tests.
-```sh
-$ pytest
-```
+## Testing
 
 Run the tests against all supported versions of Django, and run a [ruff](https://docs.astral.sh/ruff/) check.
 ```sh
+$ pip install tox
 $ tox
 ```
 
