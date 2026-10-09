@@ -60,20 +60,15 @@ legacy_tox_ini = """
     [tox]
     envlist =
         py3{12,13,14}
-        ruff
+        py314-ruff
     skip_missing_interpreters = true
 
     [testenv]
     extras = test
-
-    [testenv:py3{12,13,14}]
-    skip_install = true
     commands = 
         pytest
 
-    [testenv:ruff]
-    skip_install = true
+    [testenv:py314-ruff]
     commands = 
         ruff check .
-    allowlist_externals = ruff
 """
