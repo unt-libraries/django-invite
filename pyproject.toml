@@ -4,14 +4,14 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "django-invite"
-version = "5.0.0"
+version = "6.0.0"
 authors = [
     {name = "University of North Texas Libraries"}
 ]
 description = "A Django application for inviting users to a site."
 readme = "README.md"
 license = {file = "LICENSE"}
-requires-python = ">=3.8,<3.12"
+requires-python = ">=3.12,<3.15"
 keywords = ["django", "invite", "invitation"]
 classifiers = [
     "Environment :: Web Environment",
@@ -21,25 +21,24 @@ classifiers = [
     "Natural Language :: English",
     "Operating System :: OS Independent",
     "Programming Language :: Python",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Topic :: Internet :: WWW/HTTP :: WSGI :: Application :: User Management"
 ]
 dependencies = [
-    "Django~=4.2.1",
+    "Django~=6.1.0", 
     "pytz~=2022.7.1"
 ]
 
 [project.urls]
-repository = "https://github.com/unt-libraries/django-invite"
+Homepage = "https://github.com/unt-libraries/django-invite"
+Repository = "https://github.com/unt-libraries/django-invite.git"
 
 [project.optional-dependencies]
 test = [
-    "pytest~=7.2.0",
+    "pytest~=9.0.3",
     "pytest-django~=4.5.2",
-    "tox>=4.0",
     "ruff>=0.15.0",
 ]
 
@@ -48,6 +47,10 @@ DJANGO_SETTINGS_MODULE = "tests.settings.test"
 
 [tool.ruff]
 line-length = 99
+extend-exclude = ["migrations"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W"]
 
 [tool.ruff.format]
 quote-style = "single"
@@ -56,14 +59,16 @@ quote-style = "single"
 legacy_tox_ini = """
     [tox]
     envlist =
-        py3{8,9,10,11}
-        py39-ruff
+        py3{12,13,14}
+        py314-ruff
     skip_missing_interpreters = true
 
     [testenv]
     extras = test
-    commands = pytest
+    commands = 
+        pytest
 
-    [testenv:py39-ruff]
-    commands = ruff check invite tests
+    [testenv:py314-ruff]
+    commands = 
+        ruff check .
 """
